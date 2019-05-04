@@ -8,11 +8,20 @@
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src",
+    "lint-autofix": "eslint --ext .js,.vue src --fix",
+    "eslint-check": "eslint --print-config .eslintrc.js | eslint-config-prettier-check",
     "build": "node build/build.js"
   },
   "dependencies": {
+    "eslint-config-prettier": "^4.2.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "material-design-icons-iconfont": "^4.0.5",
+    "prettier": "^1.17.0",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2",
     "vue": "^2.5.2",
-    "vue-router": "^3.0.1"
+    "vue-router": "^3.0.1",
+    "vuetify": "^1.5.14"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.2",
