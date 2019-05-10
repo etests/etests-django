@@ -18,7 +18,7 @@
       </template>
 
       <v-list>
-        <v-list-tile v-for="(item, i) in items" :key="i" @click="">
+        <v-list-tile v-for="(item, i) in items" :key="i" @click>
           <v-list-tile-title>{{ item.title }}</v-list-tile-title>
         </v-list-tile>
       </v-list>
@@ -42,7 +42,7 @@ export default {
 <style module lang="stylus">
 @require '~@stylus/theme/colors';
 
-.logo{
+.logo {
   width: 50px;
 }
 </style>
