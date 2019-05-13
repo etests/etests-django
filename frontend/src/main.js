@@ -5,11 +5,13 @@ import App from "./App";
 import router from "./router";
 import Vuetify from "vuetify";
 import "material-design-icons-iconfont/dist/material-design-icons.css";
+import "@mdi/font/css/materialdesignicons.css";
 import "./stylus/main.styl";
 
 Vue.config.productionTip = false;
 
 Vue.use(Vuetify, {
+  iconfont: "mdi" || "md",
   theme: {
     primary: "#28CC9E",
     secondary: "#196B69"

@@ -8,16 +8,7 @@
         @input="$v.email.$touch()"
         @blur="$v.email.$touch()"
       ></v-text-field>
-      <v-text-field
-        :append-icon="showPassword ? 'visibility' : 'visibility_off'"
-        :type="showPassword ? 'text' : 'password'"
-        name="input-10-2"
-        label="Password"
-        value=""
-        class="input-group--focused"
-        @click:append="showPassword = !showPassword"
-      ></v-text-field>
-      <v-btn @click="submit">Login</v-btn>
+      <v-btn @click="submit">Submit</v-btn>
     </form>
   </FlexibleCardLayout>
 </template>
@@ -36,13 +27,7 @@ export default {
 
   data: function() {
     return {
-      email: "",
-      showPassword: false,
-      password: "",
-      passwordRules: {
-        required: value => !!value || "Required.",
-        min: v => v.length >= 8 || "Min 8 characters"
-      }
+      email: ""
     };
   },
 

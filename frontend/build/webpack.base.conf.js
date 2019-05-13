@@ -40,7 +40,8 @@ module.exports = {
       "@stylus": resolve("src/stylus"),
       "@assets": resolve("src/assets"),
       "@components": resolve("src/components"),
-      "@pages": resolve("src/pages")
+      "@pages": resolve("src/pages"),
+      "@js": resolve("src/js")
     }
   },
   module: {

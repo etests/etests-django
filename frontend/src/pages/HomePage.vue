@@ -1,40 +1,30 @@
 <template>
-  <v-toolbar light color="white">
-    <img src="~@assets/logos/etests.png" :class="$style.logo" />
+  <v-card color="white" flat>
+    <Header />
 
-    <v-toolbar-title class="secondary--text">eTests</v-toolbar-title>
-
-    <v-spacer />
-
-    <v-btn icon>
-      <v-icon>search</v-icon>
-    </v-btn>
-
-    <v-menu bottom left>
-      <template v-slot:activator="{ on }">
-        <v-btn icon v-on="on">
-          <v-icon>more_vert</v-icon>
-        </v-btn>
-      </template>
-
-      <v-list>
-        <v-list-tile v-for="(item, i) in items" :key="i" @click>
-          <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-        </v-list-tile>
-      </v-list>
-    </v-menu>
-  </v-toolbar>
+    <v-card class="fill-height">
+      <v-sheet height="700"></v-sheet>
+    </v-card>
+    <!-- <Footer :fixed="true" />   -->
+  </v-card>
 </template>
 
 <script>
+import Header from "@components/Header.vue";
+import Footer from "@components/Footer.vue";
+
 export default {
-  name: "HomePage",
   data() {
     return {
-      title: "eTests",
-      slogan: "an online testing platform",
-      items: [{ title: "Login" }, { title: "Register" }]
+      select: ["Vuetify", "Programming"],
+      items: ["Programming", "Design", "Vue", "Vuetify"],
+      subjects: ["Physics", "Chemistry", "Maths"],
+      tabs: null
     };
+  },
+  components: {
+    Header,
+    Footer
   }
 };
 </script>
@@ -42,7 +32,9 @@ export default {
 <style module lang="stylus">
 @require '~@stylus/theme/colors';
 
-.logo {
-  width: 50px;
+.logo{
+  width: 40px;
+  float: left;
+  margin: 0 5px;
 }
 </style>

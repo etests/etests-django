@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="text-xs-center">
-    <v-app>
+    <v-app class="white">
       <router-view />
     </v-app>
   </div>
@@ -9,7 +9,9 @@
 <script>
 export default {
   name: "App",
-  data() {}
+  data() {
+    return {};
+  }
 };
 </script>
 

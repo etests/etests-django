@@ -1,89 +1,87 @@
 <template>
-  <v-layout>
-    <v-flex xs12 sm6 offset-sm3>
-      <v-card :class="$style.registercard">
-        <form :class="$style.registerform">
-          <v-text-field
-            v-model="name"
-            :error-messages="nameErrors"
-            :counter="25"
-            label="Name"
-            required
-            @input="$v.name.$touch()"
-            @blur="$v.name.$touch()"
-          ></v-text-field>
-          <v-select
-            v-model="state"
-            :items="states"
-            :error-messages="statesErrors"
-            label="State"
-            required
-            @change="$v.state.$touch()"
-            @blur="$v.state.$touch()"
-          ></v-select>
-          <v-text-field
-            v-model="city"
-            :error-messages="cityErrors"
-            :counter="25"
-            label="City"
-            required
-            @input="$v.city.$touch()"
-            @blur="$v.city.$touch()"
-          ></v-text-field>
-          <v-text-field
-            v-model="email"
-            :error-messages="emailErrors"
-            label="E-mail"
-            required
-            @input="$v.email.$touch()"
-            @blur="$v.email.$touch()"
-          ></v-text-field>
-          <v-text-field
-            v-model="phone"
-            :error-messages="phoneErrors"
-            label="Mobile-Number"
-            required
-            @input="$v.phone.$touch()"
-            @blur="$v.phone.$touch()"
-          ></v-text-field>
-          <v-text-field
-            v-model="pin"
-            :error-messages="pinErrors"
-            label="Pin-Code"
-            required
-            @input="$v.phone.$touch()"
-            @blur="$v.phone.$touch()"
-          ></v-text-field>
-          <v-text-field
-            :append-icon="showPassword ? 'visibility' : 'visibility_off'"
-            :rules="[passwordRules.required, passwordRules.min]"
-            :type="showPassword ? 'text' : 'password'"
-            name="input-10-2"
-            label="Password"
-            hint="At least 8 characters"
-            value=""
-            class="input-group--focused"
-            @click:append="showPassword = !showPassword"
-          ></v-text-field>
+  <FlexibleCardLayout>
+    <form class="px-5 py-5 mb-4">
+      <v-text-field
+        v-model="name"
+        :error-messages="nameErrors"
+        :counter="25"
+        label="Name"
+        required
+        @input="$v.name.$touch()"
+        @blur="$v.name.$touch()"
+      ></v-text-field>
+      <v-select
+        v-model="state"
+        :items="states"
+        :error-messages="statesErrors"
+        label="State"
+        required
+        @change="$v.state.$touch()"
+        @blur="$v.state.$touch()"
+      ></v-select>
+      <v-text-field
+        v-model="city"
+        :error-messages="cityErrors"
+        :counter="25"
+        label="City"
+        required
+        @input="$v.city.$touch()"
+        @blur="$v.city.$touch()"
+      ></v-text-field>
+      <v-text-field
+        v-model="email"
+        :error-messages="emailErrors"
+        label="E-mail"
+        required
+        @input="$v.email.$touch()"
+        @blur="$v.email.$touch()"
+      ></v-text-field>
+      <v-text-field
+        v-model="phone"
+        :error-messages="phoneErrors"
+        label="Mobile"
+        required
+        @input="$v.phone.$touch()"
+        @blur="$v.phone.$touch()"
+      ></v-text-field>
+      <v-text-field
+        v-model="pin"
+        :error-messages="pinErrors"
+        label="Pin Code"
+        required
+        @input="$v.phone.$touch()"
+        @blur="$v.phone.$touch()"
+      ></v-text-field>
+      <v-text-field
+        :append-icon="showPassword ? 'visibility' : 'visibility_off'"
+        :rules="[passwordRules.required, passwordRules.min]"
+        :type="showPassword ? 'text' : 'password'"
+        name="input-10-2"
+        label="Password"
+        hint="At least 8 characters"
+        value=""
+        class="input-group--focused"
+        @click:append="showPassword = !showPassword"
+      ></v-text-field>
 
-          <v-checkbox
-            v-model="checkbox"
-            :error-messages="checkboxErrors"
-            label="Do you agree?"
-            required
-            @change="$v.checkbox.$touch()"
-            @blur="$v.checkbox.$touch()"
-          ></v-checkbox>
-          <v-btn @click="submit">submit</v-btn>
-          <v-btn @click="clear">clear</v-btn>
-        </form>
-      </v-card>
-    </v-flex>
-  </v-layout>
+      <v-checkbox
+        v-model="checkbox"
+        :error-messages="checkboxErrors"
+        label="Do you agree?"
+        required
+        @change="$v.checkbox.$touch()"
+        @blur="$v.checkbox.$touch()"
+      ></v-checkbox>
+      <v-btn @click="submit">submit</v-btn>
+      <v-btn @click="clear">clear</v-btn>
+    </form>
+  </FlexibleCardLayout>
 </template>
 
 <script>
 import { validationMixin } from "vuelidate";
+import FlexibleCardLayout from "@components/layouts/FlexibleCardLayout.vue";
+
 import {
   required,
   maxLength,
@@ -141,6 +139,10 @@ export default {
       },
       checkbox: false
     };
+  },
+
+  components: {
+    FlexibleCardLayout
   },
 
   computed: {
@@ -221,16 +223,3 @@ export default {
   mounted() {}
 };
 </script>
-
-<style module lang="stylus">
-@require '~@stylus/theme/colors';
-
-.registercard{
-  padding: 10px;
-  margin :50px auto
-}
-.registerform {
-  margin: 5px auto;
-  width: 75%;
-}
-</style>
