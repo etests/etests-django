@@ -1,6 +1,7 @@
 # Django settings for etests project.
 
 import os
+from datetime import timedelta
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -22,9 +23,24 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework_jwt",
+    "rest_framework_swagger",
     "corsheaders",
-    "user_auth"
+    "eusers",
 ]
+
+JWT_AUTH = {
+    "JWT_RESPONSE_PAYLOAD_HANDLER": "eusers.views.jwt_response_payload_handler",
+    "JWT_AUTH_HEADER_PREFIX": "Bearer",
+    "JWT_ALLOW_REFRESH": True,
+    "JWT_EXPIRATION_DELTA": timedelta(hours=1),
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
+}
+
+LOGIN_URL = "api-auth/login/"
+LOGOUT_URL = "accounts/logout/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -38,11 +54,11 @@ MIDDLEWARE = [
 ]
 
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
-    ]
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
 }
 
 ROOT_URLCONF = "etests.urls"
@@ -74,7 +90,7 @@ DATABASES = {
     }
 }
 
-AUTH_USER_MODEL = "user_auth.User"
+AUTH_USER_MODEL = "eusers.User"
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -102,9 +118,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 CORS_ORIGIN_ALLOW_ALL = False
 

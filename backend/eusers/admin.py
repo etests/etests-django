@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.db import models, migrations
-from user_auth.models import *
+from .models import *
 
 class UserModelAdmin(admin.ModelAdmin):
     list_display = ["name", "email", "phone", "state", "city"]
