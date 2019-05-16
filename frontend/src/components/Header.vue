@@ -27,7 +27,6 @@
       dark
       app
       clipped-left
-      fixed
       :scroll-off-screen="!drawer"
       :scroll-threshold="10"
       :flat="offsetTop == 0"

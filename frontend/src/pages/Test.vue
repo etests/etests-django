@@ -6,21 +6,17 @@
           <v-layout justify-end>
             <v-btn color="white" flat>
               <v-icon> mdi-clock </v-icon>
-              &nbsp; 2:30:10
+              &nbsp; {{ time }}
             </v-btn>
-            <v-btn flat icon>
+            <!-- <v-btn flat icon>
               <v-icon>mdi-account-network</v-icon>
             </v-btn>
             <v-btn flat icon>
               <v-icon>mdi-pause</v-icon>
-            </v-btn>
+            </v-btn> -->
             <v-btn flat icon @click="toggleFullScreen()">
               <v-icon v-if="fullscreen">mdi-fullscreen-exit</v-icon>
               <v-icon v-else>mdi-fullscreen</v-icon>
-            </v-btn>
-            <v-btn flat icon @click="panel = !panel">
-              <v-icon v-if="panel">mdi-arrow-expand-right</v-icon>
-              <v-icon v-else>mdi-arrow-expand-left</v-icon>
             </v-btn>
           </v-layout>
         </v-flex>
@@ -31,6 +27,7 @@
         v-model="currentSection"
         color="transparent"
         slider-color="white"
+        :centered="isSmallScreen"
       >
         <v-tab v-for="section in sections" :key="section.subject">
           <strong>{{ section.subject }}</strong>
@@ -40,108 +37,313 @@
     <v-divider></v-divider>
 
     <v-content app class="pt-5 mt-5">
-      <v-layout coulumn wrap>
-        <v-flex xs12>
-          <v-sheet class="text-xs-left my-1 py-2 px-4">
-            <v-chip color="grey darken-2" outline>
-              Question {{ currentQuestion + 1 }}
-            </v-chip>
-            <v-chip color="success lighten-1" dark>
-              +4
-            </v-chip>
-            <v-chip color="error lighten-1" dark>
-              -1
-            </v-chip>
-          </v-sheet>
-          <v-divider class="grey lighten-2"></v-divider>
-        </v-flex>
-        <v-flex xs12>
-          <v-sheet
-            min-height="300px"
-            color="white"
-            class="text-xs-left py-3 px-5"
-          >
-            <v-tabs-items v-model="currentSection">
-              <v-tab-item v-for="section in sections" :key="section.subject">
-                <span
-                  class="title grey--text text--darken-3"
-                  v-if="section.questions"
-                >
-                  {{ section.questions[currentQuestion].text }}
-
-                  <v-radio-group
-                    v-model="section.questions[currentQuestion].selected"
-                    :mandatory="false"
-                  >
-                    <v-radio
-                      v-for="(option, i) in section.questions[currentQuestion]
-                        .options"
-                      :key="i"
-                      :label="option"
-                      :value="i"
-                    ></v-radio>
-                  </v-radio-group>
-                </span>
-              </v-tab-item>
-            </v-tabs-items>
-          </v-sheet>
-
-          <v-flex xs12>
-            <v-sheet height="auto" class="py-2">
+      <v-layout column wrap>
+        <v-sheet class="text-xs-left pt-3 px-4">
+          <v-layout :column="isSmallScreen">
+            <v-layout :justify-center="isSmallScreen">
+              <v-chip small color="success lighten-1" class="subheading" dark>
+                +{{ questions[currentQuestion].correctMarks }}
+              </v-chip>
+              <v-chip small color="error lighten-1" class="subheading" dark>
+                -{{ questions[currentQuestion].incorrectMarks }}
+              </v-chip>
+              <v-chip small color="indigo" outline>
+                {{ questions[currentQuestion].type }}
+              </v-chip>
+            </v-layout>
+            <v-layout :justify-center="isSmallScreen">
               <v-btn
-                color="success"
+                color="info"
+                :icon="isSmallScreen"
+                :small="!isSmallScreen"
                 @click="
-                  sections[currentSection].questions[
-                    currentQuestion
-                  ].status = 2;
-                  currentQuestion += 1;
+                  markForReview(currentQuestion);
+                  nextQuestion();
                 "
               >
-                <v-icon>mdi-content-save-move</v-icon>
-                <span>Save and next </span>
-              </v-btn>
-
-              <v-btn color="info">
                 <v-icon>mdi-comment-eye-outline</v-icon>
-                <span>Mark for review</span>
+                <span v-if="!isSmallScreen">Mark for review & Next</span>
               </v-btn>
 
               <v-btn
                 color="error"
-                @click="
-                  sections[currentSection].questions[
-                    currentQuestion
-                  ].selected = null;
-                  sections[currentSection].questions[
-                    currentQuestion
-                  ].status = 0;
-                "
+                :icon="isSmallScreen"
+                :small="!isSmallScreen"
+                @click="clear(currentQuestion)"
               >
                 <v-icon>mdi-close</v-icon>
-                <span>Clear response</span>
+                <span v-if="!isSmallScreen">Clear your response</span>
               </v-btn>
+              <v-btn
+                color="success"
+                :icon="isSmallScreen"
+                :small="!isSmallScreen"
+                @click="
+                  save(currentQuestion);
+                  nextQuestion();
+                "
+              >
+                <v-icon>mdi-content-save-move</v-icon>
+                <span v-if="!isSmallScreen">Save and next </span>
+              </v-btn>
+            </v-layout>
+          </v-layout>
+        </v-sheet>
+        <v-divider class="grey lighten-2"></v-divider>
+        <v-flex xs12>
+          <v-sheet min-height="400px" color="white" class="text-xs-left py-3">
+            <v-tabs-items v-model="currentSection" :touch="swipeActions">
+              <v-tab-item v-for="section in sections" :key="section.subject">
+                <div
+                  :class="[$style.question, 'px-3 grey--text text--darken-2']"
+                >
+                  <v-img
+                    v-if="questions[currentQuestion].image"
+                    :src="
+                      require(`@assets/logos/${
+                        questions[currentQuestion].image
+                      }`)
+                    "
+                    class="mb-3"
+                  ></v-img>
+                  <v-chip color="grey darken-2" outline small>
+                    <strong> Q{{ currentQuestion + 1 }} </strong>
+                  </v-chip>
+                  <span class="subheading">
+                    {{ questions[currentQuestion].text }}
+                  </span>
 
-              <v-btn color="indigo" dark>
-                <v-icon>mdi-exit-to-app</v-icon>
-                <span>Submit this test</span>
-              </v-btn>
-            </v-sheet>
-          </v-flex>
+                  <v-radio-group
+                    v-model="questions[currentQuestion].answer"
+                    @change="save(currentQuestion)"
+                    :mandatory="false"
+                    v-if="questions[currentQuestion].type == 'SINGLE'"
+                  >
+                    <v-radio
+                      v-for="(option, i) in questions[currentQuestion].options"
+                      :key="currentQuestion + '-' + i"
+                      :label="option"
+                      :value="i"
+                      :on-icon="`mdi-alpha-${letter('a', i, true)}-circle`"
+                      :off-icon="
+                        `mdi-alpha-${letter('a', i, true)}-circle-outline`
+                      "
+                    ></v-radio>
+                  </v-radio-group>
+
+                  <v-layout
+                    v-else-if="questions[currentQuestion].type == 'MULTIPLE'"
+                    py-4
+                    my-1
+                    column
+                  >
+                    <v-checkbox
+                      v-for="(option, i) in questions[currentQuestion].options"
+                      v-model="questions[currentQuestion].answer"
+                      multiple
+                      height="0"
+                      class="mt-0 mb-1"
+                      :key="currentQuestion + '-' + i"
+                      :label="option"
+                      :value="i"
+                      :on-icon="`mdi-alpha-${letter('a', i, true)}-circle`"
+                      :off-icon="
+                        `mdi-alpha-${letter('a', i, true)}-circle-outline`
+                      "
+                      @change="save(currentQuestion)"
+                    >
+                    </v-checkbox>
+                  </v-layout>
+                  <v-layout
+                    v-else-if="questions[currentQuestion].type == 'NUMBER'"
+                    my-4
+                  >
+                    <v-flex xs12 sm6 md3>
+                      <v-text-field
+                        label="Enter your answer (0-999)"
+                        v-model="questions[currentQuestion].answer"
+                        type="number"
+                        @keyup="save(currentQuestion)"
+                      ></v-text-field>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout
+                    v-else-if="questions[currentQuestion].type == 'MATRIX'"
+                    my-3
+                    column
+                  >
+                    <v-layout row wrap justify-center>
+                      <v-flex xs6>
+                        <v-layout column justify-start>
+                          <v-flex
+                            v-for="(option, i) in questions[currentQuestion]
+                              .options"
+                            :key="`${currentQuestion}-option-${i}`"
+                          >
+                            <v-layout row wrap align-start>
+                              <v-flex xs1 class="mr-3">
+                                <v-icon>
+                                  {{
+                                    `mdi-alpha-${letter(
+                                      "a",
+                                      i,
+                                      true
+                                    )}-circle-outline`
+                                  }}
+                                </v-icon>
+                              </v-flex>
+                              <v-flex xs8>
+                                {{ option }}
+                              </v-flex>
+                            </v-layout>
+                          </v-flex>
+                        </v-layout>
+                      </v-flex>
+                      <v-flex xs6>
+                        <v-layout column justify-end>
+                          <v-flex
+                            v-for="(answer, j) in questions[currentQuestion]
+                              .answers"
+                            :key="`${currentQuestion}-answer-${j}`"
+                          >
+                            <v-layout row wrap align-start>
+                              <v-flex xs1 class="mr-3">
+                                <v-icon>
+                                  {{
+                                    `mdi-alpha-${letter(
+                                      "p",
+                                      j,
+                                      true
+                                    )}-circle-outline`
+                                  }}
+                                </v-icon>
+                              </v-flex>
+                              <v-flex xs8>
+                                {{ answer }}
+                              </v-flex>
+                            </v-layout>
+                          </v-flex>
+                        </v-layout>
+                      </v-flex>
+                    </v-layout>
+
+                    <v-flex xs12 sm6 md3 mt-4>
+                      <v-layout row>
+                        <v-flex shrink mx-3> </v-flex>
+                        <v-flex
+                          shrink
+                          v-for="j in questions[currentQuestion].answers.length"
+                          :key="`${currentQuestion}-label-answer-${j}`"
+                        >
+                          <v-checkbox
+                            height="0"
+                            class="mt-0 mb-1"
+                            :off-icon="`mdi-alpha-${letter('p', j - 1, true)}`"
+                            disabled
+                          >
+                          </v-checkbox>
+                        </v-flex>
+                      </v-layout>
+                      <v-layout
+                        row
+                        v-for="i in questions[currentQuestion].options.length"
+                        :key="`${currentQuestion}-label-option-${i}`"
+                        justify-start
+                      >
+                        <v-flex shrink>
+                          <v-checkbox
+                            height="0"
+                            class="mt-0 mb-1"
+                            :off-icon="
+                              `mdi-alpha-${letter('a', i - 1, true)}-circle`
+                            "
+                            disabled
+                          >
+                          </v-checkbox>
+                        </v-flex>
+
+                        <v-flex
+                          shrink
+                          v-for="j in questions[currentQuestion].answers.length"
+                          :key="`${currentQuestion}-${i}-${j}`"
+                        >
+                          <v-checkbox
+                            v-model="questions[currentQuestion].answer[i - 1]"
+                            multiple
+                            height="0"
+                            class="mt-0 mb-1"
+                            :value="j - 1"
+                            @change="save(currentQuestion)"
+                            :on-icon="$vuetify.icons.radioOn"
+                            :off-icon="$vuetify.icons.radioOff"
+                          >
+                          </v-checkbox>
+                        </v-flex>
+                      </v-layout>
+                    </v-flex>
+                  </v-layout>
+                </div>
+              </v-tab-item>
+            </v-tabs-items>
+          </v-sheet>
         </v-flex>
       </v-layout>
     </v-content>
+
+    <v-footer height="auto" fixed app inset>
+      <v-layout row justify-center>
+        <v-flex xs12>
+          <v-btn icon large color="info" @click="previousQuestion()">
+            <v-icon>mdi-arrow-left</v-icon>
+          </v-btn>
+          <v-btn icon large color="info" @click="nextQuestion()">
+            <v-icon>mdi-arrow-right</v-icon>
+          </v-btn>
+        </v-flex>
+        <v-layout justify-end>
+          <v-btn icon dark color="primary" @click="panel = !panel">
+            <v-icon v-if="panel">mdi-arrow-right-bold</v-icon>
+            <v-icon v-else>mdi-arrow-left-bold</v-icon>
+          </v-btn>
+        </v-layout>
+      </v-layout>
+    </v-footer>
     <v-navigation-drawer v-model="panel" app right>
       <v-card-text>
-        <v-btn
-          icon
-          :color="`${statusColor(question.status)} lighten-3`"
-          v-for="(question, i) in sections[currentSection].questions"
-          :key="question.id"
-          @click="currentQuestion = i"
-        >
-          <span>{{ i + 1 }}</span>
-        </v-btn>
+        <span v-for="(question, i) in questions" :key="question.id">
+          <v-btn
+            fab
+            v-if="question.section == currentSection"
+            dark
+            small
+            :flat="i != currentQuestion"
+            :class="statusColor(question.status)"
+            @click="changeQuestion(i)"
+          >
+            <span>{{ i + 1 }}</span>
+          </v-btn>
+        </span>
       </v-card-text>
+      <v-layout justify-center>
+        <v-btn outline color="indigo" fixed bottom :left="isSmallScreen">
+          <v-icon>mdi-exit-to-app</v-icon>
+          <span>Submit this test</span>
+        </v-btn>
+        <v-flex v-if="isSmallScreen">
+          <v-btn
+            icon
+            dark
+            color="primary"
+            @click="panel = !panel"
+            bottom
+            right
+            fixed
+          >
+            <v-icon v-if="panel">mdi-arrow-right-bold</v-icon>
+            <v-icon v-else>mdi-arrow-left-bold</v-icon>
+          </v-btn>
+        </v-flex>
+      </v-layout>
     </v-navigation-drawer>
   </v-container>
 </template>
@@ -153,41 +355,132 @@ import Footer from "@components/Footer.vue";
 export default {
   data() {
     return {
-      panel: true,
+      isSmallScreen: this.$vuetify.breakpoint.smAndDown,
+      panel: null,
       drawer: false,
+      time: "1:14:12",
+      fullscreen: false,
+      swipeActions: {
+        left: () => this.nextQuestion(),
+        right: () => this.previousQuestion()
+      },
       currentSection: 0,
       currentQuestion: 0,
       sections: [
-        {
-          start: 0,
-          end: 1,
-          subject: "Physics",
-          questions: [
-            {
-              id: "1",
-              text: "What is velocity?",
-              image: null,
-              type: "MCQS",
-              options: ["Vector", "Scalar", "Tensor", "None"],
-              selected: null,
-              status: 0
-            },
-            {
-              id: "2",
-              text: "What is friction?",
-              image: null,
-              type: "MCQS",
-              options: ["Vector", "Scalar", "Tensor", "None"],
-              selected: null,
-              status: 0
-            }
-          ]
-        },
-        { subject: "Chemistry" },
-        { subject: "Maths" }
+        { subject: "Physics", start: "0", end: "1", currentQuestion: 0 },
+        { subject: "Chemistry", start: "2", end: "3", currentQuestion: 2 },
+        { subject: "Maths", start: "4", end: "5", currentQuestion: 4 }
       ],
-      timer: true,
-      fullscreen: false
+      questions: [
+        {
+          id: "1.4",
+          section: 0,
+          text:
+            "Match the quantities on the left to their properties on the right.",
+          image: null,
+          type: "MATRIX",
+          options: [
+            "Velocity",
+            "Current",
+            "Work done by friction",
+            "Gravitational work"
+          ],
+          answers: [
+            "Vector",
+            "Scalar",
+            "Tensor",
+            "Conservative",
+            "Non-conservative"
+          ],
+          answer: [[], [], [], []],
+          status: 1,
+          correctMarks: 4,
+          incorrectMarks: 2
+        },
+        {
+          id: "1",
+          section: 0,
+          text: "What is velocity?",
+          image: null,
+          type: "SINGLE",
+          options: ["Vector", "Scalar", "Tensor", "None"],
+          answer: [],
+          status: 0,
+          correctMarks: 4,
+          incorrectMarks: 1
+        },
+        {
+          id: "2",
+          section: 0,
+          text: "What is escape velocity?",
+          image: null,
+          type: "NUMBER",
+          answer: [],
+          status: 0,
+          correctMarks: 4,
+          incorrectMarks: 1
+        },
+        {
+          id: "1.3",
+          section: 0,
+          text: "What is friction?",
+          image: null,
+          type: "MULTIPLE",
+          options: ["Vector", "Scalar", "Tensor", "None"],
+          answer: [],
+          status: 0,
+          correctMarks: 4,
+          incorrectMarks: 2
+        },
+        {
+          id: "3",
+          section: 1,
+          text: "What is atom?",
+          image: null,
+          type: "SINGLE",
+          options: ["Vector", "Scalar", "Tensor", "None"],
+          answer: [],
+          status: 0,
+          correctMarks: 4,
+          incorrectMarks: 1
+        },
+        {
+          id: "4",
+          section: 1,
+          text: "What is molecule?",
+          image: null,
+          type: "SINGLE",
+          options: ["Vector", "Scalar", "Tensor", "None"],
+          answer: [],
+          status: 0,
+          correctMarks: 4,
+          incorrectMarks: 1
+        },
+        {
+          id: "5",
+          section: 2,
+          text: "What is parabola?",
+          image: null,
+          type: "SINGLE",
+          options: ["Vector", "Scalar", "Tensor", "None"],
+          answer: [],
+          status: 0,
+          correctMarks: 4,
+          incorrectMarks: 1
+        },
+        {
+          id: "6",
+          section: 2,
+          text: "What is matrix?",
+          image: null,
+          type: "SINGLE",
+          options: ["Vector", "Scalar", "Tensor", "None"],
+          answer: [],
+          status: 0,
+          correctMarks: 4,
+          incorrectMarks: 1
+        }
+      ]
     };
   },
   components: {
@@ -195,14 +488,29 @@ export default {
     Footer
   },
   methods: {
+    letter(start, index, order) {
+      const small = "abcdefghijklmnopqrstuvwxyz";
+      const caps = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const size = small.length;
+      return order
+        ? small[(small.indexOf(start) + index) % size]
+        : caps[(caps.indexOf(start) + index) % size];
+    },
+    isEmpty(x) {
+      return x == null || x.length === 0 || x === "";
+    },
     statusColor(status) {
       switch (status) {
         case 0:
-          return "grey";
+          return "grey darken-2";
         case 1:
-          return "info";
+          return "error";
         case 2:
+          return "info";
+        case 3:
           return "green";
+        case 4:
+          return "purple";
         default:
           return "grey";
       }
@@ -231,6 +539,45 @@ export default {
         }
       }
       this.fullscreen = !this.fullscreen;
+    },
+    changeQuestion(i) {
+      if (i >= 0 && i <= this.questions.length - 1) {
+        this.currentQuestion = i;
+        this.currentSection = this.questions[i].section;
+        this.sections[this.currentSection].currentQuestion = i;
+      }
+    },
+    previousQuestion() {
+      this.changeQuestion(this.currentQuestion - 1);
+    },
+    nextQuestion() {
+      this.changeQuestion(this.currentQuestion + 1);
+    },
+    markForReview(i) {
+      if (this.isEmpty(this.questions[i].answer)) this.questions[i].status = 2;
+      else this.questions[i].status = 4;
+    },
+    clear(i) {
+      if (this.questions[i].type === "MATRIX")
+        this.questions[i].answer = [[], [], [], []];
+      else this.questions[i].answer = [];
+      this.questions[i].status = 1;
+    },
+    save(i) {
+      // console.log(this.questions[i].answer);
+      if (!this.isEmpty(this.questions[i].answer)) this.questions[i].status = 3;
+      else this.clear(i);
+    },
+    updateStatus(i) {
+      if (this.questions[i].status === 0) this.questions[i].status = 1;
+    }
+  },
+  watch: {
+    currentSection: function(newSection, oldSection) {
+      this.currentQuestion = this.sections[newSection].currentQuestion;
+    },
+    currentQuestion: function(newQuestion, oldQuestion) {
+      this.updateStatus(newQuestion);
     }
   },
   mounted() {}
@@ -241,5 +588,9 @@ export default {
 @require '~@stylus/theme/colors';
 .questionInfo{
   border-bottom: 1px solid grey !important;
+}
+.question{
+  height: 420px;
+  overflow-y: scroll;
 }
 </style>
