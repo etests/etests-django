@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Migrations
+migrations
+
 # Django stuff:
 *.log
 local_settings.py
