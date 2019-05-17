@@ -67,6 +67,20 @@
           clearable
           :class="['hidden-sm-and-down', $style.searchBox]"
         ></v-text-field>
+
+        <v-menu bottom left>
+          <template v-slot:activator="{ on }">
+            <v-btn icon v-on="on">
+              <v-icon>mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+
+          <v-list v-if="$store.state.authentication.auth">
+            <v-list-tile @click="logout()">
+              <v-list-tile-title>Logout</v-list-tile-title>
+            </v-list-tile>
+          </v-list>
+        </v-menu>
       </slot>
 
       <v-menu bottom left min-width="150">
@@ -188,6 +202,11 @@ export default {
         }
       ]
     };
+  },
+  methods: {
+    logout() {
+      this.$store.dispatch("authentication/logout");
+    }
   },
   mounted() {
     window.onscroll = () => {

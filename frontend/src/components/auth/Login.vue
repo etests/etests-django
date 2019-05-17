@@ -2,57 +2,58 @@
   <FlexibleCardLayout>
     <form class="px-5 py-5 mb-4">
       <v-text-field
-        v-model="email"
-        label="E-mail"
+        v-model="username"
+        label="Phone / Email"
         required
-        @input="$v.email.$touch()"
-        @blur="$v.email.$touch()"
       ></v-text-field>
       <v-text-field
         :append-icon="showPassword ? 'visibility' : 'visibility_off'"
         :type="showPassword ? 'text' : 'password'"
+        v-model="password"
         name="input-10-2"
         label="Password"
         value=""
         class="input-group--focused"
         @click:append="showPassword = !showPassword"
       ></v-text-field>
-      <v-btn @click="submit">Login</v-btn>
+      <v-btn @click="handleSubmit">Login</v-btn>
     </form>
   </FlexibleCardLayout>
 </template>
 
 <script>
-import { validationMixin } from "vuelidate";
-import { required, email } from "vuelidate/lib/validators";
 import FlexibleCardLayout from "@components/layouts/FlexibleCardLayout.vue";
 
 export default {
-  mixins: [validationMixin],
-
-  validations: {
-    email: { required, email }
-  },
-
   data: function() {
     return {
-      email: "",
-      showPassword: false,
+      username: "",
       password: "",
-      passwordRules: {
-        required: value => !!value || "Required.",
-        min: v => v.length >= 8 || "Min 8 characters"
-      }
+      showPassword: false,
+      submitted: false
     };
   },
 
   components: {
     FlexibleCardLayout
   },
-
+  computed: {
+    loggingIn() {
+      return this.$store.state.authentication.status.loggingIn;
+    }
+  },
+  created() {
+    // reset login status
+    this.$store.dispatch("authentication/logout");
+  },
   methods: {
-    submit() {
-      this.$v.$touch();
+    handleSubmit(e) {
+      this.submitted = true;
+      const { username, password } = this;
+      const { dispatch } = this.$store;
+      if (username && password) {
+        dispatch("authentication/login", { username, password });
+      }
     }
   }
 };

@@ -8,6 +8,7 @@ import "material-design-icons-iconfont/dist/material-design-icons.css";
 import "@mdi/font/css/materialdesignicons.css";
 import "./stylus/main.styl";
 import "chartist/dist/chartist.min.css";
+import store from "./store";
 
 Vue.use(require("vue-chartist"));
 
@@ -24,6 +25,7 @@ Vue.use(Vuetify, {
 /* eslint-disable no-new */
 new Vue({
   el: "#app",
+  store,
   router,
   components: {
     App
