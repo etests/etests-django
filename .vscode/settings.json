@@ -1,7 +1,8 @@
 {
   "eslint.enable": true,
   "eslint.run": "onType",
-  "eslint.validate": [{
+  "eslint.validate": [
+    {
       "language": "vue",
       "autoFix": true
     },
@@ -22,4 +23,6 @@
   "editor.formatOnSave": false,
   "eslint.alwaysShowStatus": true,
   "eslint.autoFixOnSave": true,
+  "python.pythonPath": "venv/bin/python3.7",
+  "python.formatting.provider": "black"
 }
