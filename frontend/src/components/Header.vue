@@ -37,10 +37,7 @@
 
       <router-link :to="{ name: 'home' }">
         <v-toolbar-title class="white--text headline">
-          <img
-            src="~@assets/logos/etests_light.png"
-            :class="[$style.logo, 'hidden-sm-and-down']"
-          />
+          <img src="~@assets/logos/etests_light.png" :class="$style.logo" />
           <span><strong>eTests</strong></span>
         </v-toolbar-title>
       </router-link>
@@ -165,7 +162,7 @@ export default {
 @require '~@stylus/theme/colors';
 
 .logo{
-  width: 40px;
+  width: 30px;
   float: left;
   margin: 0 5px;
 }

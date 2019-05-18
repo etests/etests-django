@@ -4,10 +4,6 @@
       <v-layout slot="tools">
         <v-flex>
           <v-layout justify-end>
-            <v-btn color="white" flat>
-              <v-icon> mdi-clock </v-icon>
-              &nbsp; {{ time }}
-            </v-btn>
             <!-- <v-btn flat icon>
               <v-icon>mdi-account-network</v-icon>
             </v-btn>
@@ -34,68 +30,92 @@
         </v-tab>
       </v-tabs>
     </Header>
-    <v-divider></v-divider>
 
-    <v-content app class="pt-5 mt-5">
+    <v-content app class="grey lighten-5">
       <v-layout column wrap>
-        <v-sheet class="text-xs-left pt-3 px-4">
-          <v-layout :column="isSmallScreen">
-            <v-layout :justify-center="isSmallScreen">
-              <v-chip small color="success lighten-1" class="subheading" dark>
-                +{{ questions[currentQuestion].correctMarks }}
-              </v-chip>
-              <v-chip small color="error lighten-1" class="subheading" dark>
-                -{{ questions[currentQuestion].incorrectMarks }}
-              </v-chip>
-              <v-chip small color="indigo" outline>
-                {{ questions[currentQuestion].type }}
-              </v-chip>
-            </v-layout>
-            <v-layout :justify-center="isSmallScreen">
-              <v-btn
-                color="info"
-                :icon="isSmallScreen"
-                :small="!isSmallScreen"
-                @click="
-                  markForReview(currentQuestion);
-                  nextQuestion();
-                "
-              >
-                <v-icon>mdi-comment-eye-outline</v-icon>
-                <span v-if="!isSmallScreen">Mark for review & Next</span>
-              </v-btn>
+        <v-sheet class="text-xs-left px-4" color="grey lighten-5">
+          <v-layout row :justify-center="isSmallScreen" mb-1>
+            <v-btn color="primary" flat>
+              <v-icon> mdi-clock </v-icon>
+              &nbsp; {{ time }}
+            </v-btn>
+            <v-btn
+              color="info"
+              :icon="isSmallScreen"
+              :small="!isSmallScreen"
+              @click="
+                markForReview(currentQuestion);
+                nextQuestion();
+              "
+            >
+              <v-icon>mdi-comment-eye-outline</v-icon>
+              <span v-if="!isSmallScreen">Mark for review & next</span>
+            </v-btn>
 
-              <v-btn
-                color="error"
-                :icon="isSmallScreen"
-                :small="!isSmallScreen"
-                @click="clear(currentQuestion)"
-              >
-                <v-icon>mdi-close</v-icon>
-                <span v-if="!isSmallScreen">Clear your response</span>
-              </v-btn>
-              <v-btn
-                color="success"
-                :icon="isSmallScreen"
-                :small="!isSmallScreen"
-                @click="
-                  save(currentQuestion);
-                  nextQuestion();
-                "
-              >
-                <v-icon>mdi-content-save-move</v-icon>
-                <span v-if="!isSmallScreen">Save and next </span>
-              </v-btn>
-            </v-layout>
+            <v-btn
+              color="error"
+              :icon="isSmallScreen"
+              :small="!isSmallScreen"
+              @click="clear(currentQuestion)"
+            >
+              <v-icon>mdi-close</v-icon>
+              <span v-if="!isSmallScreen">Clear your response</span>
+            </v-btn>
+            <v-btn
+              color="success"
+              :icon="isSmallScreen"
+              :small="!isSmallScreen"
+              @click="
+                save(currentQuestion);
+                nextQuestion();
+              "
+            >
+              <v-icon>mdi-content-save-move</v-icon>
+              <span v-if="!isSmallScreen">Save response & next </span>
+            </v-btn>
           </v-layout>
         </v-sheet>
         <v-divider class="grey lighten-2"></v-divider>
         <v-flex xs12>
-          <v-sheet min-height="400px" color="white" class="text-xs-left py-3">
+          <v-sheet
+            :height="windowHeight"
+            color="white"
+            class="text-xs-left py-3"
+          >
             <v-tabs-items v-model="currentSection" :touch="swipeActions">
               <v-tab-item v-for="section in sections" :key="section.subject">
-                <div
-                  :class="[$style.question, 'px-3 grey--text text--darken-2']"
+                <v-sheet class="text-xs-left px-3">
+                  <v-layout :justify-center="isSmallScreen">
+                    <v-btn
+                      small
+                      color="success lighten-1"
+                      class="subheading"
+                      dark
+                      icon
+                    >
+                      +{{ questions[currentQuestion].correctMarks }}
+                    </v-btn>
+                    <v-btn
+                      small
+                      color="error lighten-1"
+                      class="subheading"
+                      dark
+                      icon
+                    >
+                      -{{ questions[currentQuestion].incorrectMarks }}
+                    </v-btn>
+                    <v-chip color="indigo" outline>
+                      {{ questions[currentQuestion].type }}
+                    </v-chip>
+                  </v-layout>
+                </v-sheet>
+
+                <v-sheet
+                  :height="windowHeight"
+                  :class="[
+                    $style.question,
+                    'px-3 py-3 grey--text text--darken-2'
+                  ]"
                 >
                   <v-img
                     v-if="questions[currentQuestion].image"
@@ -282,7 +302,7 @@
                       </v-layout>
                     </v-flex>
                   </v-layout>
-                </div>
+                </v-sheet>
               </v-tab-item>
             </v-tabs-items>
           </v-sheet>
@@ -290,8 +310,8 @@
       </v-layout>
     </v-content>
 
-    <v-footer height="auto" fixed app inset>
-      <v-layout row justify-center>
+    <v-footer color="grey lighten-5" height="auto" fixed app inset>
+      <v-layout>
         <v-flex xs12>
           <v-btn icon large color="info" @click="previousQuestion()">
             <v-icon>mdi-arrow-left</v-icon>
@@ -300,14 +320,19 @@
             <v-icon>mdi-arrow-right</v-icon>
           </v-btn>
         </v-flex>
-        <v-layout justify-end>
-          <v-btn icon dark color="primary" @click="panel = !panel">
-            <v-icon v-if="panel">mdi-arrow-right-bold</v-icon>
-            <v-icon v-else>mdi-arrow-left-bold</v-icon>
-          </v-btn>
-        </v-layout>
       </v-layout>
+      <v-btn
+        icon
+        color="primary"
+        @click="panel = !panel"
+        :absolute="isSmallScreen"
+        :right="isSmallScreen"
+      >
+        <v-icon v-if="panel">mdi-arrow-collapse-right</v-icon>
+        <v-icon v-else>mdi-arrow-expand-left</v-icon>
+      </v-btn>
     </v-footer>
+
     <v-navigation-drawer v-model="panel" app right>
       <v-card-text>
         <span v-for="(question, i) in questions" :key="question.id">
@@ -318,7 +343,10 @@
             small
             :flat="i != currentQuestion"
             :class="statusColor(question.status)"
-            @click="changeQuestion(i)"
+            @click="
+              changeQuestion(i);
+              isSmallScreen ? (panel = !panel) : '';
+            "
           >
             <span>{{ i + 1 }}</span>
           </v-btn>
@@ -339,8 +367,8 @@
             right
             fixed
           >
-            <v-icon v-if="panel">mdi-arrow-right-bold</v-icon>
-            <v-icon v-else>mdi-arrow-left-bold</v-icon>
+            <v-icon v-if="panel">mdi-arrow-collapse-right</v-icon>
+            <v-icon v-else>mdi-arrow-expand-left</v-icon>
           </v-btn>
         </v-flex>
       </v-layout>
@@ -355,6 +383,7 @@ import Footer from "@components/Footer.vue";
 export default {
   data() {
     return {
+      windowHeight: window.innerHeight - 190,
       isSmallScreen: this.$vuetify.breakpoint.smAndDown,
       panel: null,
       drawer: false,
@@ -367,9 +396,9 @@ export default {
       currentSection: 0,
       currentQuestion: 0,
       sections: [
-        { subject: "Physics", start: "0", end: "1", currentQuestion: 0 },
-        { subject: "Chemistry", start: "2", end: "3", currentQuestion: 2 },
-        { subject: "Maths", start: "4", end: "5", currentQuestion: 4 }
+        { subject: "Physics", start: "0", end: "3", currentQuestion: 0 },
+        { subject: "Chemistry", start: "4", end: "5", currentQuestion: 4 },
+        { subject: "Maths", start: "6", end: "7", currentQuestion: 6 }
       ],
       questions: [
         {
@@ -497,7 +526,9 @@ export default {
         : caps[(caps.indexOf(start) + index) % size];
     },
     isEmpty(x) {
-      return x == null || x.length === 0 || x === "";
+      return (
+        x == null || x === "" || (Array.isArray(x) && x.every(this.isEmpty))
+      );
     },
     statusColor(status) {
       switch (status) {
@@ -580,7 +611,13 @@ export default {
       this.updateStatus(newQuestion);
     }
   },
-  mounted() {}
+  mounted() {
+    this.$nextTick(() => {
+      window.addEventListener("resize", () => {
+        this.windowHeight = window.innerHeight - 190;
+      });
+    });
+  }
 };
 </script>
 
@@ -590,7 +627,6 @@ export default {
   border-bottom: 1px solid grey !important;
 }
 .question{
-  height: 420px;
   overflow-y: scroll;
 }
 </style>
