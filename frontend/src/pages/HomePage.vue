@@ -2,13 +2,15 @@
   <v-container fluid>
     <Header :disableDrawerClose="true" />
     <v-content app>
-      <span v-if="user">Hello {{ user.name }}!</span>
-      <v-card class="px-2 py-2 mb-2" width="420" style="margin:auto">
-        <img src="~@assets/logos/etests.png" width="400" />
+      <v-card class="mb-2 px-5" width="300" height="300" style="margin:auto">
+        <v-card-text class="body1 primary--text">
+          <span v-if="user" class="text-xs-center">Hello {{ user.name }}!</span>
+          <span v-else class="text-xs-center">Welcome!</span>
+        </v-card-text>
+        <img src="~@assets/logos/etests.png" width="200" />
       </v-card>
       <Footer />
     </v-content>
-    <Header />
   </v-container>
 </template>
 
@@ -19,9 +21,6 @@ import Footer from "@components/Footer.vue";
 export default {
   data() {
     return {
-      select: ["Vuetify", "Programming"],
-      items: ["Programming", "Design", "Vue", "Vuetify"],
-      subjects: ["Physics", "Chemistry", "Maths"],
       tabs: null
     };
   },

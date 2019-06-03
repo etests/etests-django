@@ -13,7 +13,8 @@
       <v-select
         v-model="state"
         :items="states"
-        :error-messages="statesErrors"
+        :error-messages="stateErrors"
+        :counter="25"
         label="State"
         required
         @change="$v.state.$touch()"
@@ -54,14 +55,15 @@
         @change="$v.gender.$touch()"
         @blur="$v.gender.$touch()"
       ></v-select>
-      <v-text-field
-        v-model="coaching"
-        :error-messages="coachingErrors"
+      <v-select
+        v-model="institute"
+        :items="institutes"
+        :error-messages="instituteErrors"
         :counter="25"
         label="Institute"
-        @input="$v.coaching.$touch()"
-        @blur="$v.coaching.$touch()"
-      ></v-text-field>
+        @input="$v.institute.$touch()"
+        @blur="$v.institute.$touch()"
+      ></v-select>
       <v-menu
         ref="menu"
         v-model="menu"
@@ -75,27 +77,33 @@
       >
         <template v-slot:activator="{ on }">
           <v-text-field
-            v-model="date"
+            v-model="birth_date"
+            required
             label="Date of birth"
-            prepend-icon="event"
-            readonly
+            append-icon="event"
             v-on="on"
+            @change="$v.birth_date.$touch()"
+            @blur="$v.birth_date.$touch()"
           ></v-text-field>
         </template>
         <v-date-picker
           ref="picker"
-          v-model="date"
+          scrollable
+          v-model="birth_date"
           :max="new Date().toISOString().substr(0, 10)"
-          min="1950-01-01"
-          @change="save"
+          min="1980-01-01"
+          @input="menu = false"
         ></v-date-picker>
       </v-menu>
 
       <v-text-field
         :append-icon="showPassword ? 'visibility' : 'visibility_off'"
-        :rules="[passwordRules.required, passwordRules.min]"
+        :error-messages="passwordErrors"
+        required
+        v-model="password"
+        @input="$v.password.$touch()"
+        @blur="$v.password.$touch()"
         :type="showPassword ? 'text' : 'password'"
-        name="input-10-2"
         label="Password"
         hint="At least 8 characters"
         value=""
@@ -111,7 +119,7 @@
         @change="$v.checkbox.$touch()"
         @blur="$v.checkbox.$touch()"
       ></v-checkbox>
-      <v-btn @click="submit">submit</v-btn>
+      <v-btn @click="handleSubmit">submit</v-btn>
       <v-btn @click="clear">clear</v-btn>
     </form>
   </FlexibleCardLayout>
@@ -134,17 +142,19 @@ export default {
 
   validations: {
     name: { required, maxLength: maxLength(25) },
+    state: { required, maxLength: maxLength(25) },
     city: { required, maxLength: maxLength(25) },
     email: { required, email },
     gender: { required },
-    state: { required },
     phone: {
       required,
       numeric,
       maxLength: maxLength(15),
       minLength: minLength(8)
     },
-    coaching: { maxLength: maxLength(50) },
+    institute: {},
+    birth_date: { required },
+    password: { required, minLength: minLength(8) },
     checkbox: {
       checked(val) {
         return val;
@@ -159,36 +169,45 @@ export default {
   data: function() {
     return {
       name: "",
+      state: "",
+      city: "",
       email: "",
       phone: "",
-      city: "",
-      gender: null,
-      state: null,
-      states: ["A", "B", "C"],
-      coaching: "",
-      genders: ["Male", "Female", "Others"],
-      showPassword: false,
+      gender: "",
+      birth_date: "",
+      institute: null,
+      checkbox: false,
       password: "",
-      passwordRules: {
-        required: value => !!value || "Required.",
-        min: v => v.length >= 8 || "Min 8 characters"
-      },
-      date: null,
+      states: ["Uttar Pradesh", "Bihar", "West Bengal", "Delhi", "Rajasthan"],
+      genders: [
+        { value: "M", text: "Male" },
+        { value: "F", text: "Female" },
+        { value: "O", text: "Others" }
+      ],
+      showPassword: false,
       menu: false,
       watch: {
         menu(val) {
           val && setTimeout(() => (this.$refs.picker.activePicker = "YEAR"));
         }
-      },
-      checkbox: false
+      }
     };
   },
 
   computed: {
+    institutes() {
+      var list = [];
+      if (this.$store.state.institutes.all.items) {
+        this.$store.state.institutes.all.items.forEach(function(item) {
+          list.push({ value: item.pk, text: item.user.name });
+        });
+      }
+      return list;
+    },
     checkboxErrors() {
       const errors = [];
       if (!this.$v.checkbox.$dirty) return errors;
-      !this.$v.checkbox.checked && errors.push("You must agree to continue!");
+      !this.$v.checkbox.checked && errors.push("You must agree to continue.");
       return errors;
     },
     genderErrors() {
@@ -205,20 +224,25 @@ export default {
       !this.$v.name.required && errors.push("Name is required.");
       return errors;
     },
+    stateErrors() {
+      const errors = [];
+      if (!this.$v.state.$dirty) return errors;
+      !this.$v.state.required && errors.push("State is required.");
+      !this.$v.state.maxLength &&
+        errors.push("State must be at most 25 characters long");
+      return errors;
+    },
     cityErrors() {
       const errors = [];
       if (!this.$v.city.$dirty) return errors;
+      !this.$v.city.required && errors.push("City is required.");
       !this.$v.city.maxLength &&
         errors.push("city must be at most 25 characters long");
-      !this.$v.city.required && errors.push("city is required.");
       return errors;
     },
-    coachingErrors() {
+    instituteErrors() {
       const errors = [];
-      if (!this.$v.coaching.$dirty) return errors;
-      !this.$v.coaching.maxLength &&
-        errors.push("Name must be at most 25 characters long");
-      return errors;
+      if (!this.$v.institute.$dirty) return errors;
     },
     emailErrors() {
       const errors = [];
@@ -236,28 +260,70 @@ export default {
       !this.$v.phone.minLength && errors.push("Must be at least 8 digits");
       !this.$v.phone.maxLength && errors.push("Must be at most 15 digits");
       return errors;
+    },
+    passwordErrors() {
+      const errors = [];
+      if (!this.$v.password.$dirty) return errors;
+      !this.$v.password.minLength &&
+        errors.push("Password must be at least 8 characters long.");
+      !this.$v.password.required && errors.push("Password is required.");
+      return errors;
     }
   },
 
+  created() {
+    this.$store.dispatch("institutes/getAll");
+  },
+
   methods: {
-    submit() {
-      this.$v.$touch();
-    },
     clear() {
       this.$v.$reset();
       this.name = "";
+      this.state = "";
       this.city = "";
       this.email = "";
       this.phone = "";
-      this.gender = null;
-      this.date = null;
-      this.coaching = "";
+      this.gender = "";
+      this.birth_date = null;
+      this.institute = "";
       this.checkbox = false;
       this.password = "";
+    },
+    handleSubmit(e) {
+      this.$v.$touch();
+      this.submitted = true;
+      const {
+        name,
+        state,
+        city,
+        email,
+        phone,
+        checkbox,
+        password,
+        gender,
+        institute,
+        // eslint-disable-next-line camelcase
+        birth_date
+      } = this;
+      var userData = {
+        user: {
+          name,
+          state,
+          city,
+          email,
+          phone,
+          password,
+          is_student: true
+        },
+        gender,
+        institute,
+        birth_date
+      };
+      const { dispatch } = this.$store;
+      if (checkbox) {
+        dispatch("authentication/register", userData);
+      }
     }
-  },
-  save(date) {
-    this.$refs.menu.save(date);
   },
   mounted() {}
 };

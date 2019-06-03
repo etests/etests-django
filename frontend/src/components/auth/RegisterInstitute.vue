@@ -13,7 +13,7 @@
       <v-select
         v-model="state"
         :items="states"
-        :error-messages="statesErrors"
+        :error-messages="stateErrors"
         label="State"
         required
         @change="$v.state.$touch()"
@@ -45,18 +45,22 @@
         @blur="$v.phone.$touch()"
       ></v-text-field>
       <v-text-field
-        v-model="pin"
-        :error-messages="pinErrors"
-        label="Pin Code"
+        v-model="pincode"
+        :error-messages="pincodeErrors"
+        label="Pincode"
         required
         @input="$v.phone.$touch()"
         @blur="$v.phone.$touch()"
       ></v-text-field>
+
       <v-text-field
         :append-icon="showPassword ? 'visibility' : 'visibility_off'"
-        :rules="[passwordRules.required, passwordRules.min]"
+        :error-messages="passwordErrors"
+        required
+        v-model="password"
+        @input="$v.password.$touch()"
+        @blur="$v.password.$touch()"
         :type="showPassword ? 'text' : 'password'"
-        name="input-10-2"
         label="Password"
         hint="At least 8 characters"
         value=""
@@ -72,7 +76,7 @@
         @change="$v.checkbox.$touch()"
         @blur="$v.checkbox.$touch()"
       ></v-checkbox>
-      <v-btn @click="submit">submit</v-btn>
+      <v-btn @click="handleSubmit">submit</v-btn>
       <v-btn @click="clear">clear</v-btn>
     </form>
   </FlexibleCardLayout>
@@ -95,17 +99,17 @@ export default {
 
   validations: {
     name: { required, maxLength: maxLength(25) },
+    state: { required, maxLength: maxLength(25) },
     city: { required, maxLength: maxLength(25) },
+    pincode: { required, maxLength: maxLength(8) },
     email: { required, email },
-    gender: { required },
-    state: { required },
     phone: {
       required,
       numeric,
       maxLength: maxLength(15),
       minLength: minLength(8)
     },
-    coaching: { maxLength: maxLength(50) },
+    password: { required, minLength: minLength(8) },
     checkbox: {
       checked(val) {
         return val;
@@ -118,26 +122,13 @@ export default {
       name: "",
       email: "",
       phone: "",
+      state: "",
       city: "",
-      gender: null,
-      state: null,
-      states: ["A", "B", "C"],
-      coaching: "",
-      genders: ["Male", "Female", "Others"],
-      showPassword: false,
+      pincode: "",
       password: "",
-      passwordRules: {
-        required: value => !!value || "Required.",
-        min: v => v.length >= 8 || "Min 8 characters"
-      },
-      date: null,
-      menu: false,
-      watch: {
-        menu(val) {
-          val && setTimeout(() => (this.$refs.picker.activePicker = "YEAR"));
-        }
-      },
-      checkbox: false
+      checkbox: false,
+      states: ["Uttar Pradesh", "Bihar", "West Bengal", "Delhi", "Rajasthan"],
+      showPassword: false
     };
   },
 
@@ -152,12 +143,6 @@ export default {
       !this.$v.checkbox.checked && errors.push("You must agree to continue!");
       return errors;
     },
-    genderErrors() {
-      const errors = [];
-      if (!this.$v.gender.$dirty) return errors;
-      !this.$v.gender.required && errors.push("Gender is required");
-      return errors;
-    },
     nameErrors() {
       const errors = [];
       if (!this.$v.name.$dirty) return errors;
@@ -166,19 +151,28 @@ export default {
       !this.$v.name.required && errors.push("Name is required.");
       return errors;
     },
+    stateErrors() {
+      const errors = [];
+      if (!this.$v.state.$dirty) return errors;
+      !this.$v.state.required && errors.push("State is required.");
+      !this.$v.state.maxLength &&
+        errors.push("State must be at most 25 characters long");
+      return errors;
+    },
     cityErrors() {
       const errors = [];
       if (!this.$v.city.$dirty) return errors;
+      !this.$v.city.required && errors.push("city is required.");
       !this.$v.city.maxLength &&
         errors.push("city must be at most 25 characters long");
-      !this.$v.city.required && errors.push("city is required.");
       return errors;
     },
-    coachingErrors() {
+    pincodeErrors() {
       const errors = [];
-      if (!this.$v.coaching.$dirty) return errors;
-      !this.$v.coaching.maxLength &&
-        errors.push("Name must be at most 25 characters long");
+      if (!this.$v.pincode.$dirty) return errors;
+      !this.$v.pincode.required && errors.push("Pin is required.");
+      !this.$v.pincode.maxLength &&
+        errors.push("city must be at most 8 characters long");
       return errors;
     },
     emailErrors() {
@@ -197,28 +191,60 @@ export default {
       !this.$v.phone.minLength && errors.push("Must be at least 8 digits");
       !this.$v.phone.maxLength && errors.push("Must be at most 15 digits");
       return errors;
+    },
+    passwordErrors() {
+      const errors = [];
+      if (!this.$v.password.$dirty) return errors;
+      !this.$v.password.minLength &&
+        errors.push("Password must be at least 8 characters long.");
+      !this.$v.password.required && errors.push("Password is required.");
+      return errors;
     }
   },
 
   methods: {
-    submit() {
-      this.$v.$touch();
-    },
     clear() {
       this.$v.$reset();
       this.name = "";
+      this.state = "";
       this.city = "";
+      this.pincode = "";
       this.email = "";
       this.phone = "";
-      this.gender = null;
-      this.date = null;
-      this.coaching = "";
-      this.checkbox = false;
       this.password = "";
+      this.checkbox = false;
+    },
+    handleSubmit(e) {
+      this.$v.$touch();
+      this.submitted = true;
+      const {
+        name,
+        state,
+        city,
+        email,
+        phone,
+        checkbox,
+        password,
+        pincode
+      } = this;
+      var userData = {
+        user: {
+          name,
+          state,
+          city,
+          email,
+          phone,
+          password,
+          is_institute: true
+        },
+        pincode
+      };
+      console.log(JSON.stringify(userData));
+      const { dispatch } = this.$store;
+      if (checkbox) {
+        dispatch("authentication/register", userData);
+      }
     }
-  },
-  save(date) {
-    this.$refs.menu.save(date);
   },
   mounted() {}
 };

@@ -67,20 +67,6 @@
           clearable
           :class="['hidden-sm-and-down', $style.searchBox]"
         ></v-text-field>
-
-        <v-menu bottom left>
-          <template v-slot:activator="{ on }">
-            <v-btn icon v-on="on">
-              <v-icon>mdi-dots-vertical</v-icon>
-            </v-btn>
-          </template>
-
-          <v-list v-if="$store.state.authentication.auth">
-            <v-list-tile @click="logout()">
-              <v-list-tile-title>Logout</v-list-tile-title>
-            </v-list-tile>
-          </v-list>
-        </v-menu>
       </slot>
 
       <v-menu bottom left min-width="150">
@@ -91,7 +77,12 @@
         </template>
 
         <v-list>
-          <v-list-tile v-for="(item, i) in dotMenu" :key="i" :to="item.link">
+          <v-list-tile
+            v-for="(item, i) in dotMenu"
+            :key="i"
+            :to="item.link"
+            @click="item.action"
+          >
             <v-list-tile-action>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-tile-action>
@@ -183,29 +174,40 @@ export default {
         {
           title: "Login",
           icon: "mdi-key-outline",
-          link: { name: "auth", params: { authType: 2 } }
+          link: { name: "auth", params: { authType: 2 } },
+          action: _ => {
+            return false;
+          }
         },
         {
           title: "Register",
           icon: "mdi-account-plus-outline",
-          link: { name: "auth", params: { authType: 0 } }
+          link: { name: "auth", params: { authType: 0 } },
+          action: _ => {
+            return false;
+          }
         },
         {
           title: "Profile",
           icon: "mdi-account-outline",
-          link: { name: "profile" }
+          link: { name: "profile" },
+          action: _ => {
+            return false;
+          }
         },
         {
           title: "Logout",
           icon: "mdi-logout-variant",
-          link: {}
+          link: "",
+          action: this.logout
         }
       ]
     };
   },
   methods: {
     logout() {
-      this.$store.dispatch("authentication/logout");
+      if (this.$store.state.authentication.status.loggedIn)
+        this.$store.dispatch("authentication/logout");
     }
   },
   mounted() {

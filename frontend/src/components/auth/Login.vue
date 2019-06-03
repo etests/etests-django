@@ -43,8 +43,8 @@ export default {
     }
   },
   created() {
-    // reset login status
-    this.$store.dispatch("authentication/logout");
+    if (this.$store.state.authentication.status.loggedIn)
+      this.$router.push({ name: "home" });
   },
   methods: {
     handleSubmit(e) {

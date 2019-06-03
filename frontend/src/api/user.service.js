@@ -2,6 +2,7 @@ import { authHeader } from "./auth-header";
 
 export const userService = {
   login,
+  register,
   logout,
   getAll
 };
@@ -26,6 +27,23 @@ function login(username, password) {
     });
 }
 
+function register(userData) {
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(userData)
+  };
+
+  if (userData.user.is_student)
+    return fetch(`${process.env.API_URL}/students/`, requestOptions).then(
+      handleResponse
+    );
+  else if (userData.user.is_institute)
+    return fetch(`${process.env.API_URL}/institutes/`, requestOptions).then(
+      handleResponse
+    );
+}
+
 function logout() {
   // remove user from local storage to log user out
   localStorage.removeItem("auth");
@@ -36,8 +54,6 @@ function getAll() {
     method: "GET",
     headers: authHeader()
   };
-
-  console.log(requestOptions);
 
   return fetch(`${process.env.API_URL}/users/`, requestOptions).then(
     handleResponse
