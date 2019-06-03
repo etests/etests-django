@@ -20,7 +20,7 @@
           </v-tabs-items>
         </v-flex>
       </v-layout>
-      <Footer :fixed="true" />
+      <Footer />
     </v-content>
   </v-container>
 </template>

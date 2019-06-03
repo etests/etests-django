@@ -1,9 +1,9 @@
 <template>
   <v-footer dark height="20px" :app="fixed" :inset="fixed">
     <v-layout justify-center row wrap>
-      <v-card class="flex primary">
+      <v-card flat class="flex white primary--text">
         <span>&copy;2019 &nbsp;<strong>eTests</strong></span>
-        <v-btn v-for="icon in icons" :key="icon" dark icon>
+        <v-btn v-for="icon in icons" :key="icon" color="primary" icon flat>
           <v-icon size="20px">{{ icon }}</v-icon>
         </v-btn>
       </v-card>

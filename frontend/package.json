@@ -13,11 +13,13 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "chartist": "^0.11.2",
     "material-design-icons-iconfont": "^4.0.5",
     "prettier": "^1.17.0",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
     "vue": "^2.5.2",
+    "vue-chartist": "^2.2.0",
     "vue-router": "^3.0.1",
     "vuelidate": "^0.7.4",
     "vuetify": "^1.5.14"

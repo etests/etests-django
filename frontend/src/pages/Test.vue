@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="px-0">
+  <v-container fluid>
     <Header :showDrawer="false" :temporaryDrawer="true">
       <v-layout slot="tools">
         <v-flex>
@@ -17,30 +17,20 @@
           </v-layout>
         </v-flex>
       </v-layout>
-
-      <v-tabs
-        slot="tabs"
-        v-model="currentSection"
-        color="transparent"
-        slider-color="white"
-        :centered="isSmallScreen"
-      >
-        <v-tab v-for="section in sections" :key="section.subject">
-          <strong>{{ section.subject }}</strong>
-        </v-tab>
-      </v-tabs>
     </Header>
 
-    <v-content app class="grey lighten-5">
+    <v-content app :class="$style.wideText">
       <v-layout column wrap>
-        <v-sheet class="text-xs-left px-4" color="grey lighten-5">
-          <v-layout row :justify-center="isSmallScreen" mb-1>
+        <v-sheet class="text-xs-left">
+          <v-layout row justify-center mb-1>
             <v-btn color="primary" flat>
               <v-icon> mdi-clock </v-icon>
               &nbsp; {{ time }}
             </v-btn>
             <v-btn
               color="info"
+              round
+              outline
               :icon="isSmallScreen"
               :small="!isSmallScreen"
               @click="
@@ -54,6 +44,8 @@
 
             <v-btn
               color="error"
+              round
+              outline
               :icon="isSmallScreen"
               :small="!isSmallScreen"
               @click="clear(currentQuestion)"
@@ -63,6 +55,8 @@
             </v-btn>
             <v-btn
               color="success"
+              round
+              outline
               :icon="isSmallScreen"
               :small="!isSmallScreen"
               @click="
@@ -75,48 +69,38 @@
             </v-btn>
           </v-layout>
         </v-sheet>
-        <v-divider class="grey lighten-2"></v-divider>
         <v-flex xs12>
-          <v-sheet
-            :height="windowHeight"
-            color="white"
-            class="text-xs-left py-3"
-          >
+          <v-card :height="windowHeight" color="white" class="text-xs-left">
             <v-tabs-items v-model="currentSection" :touch="swipeActions">
               <v-tab-item v-for="section in sections" :key="section.subject">
-                <v-sheet class="text-xs-left px-3">
-                  <v-layout :justify-center="isSmallScreen">
+                <v-sheet
+                  :height="windowHeight"
+                  :class="[$style.question, 'px-4 py-2']"
+                >
+                  <v-layout justify-center>
                     <v-btn
-                      small
                       color="success lighten-1"
                       class="subheading"
-                      dark
+                      small
+                      outline
                       icon
                     >
                       +{{ questions[currentQuestion].correctMarks }}
                     </v-btn>
                     <v-btn
-                      small
                       color="error lighten-1"
                       class="subheading"
-                      dark
+                      small
+                      outline
                       icon
                     >
                       -{{ questions[currentQuestion].incorrectMarks }}
                     </v-btn>
                     <v-chip color="indigo" outline>
-                      {{ questions[currentQuestion].type }}
+                      {{ questions[currentQuestion].type }} TYPE
                     </v-chip>
                   </v-layout>
-                </v-sheet>
 
-                <v-sheet
-                  :height="windowHeight"
-                  :class="[
-                    $style.question,
-                    'px-3 py-3 grey--text text--darken-2'
-                  ]"
-                >
                   <v-img
                     v-if="questions[currentQuestion].image"
                     :src="
@@ -129,7 +113,7 @@
                   <v-chip color="grey darken-2" outline small>
                     <strong> Q{{ currentQuestion + 1 }} </strong>
                   </v-chip>
-                  <span class="subheading">
+                  <span :class="$style.questionText">
                     {{ questions[currentQuestion].text }}
                   </span>
 
@@ -201,8 +185,8 @@
                             :key="`${currentQuestion}-option-${i}`"
                           >
                             <v-layout row wrap align-start>
-                              <v-flex xs1 class="mr-3">
-                                <v-icon>
+                              <v-flex xs8 :class="$style.option">
+                                <v-icon :class="$style.optionLetter">
                                   {{
                                     `mdi-alpha-${letter(
                                       "a",
@@ -211,8 +195,6 @@
                                     )}-circle-outline`
                                   }}
                                 </v-icon>
-                              </v-flex>
-                              <v-flex xs8>
                                 {{ option }}
                               </v-flex>
                             </v-layout>
@@ -227,8 +209,8 @@
                             :key="`${currentQuestion}-answer-${j}`"
                           >
                             <v-layout row wrap align-start>
-                              <v-flex xs1 class="mr-3">
-                                <v-icon>
+                              <v-flex xs8 :class="$style.option">
+                                <v-icon :class="$style.optionLetter">
                                   {{
                                     `mdi-alpha-${letter(
                                       "p",
@@ -237,8 +219,6 @@
                                     )}-circle-outline`
                                   }}
                                 </v-icon>
-                              </v-flex>
-                              <v-flex xs8>
                                 {{ answer }}
                               </v-flex>
                             </v-layout>
@@ -305,23 +285,26 @@
                 </v-sheet>
               </v-tab-item>
             </v-tabs-items>
-          </v-sheet>
+          </v-card>
         </v-flex>
       </v-layout>
     </v-content>
 
-    <v-footer color="grey lighten-5" height="auto" fixed app inset>
+    <v-footer color="white" height="auto" fixed app inset>
       <v-layout>
         <v-flex xs12>
-          <v-btn icon large color="info" @click="previousQuestion()">
+          <input @keyup.left="previousQuestion" type="hidden" />
+          <input @keyup.right="nextQuestion" type="hidden" />
+          <v-btn icon color="primary" @click="previousQuestion()">
             <v-icon>mdi-arrow-left</v-icon>
           </v-btn>
-          <v-btn icon large color="info" @click="nextQuestion()">
+          <v-btn icon color="primary" @click="nextQuestion()">
             <v-icon>mdi-arrow-right</v-icon>
           </v-btn>
         </v-flex>
       </v-layout>
       <v-btn
+        flat
         icon
         color="primary"
         @click="panel = !panel"
@@ -335,6 +318,24 @@
 
     <v-navigation-drawer v-model="panel" app right>
       <v-card-text>
+        <v-toolbar-title class="subheading primary--text mt-3">
+          <strong style="text-transform: uppercase;">{{ testName }}</strong>
+        </v-toolbar-title>
+        <v-tabs
+          slot="tabs"
+          v-model="currentSection"
+          color="transparent"
+          hide-slider
+          centered
+        >
+          <v-tab
+            active-class="primary--text"
+            v-for="section in sections"
+            :key="section.subject"
+          >
+            {{ section.subject }}
+          </v-tab>
+        </v-tabs>
         <span v-for="(question, i) in questions" :key="question.id">
           <v-btn
             fab
@@ -359,6 +360,7 @@
         </v-btn>
         <v-flex v-if="isSmallScreen">
           <v-btn
+            flat
             icon
             dark
             color="primary"
@@ -393,6 +395,7 @@ export default {
         left: () => this.nextQuestion(),
         right: () => this.previousQuestion()
       },
+      testName: "Unit Test 1",
       currentSection: 0,
       currentQuestion: 0,
       sections: [
@@ -626,7 +629,25 @@ export default {
 .questionInfo{
   border-bottom: 1px solid grey !important;
 }
+.wideText{
+  letter-spacing: 0.04em;
+}
 .question{
-  overflow-y: scroll;
+  overflow-y: auto;
+  .questionText{
+    font-size: 13pt;
+    letter-spacing: 0.02em;
+  }
+  .option{
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 5px;
+    color: #787878;
+
+    .optionLetter{
+      position: absolute;
+      left: 0
+    }
+  }
 }
 </style>

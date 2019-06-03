@@ -1,12 +1,13 @@
 <template>
-  <v-card color="white" flat>
-    <Header />
-
-    <v-card class="fill-height">
-      <v-sheet height="700"></v-sheet>
-    </v-card>
-    <!-- <Footer :fixed="true" />   -->
-  </v-card>
+  <v-container fluid>
+    <Header :disableDrawerClose="true" />
+    <v-content app>
+      <v-card class="px-2 py-2 mb-2" width="420" style="margin:auto">
+        <img src="~@assets/logos/etests.png" width="400" />
+      </v-card>
+      <Footer />
+    </v-content>
+  </v-container>
 </template>
 
 <script>

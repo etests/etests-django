@@ -7,6 +7,9 @@ import Vuetify from "vuetify";
 import "material-design-icons-iconfont/dist/material-design-icons.css";
 import "@mdi/font/css/materialdesignicons.css";
 import "./stylus/main.styl";
+import "chartist/dist/chartist.min.css";
+
+Vue.use(require("vue-chartist"));
 
 Vue.config.productionTip = false;
 

@@ -1,5 +1,48 @@
 @import '~vuetify/src/stylus/main'
 
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../assets/fonts/roboto/roboto-v19-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local('Roboto'), local('Roboto-Regular'),
+       url('../assets/fonts/roboto/roboto-v19-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../assets/fonts/roboto/roboto-v19-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../assets/fonts/roboto/roboto-v19-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('../assets/fonts/roboto/roboto-v19-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../assets/fonts/roboto/roboto-v19-latin-regular.svg#Roboto') format('svg'); /* Legacy iOS */
+}
+
+
+$body-font-family = 'Roboto'
+
 .round-corners{
     border-radius: 5px;
+}
+
+a{
+    text-decoration: none;
+}
+
+
+.theme--light.v-text-field--solo-inverted.v-text-field--solo > .v-input__control > .v-input__slot {
+  background: rgb(241, 243, 244);
+  brder-radius: 8px;
+
+  .v-label{
+      color: #c9cbcb;
+  }
+}
+
+.theme--light.v-text-field--solo-inverted.v-text-field--solo.v-input--is-focused > .v-input__control > .v-input__slot {
+    background: #fff;
+    box-shadow: 0 1px 1px 0 rgba(65,69,73,0.3), 0 1px 3px 1px rgba(65,69,73,0.15);
+    border-radius: 8px;
+
+    input {
+        color: #444;
+    }
+    .v-label{
+        color: #c9cbcb
+    }
 }
