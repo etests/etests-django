@@ -2,6 +2,9 @@
 
 import os
 from datetime import timedelta
+import django_heroku
+import dj_database_url
+import psycopg2
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -10,7 +13,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
@@ -82,14 +85,6 @@ TEMPLATES = [
 WSGI_APPLICATION = "etests.wsgi.application"
 
 
-# Database
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-    }
-}
-
 AUTH_USER_MODEL = "eusers.User"
 
 # Password validation
@@ -122,7 +117,14 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 CORS_ORIGIN_ALLOW_ALL = False
 
+# Activate Django-Heroku.
+django_heroku.settings(locals())
+
 try:
     from local_settings import *
 except ImportError:
-    pass
+    # Database
+    DATABASE_URL = os.environ['DATABASE_URL']
+    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+    DATABASES = {}
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)  
