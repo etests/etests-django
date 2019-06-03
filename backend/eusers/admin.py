@@ -30,3 +30,14 @@ class InstituteModelAdmin(admin.ModelAdmin):
         model = Institute
 
 admin.site.register(Institute, InstituteModelAdmin)
+admin.site.register(Exam)
+admin.site.register(Subject)
+admin.site.register(Topic)
+admin.site.register(AccessCode)
+admin.site.register(Tag)
+admin.site.register(TestSeries)
+admin.site.register(Test)
+admin.site.register(UnitTest)
+
+
+
