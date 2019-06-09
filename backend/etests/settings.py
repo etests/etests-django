@@ -13,7 +13,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
@@ -25,15 +25,18 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
+
     "rest_framework",
     "rest_framework_jwt",
     "rest_framework_swagger",
+
     "corsheaders",
-    "eusers",
+    "authentication",
+    "api"
 ]
 
 JWT_AUTH = {
-    "JWT_RESPONSE_PAYLOAD_HANDLER": "eusers.views.jwt_response_payload_handler",
     "JWT_AUTH_HEADER_PREFIX": "Bearer",
     "JWT_ALLOW_REFRESH": True,
     "JWT_EXPIRATION_DELTA": timedelta(hours=1),
@@ -66,6 +69,8 @@ REST_FRAMEWORK = {
 
 ROOT_URLCONF = "etests.urls"
 
+SITE_ID = '1'
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -85,7 +90,7 @@ TEMPLATES = [
 WSGI_APPLICATION = "etests.wsgi.application"
 
 
-AUTH_USER_MODEL = "eusers.User"
+AUTH_USER_MODEL = "authentication.User"
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
