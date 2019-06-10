@@ -1,7 +1,7 @@
 from django.utils.text import slugify
 
 
-def get_unique_slug(model_instance, slugable_field_name, slug_field_name):
+def get_unique_slug(model_instance, slugable_field_name, slug_field_name="slug"):
     """
     Takes a model instance, sluggable field name (such as 'title') of that
     model as string, slug field name (such as 'slug') of the model as string;

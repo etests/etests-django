@@ -138,12 +138,14 @@ class StudentDetailsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
+        fields = '__all__' 
 
 class InstituteDetailsSerializer(serializers.ModelSerializer):
     user = UserDetailsSerializer()
 
     class Meta:
         model = Institute
+        fields = '__all__' 
 
 class JWTSerializer(serializers.Serializer):
     """

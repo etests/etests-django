@@ -25,7 +25,7 @@ class Exam(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = get_unique_slug(self, self.name)
+            self.slug = get_unique_slug(self, "name")
         super(Exam, self).save(*args, **kwargs)
 
     class Meta:
@@ -42,7 +42,7 @@ class Subject(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = get_unique_slug(self, self.name)
+            self.slug = get_unique_slug(self, "name")
         super(Subject, self).save(*args, **kwargs)
 
     def __str__(self):
@@ -57,7 +57,7 @@ class Topic(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = get_unique_slug(self, self.name)
+            self.slug = get_unique_slug(self, "name")
         super(Topic, self).save(*args, **kwargs)
 
     class Meta:
@@ -75,9 +75,9 @@ class AccessCode(models.Model):
 
 class Tag(models.Model):
     id = models.AutoField(primary_key = True)
-    TAG_TYPE_CHOICES = (("exam", "Exam"), ("topic", "Topic"), ("others", "Others"))
+    TAG_TYPE_CHOICES = (("EXAM", "Exam"), ("TOPIC", "Topic"), ("OTHER", "Others"))
     name = models.CharField(max_length = 20)
-    type = models.CharField(max_length = 1, choices = TAG_TYPE_CHOICES)
+    type = models.CharField(max_length = 10, choices = TAG_TYPE_CHOICES)
 
 
 class TestSeries(models.Model):
@@ -105,13 +105,21 @@ class TestSeries(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = get_unique_slug(self, self.name)
+            self.slug = get_unique_slug(self, "name")
         super(TestSeries, self).save(*args, **kwargs)
 
+
+QUESTION_TYPES = [
+    ('SINGLE', 'SINGLE CORRECT'),
+    ('MULTIPLE', 'MULTIPLE CORRECT'),
+    ('NUMBER', 'NUMBER TYPE'),
+    ('MATRIX', 'MATRIX MATCH')
+]
 
 class BaseTest(models.Model):
     id = models.AutoField(primary_key = True)
     name = models.CharField(max_length = 20)
+    institute = models.ForeignKey(Institute, blank = True, null = True, on_delete = models.CASCADE)
     slug = models.SlugField(unique = True, editable = False)
     active = models.BooleanField(default = False)
     practice = models.BooleanField(default = False)
@@ -119,14 +127,15 @@ class BaseTest(models.Model):
     date_added = models.DateField(auto_now_add = True)
     activation_time = models.DateField(blank = True, null = True)
     time_alotted = models.DurationField(default = timedelta(hours = 3))
+    questions = JSONField()
 
     class Meta:
         abstract = True
     
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = get_unique_slug(self, self.name)
-        super(Topic, self).save(*args, **kwargs)
+            self.slug = get_unique_slug(self, "name")
+        super(BaseTest, self).save(*args, **kwargs)
 
 class Test(BaseTest):
     id = models.AutoField(primary_key = True)
@@ -136,66 +145,9 @@ class UnitTest(BaseTest):
     id = models.AutoField(primary_key = True)
     visible = models.BooleanField(default = False)
     exam = models.ForeignKey(Exam, related_name = 'unit_tests', blank = True, null = True, on_delete = models.SET_NULL)
-    institute = models.ForeignKey(Institute, related_name = 'unit_tests', blank = True, null = True, on_delete = models.CASCADE)
     registered_students = models.ManyToManyField(Student, blank = True)
     access_code = models.ForeignKey(AccessCode, related_name = 'unit_tests', blank = True, null = True, on_delete = models.SET_NULL)
     price = models.FloatField()
-
-
-class Question(models.Model):
-    QUESTION_TYPES = [
-        ('SINGLE', 'SINGLE CORRECT'),
-        ('MULTIPLE', 'MULTIPLE CORRECT'),
-        ('NUMBER', 'NUMBER TYPE'),
-        ('MATRIX', 'MATRIX MATCH')
-    ]
-    id = models.AutoField(primary_key=True)
-    type = models.CharField(max_length=20, choices=QUESTION_TYPES)
-    marks = models.FloatField()
-    negative_marks = models.FloatField()
-    partial_allowed = models.BooleanField(default=False)
-    partial_marks = models.FloatField()
-    position = models.IntegerField("position")
-    slug = models.SlugField(unique = True, editable = False)
-    text = models.CharField(max_length=500, blank=True)
-    image = models.ImageField(upload_to='static/images/questions/', max_length=20*1024, blank=True)
-    solution = JSONField()
-    topic = models.ForeignKey(Topic, null=True, blank=True, on_delete=models.SET_NULL)
-    date_added = models.DateField(auto_now_add=True)
-    class Meta:
-        ordering = ("position",)
-
-    def __str__(self):
-       return "Question "+str(self.position)
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = get_unique_slug(self, self.name)
-        super(Question, self).save(*args, **kwargs)
-
-LABELS = [(0, 'A'), (1, 'B'), (2, 'C'), (3, 'D')]
-
-class SingleCorrectQuestion(models.Model):
-    question = models.OneToOneField(Question, on_delete=models.CASCADE)
-    options = JSONField()
-    answer = models.CharField(max_length=1, choices=LABELS)
-
-class MultipleCorrectQuestion(models.Model):
-    question = models.OneToOneField(Question, on_delete=models.CASCADE)
-    options = JSONField()
-    answer = ArrayField(models.CharField(max_length=1, choices=LABELS))
-
-class NumberTypeQuestion(models.Model):
-    question = models.OneToOneField(Question, on_delete=models.CASCADE)    
-    answer = models.FloatField()
-    def answer(self):
-        return self.answer
-
-class MatrixMatchQuestion(models.Model):
-    question = models.OneToOneField(Question, on_delete=models.CASCADE)
-    labels = JSONField()
-    options = JSONField()
-    answer = ArrayField(ArrayField(models.IntegerField()))
 
 class Session(models.Model):
     id = models.AutoField(primary_key=True)

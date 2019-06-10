@@ -39,7 +39,7 @@ INSTALLED_APPS = [
 JWT_AUTH = {
     "JWT_AUTH_HEADER_PREFIX": "Bearer",
     "JWT_ALLOW_REFRESH": True,
-    "JWT_EXPIRATION_DELTA": timedelta(hours=1),
+    "JWT_EXPIRATION_DELTA": timedelta(days=1),
     "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
 }
 
@@ -64,7 +64,7 @@ REST_FRAMEWORK = {
         "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ],
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAdminUser"],
 }
 
 ROOT_URLCONF = "etests.urls"
