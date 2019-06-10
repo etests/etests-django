@@ -20,62 +20,63 @@
     </Header>
 
     <v-content app :class="$style.wideText">
-      <v-layout column wrap>
-        <v-sheet class="text-xs-left">
-          <v-layout row justify-center mb-1>
-            <v-btn color="primary" flat>
-              <v-icon> mdi-clock </v-icon>
-              &nbsp; {{ time }}
-            </v-btn>
-            <v-btn
-              color="info"
-              round
-              outline
-              :icon="isSmallScreen"
-              :small="!isSmallScreen"
-              @click="
-                markForReview(currentQuestion);
-                nextQuestion();
-              "
-            >
-              <v-icon>mdi-comment-eye-outline</v-icon>
-              <span v-if="!isSmallScreen">Mark for review & next</span>
-            </v-btn>
-
-            <v-btn
-              color="error"
-              round
-              outline
-              :icon="isSmallScreen"
-              :small="!isSmallScreen"
-              @click="clear(currentQuestion)"
-            >
-              <v-icon>mdi-close</v-icon>
-              <span v-if="!isSmallScreen">Clear your response</span>
-            </v-btn>
-            <v-btn
-              color="success"
-              round
-              outline
-              :icon="isSmallScreen"
-              :small="!isSmallScreen"
-              @click="
-                save(currentQuestion);
-                nextQuestion();
-              "
-            >
-              <v-icon>mdi-content-save-move</v-icon>
-              <span v-if="!isSmallScreen">Save response & next </span>
-            </v-btn>
-          </v-layout>
-        </v-sheet>
+      <v-layout row wrap>
         <v-flex xs12>
-          <v-card :height="windowHeight" color="white" class="text-xs-left">
+          <v-card color="white" :class="$style.questionContainer">
+            <v-sheet class="pt-2">
+              <v-layout row justify-center mb-1>
+                <v-btn color="primary" flat>
+                  <v-icon> mdi-clock </v-icon>
+                  &nbsp; {{ time }}
+                </v-btn>
+                <v-btn
+                  color="info"
+                  round
+                  outline
+                  :icon="isSmallScreen"
+                  :small="!isSmallScreen"
+                  @click="
+                    markForReview(currentQuestion);
+                    nextQuestion();
+                  "
+                >
+                  <v-icon>mdi-comment-eye-outline</v-icon>
+                  <span v-if="!isSmallScreen">Mark for review & next</span>
+                </v-btn>
+
+                <v-btn
+                  color="error"
+                  round
+                  outline
+                  :icon="isSmallScreen"
+                  :small="!isSmallScreen"
+                  @click="clear(currentQuestion)"
+                >
+                  <v-icon>mdi-close</v-icon>
+                  <span v-if="!isSmallScreen">Clear your response</span>
+                </v-btn>
+                <v-btn
+                  color="success"
+                  round
+                  outline
+                  :icon="isSmallScreen"
+                  :small="!isSmallScreen"
+                  @click="
+                    save(currentQuestion);
+                    nextQuestion();
+                  "
+                >
+                  <v-icon>mdi-content-save-move</v-icon>
+                  <span v-if="!isSmallScreen">Save response & next </span>
+                </v-btn>
+              </v-layout>
+            </v-sheet>
+            <v-divider />
             <v-tabs-items v-model="currentSection" :touch="swipeActions">
               <v-tab-item v-for="section in sections" :key="section.subject">
                 <v-sheet
-                  :height="windowHeight"
                   :class="[$style.question, 'px-4 py-2']"
+                  :height="windowHeight"
                 >
                   <v-layout justify-center>
                     <v-btn
@@ -385,7 +386,7 @@ import Footer from "@components/Footer.vue";
 export default {
   data() {
     return {
-      windowHeight: window.innerHeight - 190,
+      windowHeight: window.innerHeight - 200,
       isSmallScreen: this.$vuetify.breakpoint.smAndDown,
       panel: null,
       drawer: false,
@@ -617,7 +618,7 @@ export default {
   mounted() {
     this.$nextTick(() => {
       window.addEventListener("resize", () => {
-        this.windowHeight = window.innerHeight - 190;
+        this.windowHeight = window.innerHeight - 200;
       });
     });
   }
@@ -632,21 +633,29 @@ export default {
 .wideText{
   letter-spacing: 0.04em;
 }
-.question{
-  overflow-y: auto;
-  .questionText{
-    font-size: 13pt;
-    letter-spacing: 0.02em;
-  }
-  .option{
-    position: relative;
-    padding-left: 30px;
-    margin-bottom: 5px;
-    color: #787878;
+.questionContainer{
+  text-align: left;
+  border: 1px solid #c9cbd0;
+  border-radius: 8px;
 
-    .optionLetter{
-      position: absolute;
-      left: 0
+  .question{
+    overflow-y: auto;
+    .questionText{
+      font-family: 'Product Sans',Roboto,Arial,sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 0.02em;
+      color: #606164;
+    }
+    .option{
+      position: relative;
+      padding-left: 30px;
+      margin-bottom: 5px;
+      color: #787878;
+
+      .optionLetter{
+        position: absolute;
+        left: 0
+      }
     }
   }
 }

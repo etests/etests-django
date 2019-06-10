@@ -5,6 +5,9 @@ import { alert } from "./alert.module";
 import { authentication } from "./authentication.module";
 import { users } from "./users.module";
 import { institutes } from "./institutes.module";
+import { testSeries } from "./testSeries.module";
+import { tests } from "./tests.module";
+import { unitTests } from "./unitTests.module";
 
 Vue.use(Vuex);
 
@@ -13,6 +16,9 @@ export default new Vuex.Store({
     alert,
     authentication,
     users,
-    institutes
+    institutes,
+    testSeries,
+    tests,
+    unitTests
   }
 });

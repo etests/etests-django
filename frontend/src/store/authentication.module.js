@@ -30,7 +30,6 @@ export const authentication = {
       userService.register(userData).then(
         userData => {
           commit("registerSuccess", userData.user);
-          router.push("/login");
           setTimeout(() => {
             dispatch("alert/success", "Registration successful", {
               root: true

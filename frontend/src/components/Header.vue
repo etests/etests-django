@@ -10,24 +10,32 @@
     >
       <v-list>
         <template v-for="(item, i) in menu">
-          <v-divider v-if="item.divider" :key="i" dark class="my-2"></v-divider>
-          <v-list-tile
-            v-else
+          <div
+            v-if="
+              (item.requiresStudent && isStudent) ||
+                (item.requiresInstitute && isInstitute) ||
+                (!item.requiresStudent && !item.requiresInstitute)
+            "
             :key="i"
-            :to="item.link"
-            :class="$style.DrawerItem"
-            :active-class="$style.activeDrawerItem"
           >
-            <v-list-tile-action>
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-tile-action>
+            <v-divider v-if="item.divider" dark class="my-2"></v-divider>
+            <v-list-tile
+              :to="item.link"
+              :class="$style.DrawerItem"
+              :active-class="$style.activeDrawerItem"
+              v-else
+            >
+              <v-list-tile-action>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-tile-action>
 
-            <v-list-tile-content>
-              <v-list-tile-title :class="$style.drawerItemTitle">
-                {{ item.title }}
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+              <v-list-tile-content>
+                <v-list-tile-title :class="$style.drawerItemTitle">
+                  {{ item.title }}
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </div>
         </template>
       </v-list>
     </v-navigation-drawer>
@@ -138,31 +146,56 @@ export default {
           link: { name: "institutes" }
         },
 
-        { divider: "true" },
+        { divider: true },
 
         {
           title: "Dashboard",
           icon: "mdi-view-dashboard-outline",
-          link: { name: "student-dashboard" }
+          link: { path: "/student/dashboard" },
+          requiresStudent: true
         },
         {
           title: "Progress Report",
           icon: "mdi-chart-line",
-          link: { name: "report" }
+          link: { name: "report" },
+          requiresStudent: true
         },
 
         {
           title: "Exam Schedule",
           icon: "mdi-calendar-text-outline",
-          link: { name: "exams" }
+          link: { name: "exams" },
+          requiresStudent: true
         },
         {
           title: "Test",
           icon: "mdi-monitor-screenshot",
-          link: { name: "test" }
+          link: { name: "test" },
+          requiresStudent: true
         },
 
-        { divider: "true" },
+        { divider: true, requiresStudent: true },
+
+        {
+          title: "Dashboard",
+          icon: "mdi-view-dashboard-outline",
+          link: { path: "/institute/dashboard" },
+          requiresInstitute: true
+        },
+        {
+          title: "Tests",
+          icon: "mdi-note-multiple-outline",
+          link: { path: "/institute/tests" },
+          requiresInstitute: true
+        },
+        {
+          title: "Notifications",
+          icon: "mdi-bell-ring-outline",
+          link: { path: "/institute/notifications" },
+          requiresInstitute: true
+        },
+
+        { divider: true, requiresInstitute: true },
 
         {
           title: "Discuss",
@@ -208,6 +241,16 @@ export default {
     logout() {
       if (this.$store.state.authentication.status.loggedIn)
         this.$store.dispatch("authentication/logout");
+    }
+  },
+  computed: {
+    isStudent() {
+      if (!this.$store.state.authentication.status.loggedIn) return false;
+      return this.$store.state.authentication.auth.user.is_student;
+    },
+    isInstitute() {
+      if (!this.$store.state.authentication.status.loggedIn) return false;
+      return this.$store.state.authentication.auth.user.is_institute;
     }
   },
   mounted() {

@@ -3,6 +3,7 @@ import { authHeader } from "./auth-header";
 export const userService = {
   login,
   register,
+  updateProfile,
   logout,
   getAll
 };
@@ -14,7 +15,7 @@ function login(username, password) {
     body: JSON.stringify({ username, password })
   };
 
-  return fetch(`${process.env.API_URL}/auth/obtain_token/`, requestOptions)
+  return fetch(`${process.env.API_URL}/auth/login/`, requestOptions)
     .then(handleResponse)
     .then(auth => {
       // login successful if there's a jwt token in the response
@@ -35,18 +36,39 @@ function register(userData) {
   };
 
   if (userData.user.is_student)
-    return fetch(`${process.env.API_URL}/students/`, requestOptions).then(
-      handleResponse
-    );
+    return fetch(
+      `${process.env.API_URL}/auth/register-student/`,
+      requestOptions
+    ).then(handleResponse);
   else if (userData.user.is_institute)
-    return fetch(`${process.env.API_URL}/institutes/`, requestOptions).then(
-      handleResponse
-    );
+    return fetch(
+      `${process.env.API_URL}/auth/register-institute/`,
+      requestOptions
+    ).then(handleResponse);
+}
+
+function updateProfile(userData) {
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(userData)
+  };
+
+  return fetch(`${process.env.API_URL}/auth/user/`, requestOptions).then(
+    handleResponse
+  );
 }
 
 function logout() {
-  // remove user from local storage to log user out
-  localStorage.removeItem("auth");
+  const requestOptions = {
+    method: "POST"
+  };
+
+  return fetch(`${process.env.API_URL}/auth/logout/`, requestOptions)
+    .then(handleResponse)
+    .then(function() {
+      localStorage.removeItem("auth");
+    });
 }
 
 function getAll() {
@@ -66,8 +88,8 @@ function handleResponse(response) {
     if (!response.ok) {
       if (response.status === 401) {
         // auto logout if 401 response returned from api
-        logout();
-        location.reload(true);
+        // logout();
+        // location.reload(true);
       }
 
       const error = (data && data.message) || response.statusText;

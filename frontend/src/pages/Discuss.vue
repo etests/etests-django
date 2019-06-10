@@ -1,42 +1,31 @@
 <template>
-  <v-container fluid>
-    <Header :disableDrawerClose="true" />
-    <v-content app>
-      <div style="max-width: 80%; margin: auto;">
-        <v-container fluid grid-list-lg>
-          <v-layout row wrap>
-            <v-flex xs12 v-for="(post, i) in posts" :key="i">
-              <v-card>
-                <v-layout class="text-xs-left">
-                  <v-flex xs12>
-                    <v-card-title primary-title>
-                      <div>
-                        <div class="title">{{ post.title }}</div>
-                        <br />
-                        <div>{{ post.description }}</div>
-                        <br />
-                        <div>{{ post.user }}</div>
-                      </div>
-                    </v-card-title>
-                  </v-flex>
-                </v-layout>
-                <v-divider light></v-divider>
-                <v-card-actions class="pa-3">
-                  <v-btn flat small color="success">Answer this question</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </div>
-      <Footer />
-    </v-content>
-  </v-container>
+  <StandardLayout>
+    <v-flex xs12 v-for="(post, i) in posts" :key="i">
+      <v-card :class="$style.questionCard">
+        <v-layout class="text-xs-left">
+          <v-flex xs12>
+            <v-card-title>
+              <div>
+                <div :class="$style.title">{{ post.title }}</div>
+                <br />
+                <div :class="$style.description">{{ post.description }}</div>
+                <br />
+                <div>{{ post.user }}</div>
+              </div>
+            </v-card-title>
+          </v-flex>
+        </v-layout>
+        <v-divider light></v-divider>
+        <v-card-actions class="pa-3">
+          <v-btn flat small color="success">Answer this question</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-flex>
+  </StandardLayout>
 </template>
 
 <script>
-import Header from "@components/Header.vue";
-import Footer from "@components/Footer.vue";
+import StandardLayout from "@components/layouts/StandardLayout";
 
 export default {
   data() {
@@ -64,8 +53,7 @@ export default {
     };
   },
   components: {
-    Header,
-    Footer
+    StandardLayout
   }
 };
 </script>
@@ -73,9 +61,23 @@ export default {
 <style module lang="stylus">
 @require '~@stylus/theme/colors';
 
-.logo{
-  width: 40px;
-  float: left;
-  margin: 0 5px;
+
+.questionCard{
+  border: 1px solid #dadce0;
+  border-radius: 8px;
+  .title{
+    font-family: 'Product Sans Light',Roboto,Arial,sans-serif;
+    font-size: 1.875rem;
+    line-height: 1.75rem;
+    color: #202124;
+  }
+  .description{
+    text-align: left;
+    letter-spacing: .014em;
+    font-family: 'Product Sans Light',Roboto,Arial,sans-serif;
+    font-size: 1.08rem;
+    line-height: 1.25rem;
+    color: #5f6368;
+  }
 }
 </style>

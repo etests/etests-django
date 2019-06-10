@@ -15,44 +15,44 @@ export default {
         {
           title: "Notifications",
           text:
-            "See notifications from your institute about upcoming tests and solutions to past tests",
+            "Create and manage notifications for students. Notify about upcoming tests, updates about solutions to past tests etc.",
           action: {
-            text: "See all notifications",
+            text: "Manage notifications",
             icon: "mdi-bell",
-            link: { path: "/student/notifications" },
+            link: { path: "/institute/notifications" },
             color: "amber"
           }
         },
         {
           title: "Tests",
           text:
-            "Complete list of your tests where you can review your past tests and see information about upcoming tests.",
+            "Create test series and add tests to them, or edit existing tests and unit tests.",
           action: {
-            text: "Your test history",
+            text: "Create and view tests",
             icon: "mdi-note-multiple",
-            link: { path: "/student/tests" },
+            link: { path: "/institute/tests" },
             color: "info"
           }
         },
         {
-          title: "Progress Report",
+          title: "Batches",
           text:
-            "A detailed analysis of your progress using charts, and graphs. See your weak and strong points to improve your performance.",
+            "Create separate batches for your students using a list of roll numbers.",
           action: {
-            text: "Your progress report",
-            icon: "mdi-chart-line",
-            link: { path: "/student/report" },
+            text: "Manage your batches",
+            icon: "mdi-account-multiple",
+            link: { path: "/institute/batches" },
             color: "success"
           }
         },
         {
           title: "Profile",
           text:
-            "Edit your profile. Make it shine because this is what others see about you.",
+            "Edit your profile to make it stand out. This is essential because it show others what your institute is.",
           action: {
             text: "Edit your profile",
             icon: "mdi-account",
-            link: { path: "/student/profile" },
+            link: { path: "/institute/profile" },
             color: "error"
           }
         }

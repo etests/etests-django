@@ -1,32 +1,24 @@
 <template>
-  <v-container fluid>
-    <Header :disableDrawerClose="true" />
-    <v-content app>
-      <v-card class="mb-2 px-5" width="300" height="300" style="margin:auto">
-        <v-card-text class="body1 primary--text">
-          <span v-if="user" class="text-xs-center">Hello {{ user.name }}!</span>
-          <span v-else class="text-xs-center">Welcome!</span>
-        </v-card-text>
-        <img src="~@assets/logos/etests.png" width="200" />
-      </v-card>
-      <Footer />
-    </v-content>
-  </v-container>
+  <StandardLayout>
+    <v-card class="mb-2 px-5" width="300" height="300" style="margin:auto">
+      <v-card-text class="body1 primary--text">
+        <span v-if="user" class="text-xs-center">Hello {{ user.name }}!</span>
+        <span v-else class="text-xs-center">Welcome!</span>
+      </v-card-text>
+      <img src="~@assets/logos/etests.png" width="200" />
+    </v-card>
+  </StandardLayout>
 </template>
 
 <script>
-import Header from "@components/Header.vue";
-import Footer from "@components/Footer.vue";
+import StandardLayout from "@components/layouts/StandardLayout";
 
 export default {
   data() {
-    return {
-      tabs: null
-    };
+    return {};
   },
   components: {
-    Header,
-    Footer
+    StandardLayout
   },
   computed: {
     auth() {
@@ -36,8 +28,7 @@ export default {
       if (this.auth) return this.auth.user;
       else return null;
     }
-  },
-  created() {}
+  }
 };
 </script>
 

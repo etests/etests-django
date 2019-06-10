@@ -1,6 +1,6 @@
 import { authHeader } from "./auth-header";
 
-export const instituteService = {
+export const testService = {
   getAll
 };
 
@@ -9,12 +9,10 @@ function getAll() {
     method: "GET",
     headers: authHeader()
   };
-
-  return fetch(`${process.env.API_URL}/api/institutes/`, requestOptions).then(
+  return fetch(`${process.env.API_URL}/api/tests/`, requestOptions).then(
     handleResponse
   );
 }
-
 function handleResponse(response) {
   return response.text().then(text => {
     const data = text && JSON.parse(text);
