@@ -1,11 +1,18 @@
 <template>
-  <ObjectCard :card="testSeries">
+  <ObjectCard :card="testSeries" :editing="editing">
     <div slot="actions">
       <v-btn icon flat color="success lighten-1" @click="viewDialog = true">
         <v-icon class="px-1">mdi-eye</v-icon>
       </v-btn>
-      <v-btn icon flat color="blue lighten-1">
-        <v-icon class="px-1">mdi-pencil</v-icon>
+      <v-btn
+        icon
+        dark
+        :flat="!editing"
+        color="blue lighten-1"
+        @click="editing = !editing"
+      >
+        <v-icon class="px-1" v-if="!editing">mdi-pencil</v-icon>
+        <v-icon class="px-1" v-else>mdi-content-save</v-icon>
       </v-btn>
       <v-btn icon flat color="error lighten-1" @click="deleteDialog = true">
         <v-icon class="px-1">mdi-delete</v-icon>
@@ -38,7 +45,7 @@
             Are you sure you want to delete {{ testSeries.name }}
           </v-card-title>
           <v-card-text>
-            You will not be able restore this test series if you continue.
+            You will not be able to restore this test series if you continue.
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -67,6 +74,7 @@ export default {
   },
   data() {
     return {
+      editing: false,
       deleteDialog: false,
       viewDialog: false
     };

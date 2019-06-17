@@ -12,18 +12,18 @@
             :key="j"
             :test="test"
           />
-          <CreateNewCard />
+          <CreateNewCard objectType="Test" />
         </TestSeriesCard>
-        <CreateNewCard />
+        <CreateNewCard objectType="Test Series" />
       </SectionLayout>
 
       <SectionLayout heading="Unit Tests">
-        <UnitTestCard
+        <TestCard
           v-for="(unitTest, i) in unitTests"
           :key="i"
-          :unitTest="unitTest"
+          :test="unitTest"
         />
-        <CreateNewCard />
+        <CreateNewCard objectType="Unit Test" />
       </SectionLayout>
     </v-layout>
   </StandardLayout>
@@ -34,7 +34,6 @@ import StandardLayout from "@components/layouts/StandardLayout";
 import SectionLayout from "@components/layouts/SectionLayout";
 import TestSeriesCard from "@components/testLayouts/TestSeriesCard";
 import TestCard from "@components/testLayouts/TestCard";
-import UnitTestCard from "@components/testLayouts/UnitTestCard";
 import CreateNewCard from "@components/testLayouts/CreateNewCard";
 
 export default {
@@ -62,7 +61,6 @@ export default {
     SectionLayout,
     TestSeriesCard,
     TestCard,
-    UnitTestCard,
     CreateNewCard
   }
 };
