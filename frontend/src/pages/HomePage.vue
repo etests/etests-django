@@ -1,24 +1,56 @@
 <template>
-  <StandardLayout>
-    <v-card class="mb-2 px-5" width="300" height="300" style="margin:auto">
-      <v-card-text class="body1 primary--text">
-        <span v-if="user" class="text-xs-center">Hello {{ user.name }}!</span>
-        <span v-else class="text-xs-center">Welcome!</span>
-      </v-card-text>
-      <img src="~@assets/logos/etests.png" width="200" />
-    </v-card>
-  </StandardLayout>
+  <HeroLayout>
+    <full-page ref="fullpage" :options="options">
+      <component v-for="section in sections" :key="section" :is="section" />
+    </full-page>
+  </HeroLayout>
 </template>
 
 <script>
-import StandardLayout from "@components/layouts/StandardLayout";
+import HeroLayout from "@components/layouts/HeroLayout.vue";
+import SectionLayout from "@components/homepage/SectionLayout.vue";
+
+import Hero from "@components/homepage/Hero.vue";
+import Welcome from "@components/homepage/Welcome.vue";
+import QuickStart from "@components/homepage/QuickStart.vue";
+import Exams from "@components/homepage/Exams.vue";
+import Demo from "@components/homepage/Demo.vue";
+import Subscribe from "@components/homepage/Subscribe.vue";
+import Footer from "@components/Footer.vue";
 
 export default {
   data() {
-    return {};
+    return {
+      sections: [
+        "Hero",
+        "Welcome",
+        "QuickStart",
+        "Exams",
+        "Demo",
+        "Subscribe",
+        "Footer"
+      ],
+      options: {
+        licenseKey: null,
+        scrollingSpeed: 500,
+        parallax: true,
+        verticalCentered: true,
+        menu: "#menu",
+        controlArrows: true,
+        scrollBar: true
+      }
+    };
   },
   components: {
-    StandardLayout
+    Hero,
+    HeroLayout,
+    Welcome,
+    QuickStart,
+    Exams,
+    Demo,
+    Subscribe,
+    SectionLayout,
+    Footer
   },
   computed: {
     auth() {
@@ -34,10 +66,10 @@ export default {
 
 <style module lang="stylus">
 @require '~@stylus/theme/colors';
+</style>
 
-.logo{
-  width: 40px;
-  float: left;
-  margin: 0 5px;
+<style scoped>
+.fullpage-wrapper {
+  width: 100% !important;
 }
 </style>

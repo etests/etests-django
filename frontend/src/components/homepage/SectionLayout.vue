@@ -1,0 +1,55 @@
+<template>
+  <div class="section">
+    <v-layout
+      fill-height
+      :class="[$style.section, !isSmallScreen ? $style.space : '']"
+    >
+      <v-flex xs12 align-end flexbox>
+        <h1 :class="$style.heading">
+          <slot name="heading"></slot>
+        </h1>
+        <h3 :class="$style.subheading">
+          <slot name="subheading"></slot>
+        </h3>
+        <v-layout row justify-center wrap>
+          <slot name="content"></slot>
+        </v-layout>
+      </v-flex>
+    </v-layout>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      isSmallScreen: this.$vuetify.breakpoint.smAndDown
+    };
+  }
+};
+</script>
+<style module lang="stylus">
+@require '~@stylus/theme/colors';
+.section{
+  padding-top: 70px;
+
+  .heading{
+    font-family: "Product Sans Thin";
+    font-size: 2.1rem;
+  }
+
+  .subheading{
+      font-family: "Product Sans Thin";
+      font-size: 1.2rem;
+  }
+}
+.space{
+  padding-top: 8%;
+}
+</style>
+
+<style scoped>
+.section:nth-child(even) {
+  background-color: #f5f5f5;
+}
+</style>

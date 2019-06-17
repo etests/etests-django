@@ -40,7 +40,7 @@
       </v-list>
     </v-navigation-drawer>
     <v-toolbar
-      color="white"
+      color="#fefefecc"
       tabs
       app
       clipped-left
@@ -49,7 +49,7 @@
       :flat="offsetTop == 0"
     >
       <v-toolbar-side-icon
-        v-if="!disableDrawerClose || !drawer"
+        v-if="!disableDrawerClose || isSmallScreen"
         @click="drawer = !drawer"
       >
         <v-icon color="primary">mdi-menu</v-icon>
@@ -74,13 +74,30 @@
           clear-icon="mdi-close"
           clearable
           :class="['hidden-sm-and-down', $style.searchBox]"
+          v-if="showSearchBar"
         ></v-text-field>
+
+        <template v-else>
+          <v-toolbar-items class="hidden-sm-and-down">
+            <v-btn
+              flat
+              color="#1a916f"
+              v-for="item in topNavMenu"
+              :key="item.title"
+              :to="item.link"
+            >
+              {{ item.title }}
+            </v-btn>
+          </v-toolbar-items>
+
+          <v-spacer />
+        </template>
       </slot>
 
-      <v-menu bottom left min-width="150">
+      <v-menu bottom left transition="slide-y-transition">
         <template v-slot:activator="{ on }">
-          <v-btn icon v-on="on">
-            <v-icon>mdi-dots-vertical</v-icon>
+          <v-btn flat color="primary" icon v-on="on">
+            <v-icon large>mdi-account-circle</v-icon>
           </v-btn>
         </template>
 
@@ -114,6 +131,11 @@
 <script>
 export default {
   props: {
+    isAbsolute: {
+      reuired: false,
+      default: false,
+      type: Boolean
+    },
     disableDrawerClose: {
       reuired: false,
       default: false,
@@ -128,15 +150,41 @@ export default {
       required: false,
       default: false,
       type: Boolean
+    },
+    showSearchBar: {
+      required: false,
+      default: true,
+      type: Boolean
     }
   },
   data() {
     return {
       offsetTop: 0,
+      isSmallScreen: this.$vuetify.breakpoint.smAndDown,
       drawer: this.showDrawer,
       title: "eTests",
       slogan: "an online testing platform",
+      topNavMenu: [
+        { title: "Home", icon: "mdi-home-outline", link: { name: "home" } },
 
+        {
+          title: "Institutes",
+          icon: "mdi-domain",
+          link: { name: "institutes" }
+        },
+        {
+          title: "Tests",
+          icon: "mdi-note-multiple-outline",
+          link: { path: "/institute/tests" },
+          requiresInstitute: true
+        },
+
+        {
+          title: "Discuss",
+          icon: "mdi-account-group-outline",
+          link: { name: "discuss" }
+        }
+      ],
       menu: [
         { title: "Home", icon: "mdi-home-outline", link: { name: "home" } },
 
@@ -270,6 +318,10 @@ export default {
   margin: 0 5px;
 }
 
+.dotMenu{
+
+}
+
 
 .DrawerItem{
   a{
@@ -286,5 +338,14 @@ export default {
 .activeDrawerItem {
     background: $aero;
     color: $genoa;
+}
+</style>
+
+<style scoped>
+.v-menu__content {
+  border-radius: 8px;
+  font-family: "Product Sans Light";
+  font-size: 1.3rem;
+  min-width: 160px;
 }
 </style>
