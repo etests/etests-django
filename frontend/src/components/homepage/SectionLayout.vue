@@ -31,7 +31,7 @@ export default {
 <style module lang="stylus">
 @require '~@stylus/theme/colors';
 .section{
-  padding-top: 70px;
+  padding: 70px 10px 20px;
 
   .heading{
     font-family: "Product Sans Thin";

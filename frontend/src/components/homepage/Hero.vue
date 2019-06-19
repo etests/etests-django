@@ -10,23 +10,28 @@
         </div>
       </v-flex>
       <v-flex xs12>
-        <v-carousel light cycle hide-delimiters class="elevation-0">
+        <v-carousel light hide-delimiters class="elevation-0" height="auto">
           <v-carousel-item
             v-for="(feature, i) in features"
             :key="i"
             :class="$style.carouselItem"
           >
             <v-layout row wrap>
-              <v-flex xs12 md6>
+              <v-flex xs12 sm6>
                 <v-img :src="feature.src" :class="$style.img" />
               </v-flex>
 
-              <v-flex xs12 md6 :class="$style.title">
+              <v-flex xs12 sm6 :class="$style.title">
                 <p :class="`${feature.color}--text`">
                   {{ feature.title }}
                 </p>
                 <v-flex xs12 :class="$style.btn">
-                  <v-btn round outline large :color="feature.color">
+                  <v-btn
+                    round
+                    outline
+                    :large="['md', 'lg', 'xl'].includes($mq)"
+                    :color="feature.color"
+                  >
                     {{ feature.btn.title }}
                     <v-icon right dark>
                       {{ feature.btn.icon }}
@@ -83,7 +88,7 @@ export default {
 
 <style module lang="stylus">
 .hero {
-    padding-top: 50px;
+    padding: 50px 20px;
     background-color: #fefeff;
     font-family: "Product Sans Light";
     .heading{

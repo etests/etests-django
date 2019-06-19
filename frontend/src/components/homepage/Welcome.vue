@@ -13,7 +13,7 @@
       slot="content"
       :class="$style.cardsContainer"
     >
-      <v-flex v-for="card in cards" :key="card.title" xs6 lg3>
+      <v-flex v-for="card in cards" :key="card.title" xs6 sm3>
         <v-card hover :class="$style.card">
           <v-img :src="card.src" :class="$style.icon" />
           <v-flex xs12 :class="$style.text">
@@ -69,7 +69,7 @@ export default {
     width: 90%;
     max-width: 300px;
     height: auto;
-    min-height: 150px;
+    min-height: 160px;
 
     .icon{
       margin: auto;

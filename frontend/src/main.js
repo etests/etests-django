@@ -8,7 +8,17 @@ import "./stylus/main.styl";
 import "chartist/dist/chartist.min.css";
 import store from "./store";
 import VueFullPage from "vue-fullpage.js";
-import "./registerServiceWorker";
+import vueMq from "vue-mq";
+
+Vue.use(vueMq, {
+  breakpoints: {
+    xs: 600,
+    sm: 960,
+    md: 1264,
+    lg: 1904,
+    xl: Infinity
+  }
+});
 
 Vue.use(VueFullPage);
 

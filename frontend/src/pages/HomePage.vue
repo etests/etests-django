@@ -1,8 +1,11 @@
 <template>
   <HeroLayout>
-    <full-page ref="fullpage" :options="options">
+    <full-page ref="fullpage" :options="options" v-if="!disableFullpage">
       <component v-for="section in sections" :key="section" :is="section" />
     </full-page>
+    <v-flex xs12 v-else>
+      <component v-for="section in sections" :key="section" :is="section" />
+    </v-flex>
   </HeroLayout>
 </template>
 
@@ -53,6 +56,15 @@ export default {
     Footer
   },
   computed: {
+    disableFullpage() {
+      return (
+        window.innerHeight <= 450 &&
+        window.matchMedia("(orientation: landscape)").matches
+      );
+    },
+    auth() {
+      return this.$store.state.authentication.auth;
+    },
     user() {
       return this.$store.state.auth.user;
     }

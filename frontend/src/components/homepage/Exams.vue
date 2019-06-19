@@ -15,7 +15,7 @@
       :class="$style.cardsContainer"
       :mt-5="!isSmallScreen"
     >
-      <v-flex v-for="card in cards" :key="card.title" xs6 lg3>
+      <v-flex v-for="card in cards" :key="card.title" xs6 sm3>
         <v-card hover :class="$style.card">
           <v-img :src="card.src" :class="$style.icon" />
           <v-flex xs12 :class="$style.text">
@@ -63,7 +63,8 @@ export default {
 
 <style module lang="stylus">
 .cardsContainer{
-   margin: 25px auto;
+   margin: auto;
+   margin-top: 50px;
 
   .card{
     margin: 5px auto 40px;
@@ -72,7 +73,7 @@ export default {
     width: 90%;
     max-width: 300px;
     height: auto;
-    min-height: 150px;
+    min-height: 130px;
 
     .icon{
       margin: auto;
