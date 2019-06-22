@@ -133,8 +133,10 @@ const router = new Router({
           }
         },
         {
-          path: "test/new",
-          component: () => import("@/pages/institute/NewTest"),
+          path: "test/:id/edit",
+          name: "edit-test",
+          component: () => import("@/pages/institute/EditTest"),
+          props: true,
           meta: {
             title: "Create New Test"
           }
@@ -174,9 +176,10 @@ const router = new Router({
       }
     },
     {
-      path: "/test",
+      path: "/test/:id",
       name: "test",
       component: () => import("@/pages/test/Test"),
+      props: true,
       meta: {
         title: "Test"
       }

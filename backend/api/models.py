@@ -127,7 +127,9 @@ class BaseTest(models.Model):
     date_added = models.DateField(auto_now_add = True)
     activation_time = models.DateField(blank = True, null = True)
     time_alotted = models.DurationField(default = timedelta(hours = 3))
-    questions = JSONField()
+    sections = JSONField(blank = True, null = True)
+    questions = JSONField(blank = True, null = True)
+    answers = JSONField(blank = True, null = True)
 
     class Meta:
         abstract = True

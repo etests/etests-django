@@ -1,27 +1,14 @@
 <template>
-  <ObjectCard :card="newObjectCard" :editing="editing">
-    <div slot="content" v-if="!editing">
-      <v-icon color="grey" class="display-4 mt-4" @click="editing = true">
-        mdi-plus-circle
-      </v-icon>
-    </div>
-
-    <div slot="actions" v-if="!editing">
-      <v-btn flat disabled>new {{ objectType }}</v-btn>
-    </div>
-    <div slot="actions" v-else>
-      <v-btn icon dark color="error lighten-1" @click="editing = false">
-        <v-icon class="px-1">mdi-close</v-icon>
-      </v-btn>
-      <v-btn icon dark color="blue lighten-1" @click="editing = !editing">
-        <v-icon class="px-1">mdi-content-save</v-icon>
-      </v-btn>
-    </div>
+  <ObjectCard
+    :card="newObjectCard"
+    :objectType="objectType"
+    @save="handleSubmit"
+  >
   </ObjectCard>
 </template>
 
 <script>
-import ObjectCard from "@components/layouts/ObjectCard";
+import ObjectCard from "@components/testLayouts/ObjectCard";
 
 export default {
   props: {
@@ -36,12 +23,19 @@ export default {
       newObjectCard: {
         name: "",
         description: ""
-      },
-      editing: false
+      }
     };
   },
   components: {
     ObjectCard
+  },
+  methods: {
+    handleSubmit(e) {
+      const { dispatch } = this.$store;
+      var testData = { name: this.name, price: 0, questions: "[{}]" };
+      console.log(testData);
+      dispatch("unitTest/create", testData).then((this.editing = false));
+    }
   }
 };
 </script>

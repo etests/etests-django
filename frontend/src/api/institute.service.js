@@ -10,7 +10,7 @@ function getAll() {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.API_URL}/api/institutes/`, requestOptions).then(
+  return fetch(`${process.env.API_URL}/institutes/`, requestOptions).then(
     handleResponse
   );
 }

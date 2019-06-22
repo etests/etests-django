@@ -8,17 +8,7 @@
 
 <script>
 export default {
-  name: "app",
-  computed: {
-    alert() {
-      return this.$store.state.alert;
-    }
-  },
-  watch: {
-    $route(to, from) {
-      this.$store.dispatch("alert/clear");
-    }
-  }
+  name: "app"
 };
 </script>
 

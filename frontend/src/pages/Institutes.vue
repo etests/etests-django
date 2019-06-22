@@ -58,7 +58,7 @@ export default {
     Footer
   },
   created() {
-    this.$store.dispatch("institutes/getAll");
+    this.$store.dispatch("institute/getAll");
   },
   computed: {
     institutes() {

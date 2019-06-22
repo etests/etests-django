@@ -15,7 +15,7 @@ function login(username, password) {
     body: JSON.stringify({ username, password })
   };
 
-  return fetch(`${process.env.API_URL}/auth/login/`, requestOptions)
+  return fetch(`${process.env.API_URL}/login/`, requestOptions)
     .then(handleResponse)
     .then(auth => {
       // login successful if there's a jwt token in the response
@@ -37,12 +37,12 @@ function register(userData) {
 
   if (userData.user.is_student)
     return fetch(
-      `${process.env.API_URL}/auth/register-student/`,
+      `${process.env.API_URL}/register/student/`,
       requestOptions
     ).then(handleResponse);
   else if (userData.user.is_institute)
     return fetch(
-      `${process.env.API_URL}/auth/register-institute/`,
+      `${process.env.API_URL}/register/institute/`,
       requestOptions
     ).then(handleResponse);
 }
@@ -54,7 +54,7 @@ function updateProfile(userData) {
     body: JSON.stringify(userData)
   };
 
-  return fetch(`${process.env.API_URL}/auth/user/`, requestOptions).then(
+  return fetch(`${process.env.API_URL}/user/`, requestOptions).then(
     handleResponse
   );
 }
@@ -64,7 +64,7 @@ function logout() {
     method: "POST"
   };
 
-  return fetch(`${process.env.API_URL}/auth/logout/`, requestOptions)
+  return fetch(`${process.env.API_URL}/logout/`, requestOptions)
     .then(handleResponse)
     .then(function() {
       localStorage.removeItem("auth");

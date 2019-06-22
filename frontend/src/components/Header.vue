@@ -40,7 +40,7 @@
       </v-list>
     </v-navigation-drawer>
     <v-toolbar
-      color="#fefefecc"
+      color="white"
       tabs
       app
       clipped-left

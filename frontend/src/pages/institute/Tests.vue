@@ -10,20 +10,21 @@
           <TestCard
             v-for="(test, j) in testSeries.tests"
             :key="j"
+            :testSeries="testSeries"
             :test="test"
           />
-          <CreateNewCard objectType="Test" />
+          <TestCard :testSeries="testSeries" new />
         </TestSeriesCard>
-        <CreateNewCard objectType="Test Series" />
+        <TestSeriesCard new />
       </SectionLayout>
 
       <SectionLayout heading="Unit Tests">
-        <TestCard
+        <UnitTestCard
           v-for="(unitTest, i) in unitTests"
           :key="i"
           :test="unitTest"
         />
-        <CreateNewCard objectType="Unit Test" />
+        <UnitTestCard new />
       </SectionLayout>
     </v-layout>
   </StandardLayout>
@@ -34,26 +35,31 @@ import StandardLayout from "@components/layouts/StandardLayout";
 import SectionLayout from "@components/layouts/SectionLayout";
 import TestSeriesCard from "@components/testLayouts/TestSeriesCard";
 import TestCard from "@components/testLayouts/TestCard";
-import CreateNewCard from "@components/testLayouts/CreateNewCard";
+import UnitTestCard from "@components/testLayouts/UnitTestCard";
+import ObjectCard from "@components/testLayouts/ObjectCard";
 
 export default {
   data() {
     return {};
   },
   created() {
-    this.$store.dispatch("testSeries/getAll");
-    this.$store.dispatch("tests/getAll");
-    this.$store.dispatch("unitTests/getAll");
+    this.fetchTestSeries();
+    this.fetchUnitTests();
   },
   computed: {
     allTestSeries() {
       return this.$store.state.testSeries.all.items;
     },
-    tests() {
-      return this.$store.state.tests.all.items;
-    },
     unitTests() {
       return this.$store.state.unitTests.all.items;
+    }
+  },
+  methods: {
+    fetchTestSeries() {
+      this.$store.dispatch("testSeries/getAll");
+    },
+    fetchUnitTests() {
+      this.$store.dispatch("unitTests/getAll");
     }
   },
   components: {
@@ -61,7 +67,8 @@ export default {
     SectionLayout,
     TestSeriesCard,
     TestCard,
-    CreateNewCard
+    UnitTestCard,
+    ObjectCard
   }
 };
 </script>

@@ -29,19 +29,42 @@
                   <v-icon> mdi-clock </v-icon>
                   &nbsp; {{ time }}
                 </v-btn>
+
+                <v-menu offset-y transition="slide-y-transition" bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                      color="info"
+                      round
+                      outline
+                      :icon="isSmallScreen"
+                      :small="!isSmallScreen"
+                      v-on="on"
+                    >
+                      <v-icon>mdi-plus</v-icon>
+                      <span v-if="!isSmallScreen">Add new question</span>
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-tile
+                      v-for="(type, index) in questionTypes"
+                      :key="index"
+                      @click="addQuestion(type.value)"
+                    >
+                      <v-list-tile-title>{{ type.text }}</v-list-tile-title>
+                    </v-list-tile>
+                  </v-list>
+                </v-menu>
+
                 <v-btn
-                  color="info"
+                  color="error"
                   round
                   outline
                   :icon="isSmallScreen"
                   :small="!isSmallScreen"
-                  @click="
-                    markForReview(questionIndex);
-                    nextQuestion();
-                  "
+                  @click="clearQuestion(questionIndex)"
                 >
-                  <v-icon>mdi-comment-eye-outline</v-icon>
-                  <span v-if="!isSmallScreen">Mark for review & next</span>
+                  <v-icon>mdi-close</v-icon>
+                  <span v-if="!isSmallScreen">Clear answer</span>
                 </v-btn>
 
                 <v-btn
@@ -50,34 +73,32 @@
                   outline
                   :icon="isSmallScreen"
                   :small="!isSmallScreen"
-                  @click="clear(questionIndex)"
+                  @click="deleteQuestion(questionIndex)"
                 >
-                  <v-icon>mdi-close</v-icon>
-                  <span v-if="!isSmallScreen">Clear your response</span>
+                  <v-icon>mdi-delete</v-icon>
+                  <span v-if="!isSmallScreen">Delete question</span>
                 </v-btn>
+
                 <v-btn
                   color="success"
                   round
                   outline
                   :icon="isSmallScreen"
                   :small="!isSmallScreen"
-                  @click="
-                    save(questionIndex);
-                    nextQuestion();
-                  "
+                  @click="saveTest()"
                 >
-                  <v-icon>mdi-content-save-move</v-icon>
-                  <span v-if="!isSmallScreen">Save response & next </span>
+                  <v-icon>mdi-content-save</v-icon>
+                  <span v-if="!isSmallScreen">Save this test</span>
                 </v-btn>
               </v-layout>
             </v-sheet>
             <v-divider />
-            <v-tabs-items v-model="currentSection" :touch="swipeActions">
-              <v-tab-item v-for="section in sections" :key="section.subject">
-                <v-sheet
-                  :class="[$style.question, 'px-4 py-2']"
-                  :height="windowHeight"
-                >
+            <v-tabs-items v-model="sectionIndex" :touch="swipeActions">
+              <v-sheet
+                :class="[$style.question, 'px-4 py-2']"
+                :height="windowHeight"
+              >
+                <v-tab-item v-for="section in sections" :key="section.subject">
                   <v-layout justify-center>
                     <v-btn
                       color="success lighten-1"
@@ -98,7 +119,12 @@
                       -{{ currentQuestion.incorrectMarks }}
                     </v-btn>
                     <v-chip color="indigo" outline>
-                      {{ questionTypes[currentQuestion.type].text }}
+                      <v-select
+                        :items="questionTypes"
+                        placeholder="Select question type"
+                        v-model="currentQuestion.type"
+                        @change="clearQuestion(questionIndex)"
+                      ></v-select>
                     </v-chip>
                   </v-layout>
 
@@ -107,65 +133,77 @@
                     :src="require(`@assets/logos/${currentQuestion.image}`)"
                     class="mb-3"
                   ></v-img>
-                  <v-chip color="grey darken-2" outline small>
-                    <strong> Q{{ questionIndex + 1 }} </strong>
-                  </v-chip>
                   <span :class="$style.questionText">
-                    {{ currentQuestion.text }}
+                    <v-textarea
+                      rows="1"
+                      :prepend-inner-icon="
+                        `mdi-numeric-${questionIndex + 1}-circle`
+                      "
+                      placeholder="Question text"
+                      v-model="currentQuestion.text"
+                    ></v-textarea>
                   </span>
 
                   <v-radio-group
                     v-model="currentQuestion.answer"
-                    @change="save(questionIndex)"
+                    @change="saveQuestion(questionIndex)"
                     :mandatory="false"
                     v-if="currentQuestion.type == 0"
                   >
-                    <v-radio
-                      v-for="(option, i) in currentQuestion.options"
-                      :key="questionIndex + '-' + i"
-                      :label="option"
-                      :value="i"
-                      :on-icon="`mdi-alpha-${letter('a', i, true)}-circle`"
-                      :off-icon="
-                        `mdi-alpha-${letter('a', i, true)}-circle-outline`
-                      "
-                    ></v-radio>
+                    <template v-for="(option, i) in currentQuestion.options">
+                      <v-text-field
+                        v-model="currentQuestion.options[i]"
+                        :key="questionIndex + '-' + i"
+                      >
+                        <v-radio
+                          slot="prepend-inner"
+                          :value="i"
+                          :on-icon="`mdi-alpha-${letter('a', i, true)}-circle`"
+                          :off-icon="
+                            `mdi-alpha-${letter('a', i, true)}-circle-outline`
+                          "
+                        />
+                      </v-text-field>
+                    </template>
                   </v-radio-group>
 
-                  <v-layout
-                    v-else-if="currentQuestion.type == 1"
-                    py-4
-                    my-1
-                    column
-                  >
-                    <v-checkbox
-                      v-for="(option, i) in currentQuestion.options"
-                      v-model="currentQuestion.answer"
-                      multiple
-                      height="0"
-                      class="mt-0 mb-1"
-                      :key="questionIndex + '-' + i"
-                      :label="option"
-                      :value="i"
-                      :on-icon="`mdi-alpha-${letter('a', i, true)}-circle`"
-                      :off-icon="
-                        `mdi-alpha-${letter('a', i, true)}-circle-outline`
-                      "
-                      @change="save(questionIndex)"
-                    >
-                    </v-checkbox>
+                  <v-layout v-else-if="currentQuestion.type == 1" py-4 my-1 row>
+                    <v-flex xs12 md6 lg4>
+                      <template v-for="(option, i) in currentQuestion.options">
+                        <v-text-field
+                          v-model="currentQuestion.options[i]"
+                          :key="questionIndex + '-' + i"
+                        >
+                          <v-checkbox
+                            slot="prepend-inner"
+                            v-model="currentQuestion.answer"
+                            multiple
+                            height="0"
+                            class="mt-0 mb-1"
+                            :value="i"
+                            :on-icon="
+                              `mdi-alpha-${letter('a', i, true)}-circle`
+                            "
+                            :off-icon="
+                              `mdi-alpha-${letter('a', i, true)}-circle-outline`
+                            "
+                            @change="saveQuestion(questionIndex)"
+                          />
+                        </v-text-field>
+                      </template>
+                    </v-flex>
                   </v-layout>
                   <v-layout v-else-if="currentQuestion.type == 2" my-4>
                     <v-flex xs12 sm6 md3>
                       <v-text-field
-                        label="Enter your answer (0-999)"
+                        label="Answer (0-999)"
                         v-model="currentQuestion.answer"
                         type="number"
-                        @keyup="save(questionIndex)"
+                        @keyup="saveQuestion(questionIndex)"
                       ></v-text-field>
                     </v-flex>
                   </v-layout>
-                  <v-layout v-else-if="currentQuestion.type == 3" my-3 column>
+                  <v-layout v-else-if="currentQuestion.type == 3" column>
                     <v-layout row wrap justify-center>
                       <v-flex xs6>
                         <v-layout column justify-start>
@@ -173,18 +211,20 @@
                             v-for="(option, i) in currentQuestion.options"
                             :key="`${questionIndex}-option-${i}`"
                           >
-                            <v-layout row wrap align-start>
+                            <v-layout row wrap justify-start>
                               <v-flex xs8 :class="$style.option">
-                                <v-icon :class="$style.optionLetter">
-                                  {{
+                                <v-textarea
+                                  rows="1"
+                                  :prepend-inner-icon="
                                     `mdi-alpha-${letter(
-                                      "a",
+                                      'a',
                                       i,
                                       true
                                     )}-circle-outline`
-                                  }}
-                                </v-icon>
-                                {{ option }}
+                                  "
+                                  v-model="currentQuestion.options[i]"
+                                  clearable
+                                />
                               </v-flex>
                             </v-layout>
                           </v-flex>
@@ -198,16 +238,18 @@
                           >
                             <v-layout row wrap align-start>
                               <v-flex xs8 :class="$style.option">
-                                <v-icon :class="$style.optionLetter">
-                                  {{
+                                <v-textarea
+                                  rows="1"
+                                  :prepend-inner-icon="
                                     `mdi-alpha-${letter(
-                                      "p",
+                                      'p',
                                       j,
                                       true
                                     )}-circle-outline`
-                                  }}
-                                </v-icon>
-                                {{ answer }}
+                                  "
+                                  v-model="currentQuestion.answers[j]"
+                                  clearable
+                                />
                               </v-flex>
                             </v-layout>
                           </v-flex>
@@ -261,7 +303,7 @@
                             height="0"
                             class="mt-0 mb-1"
                             :value="j - 1"
-                            @change="save(questionIndex)"
+                            @change="saveQuestion(questionIndex)"
                             :on-icon="$vuetify.icons.radioOn"
                             :off-icon="$vuetify.icons.radioOff"
                           >
@@ -270,8 +312,8 @@
                       </v-layout>
                     </v-flex>
                   </v-layout>
-                </v-sheet>
-              </v-tab-item>
+                </v-tab-item>
+              </v-sheet>
             </v-tabs-items>
           </v-card>
         </v-flex>
@@ -311,25 +353,69 @@
         </v-toolbar-title>
         <v-tabs
           slot="tabs"
-          v-model="currentSection"
+          v-model="sectionIndex"
           color="transparent"
           hide-slider
           centered
         >
           <v-tab
             active-class="primary--text"
-            v-for="section in sections"
+            v-for="(section, index) in sections"
             :key="section.subject"
+            @click="changeSection(index)"
           >
             {{ section.subject }}
           </v-tab>
         </v-tabs>
-        <span v-for="(question, i) in questions" :key="question.id">
+
+        <span>
+          <v-dialog v-model="newSectionDialog" persistent max-width="400px">
+            <template v-slot:activator="{ on }">
+              <v-btn fab small color="primary" dark v-on="on">
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+            </template>
+            <v-card :class="$style.dialog">
+              <v-card-title>
+                <span :class="$style.title">Create new section</span>
+              </v-card-title>
+              <v-card-text>
+                <v-container grid-list-md>
+                  <v-layout wrap>
+                    <v-flex xs12>
+                      <v-text-field
+                        label="Section name"
+                        required
+                      ></v-text-field>
+                    </v-flex>
+                  </v-layout>
+                </v-container>
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="error" flat @click="newSectionDialog = false">
+                  Cancel
+                </v-btn>
+                <v-btn
+                  color="success"
+                  @click="
+                    createNewSection;
+                    newSectionDialog = false;
+                  "
+                >
+                  Create
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </span>
+        <v-divider />
+        <span v-for="(question, i) in questions" :key="i">
           <v-btn
             fab
-            v-if="question.section == currentSection"
-            dark
             small
+            v-if="question.section == sectionIndex"
+            dark
             :flat="i != questionIndex"
             :class="statusColor(question.status)"
             @click="
@@ -396,13 +482,9 @@ export default {
         left: () => this.nextQuestion(),
         right: () => this.previousQuestion()
       },
-      currentSection: 0,
+      sectionIndex: 0,
       questionIndex: 0,
-      sections: [
-        { subject: "Physics", start: "0", end: "3", questionIndex: 0 },
-        { subject: "Chemistry", start: "4", end: "5", questionIndex: 4 },
-        { subject: "Maths", start: "6", end: "7", questionIndex: 6 }
-      ]
+      newSectionDialog: false
     };
   },
   components: {
@@ -464,12 +546,30 @@ export default {
       }
       this.fullscreen = !this.fullscreen;
     },
-    changeQuestion(i) {
-      if (i >= 0 && i <= this.questions.length - 1) {
-        this.questionIndex = i;
-        this.currentSection = this.questions[i].section;
-        this.sections[this.currentSection].questionIndex = i;
+    validQuestionIndex(i) {
+      return i >= 0 && i <= this.questions.length - 1;
+    },
+    validSectionIndex(i) {
+      return i >= 0 && i <= this.sections.length - 1;
+    },
+    changeSection(i) {
+      console.log("Changing section...");
+      if (this.validSectionIndex(i)) {
+        this.sectionIndex = i;
+        if (this.currentQuestion.section !== i)
+          this.changeQuestion(this.currentSection.start);
+        console.log(`Changed to section ${i + 1}`);
       }
+    },
+    changeQuestion(i) {
+      console.log("Changing question...");
+      if (this.validQuestionIndex(i)) {
+        this.questionIndex = i;
+        if (this.currentQuestion.section !== this.sectionIndex)
+          this.changeSection(this.currentQuestion.section);
+        console.log(`Changed to question ${i + 1}`);
+      }
+      this.updateStatus(i);
     },
     previousQuestion() {
       this.changeQuestion(this.questionIndex - 1);
@@ -477,28 +577,72 @@ export default {
     nextQuestion() {
       this.changeQuestion(this.questionIndex + 1);
     },
-    markForReview(i) {
-      if (this.isEmpty(this.questions[i].answer)) this.questions[i].status = 2;
-      else this.questions[i].status = 4;
+    clearQuestion(i) {
+      if (this.validQuestionIndex(i)) {
+        if (this.questions[i].type === "MATRIX")
+          this.questions[i].answer = [[], [], [], []];
+        else this.questions[i].answer = [];
+        this.questions[i].status = 1;
+      }
     },
-    clear(i) {
-      if (this.questions[i].type === "MATRIX")
-        this.questions[i].answer = [[], [], [], []];
-      else this.questions[i].answer = [];
-      this.questions[i].status = 1;
-    },
-    save(i) {
-      if (!this.isEmpty(this.questions[i].answer)) this.questions[i].status = 3;
+    saveQuestion(i) {
+      if (this.validQuestionIndex(i) && !this.isEmpty(this.questions[i].answer))
+        this.questions[i].status = 3;
       else this.clear(i);
     },
     updateStatus(i) {
-      if (this.questions[i].status === 0) this.questions[i].status = 1;
+      if (this.validQuestionIndex(i) && this.questions[i].status === 0)
+        this.questions[i].status = 1;
+    },
+    addQuestion(type) {
+      var question = {
+        section: this.sectionIndex,
+        text: "",
+        image: null,
+        type: type,
+        options: ["Option A", "Option B", "Option C", "Option D"],
+        status: 0,
+        correctMarks: 4,
+        incorrectMarks: 1
+      };
+      if (type === 3) {
+        question.answers = [
+          "Answer P",
+          "Answer Q",
+          "Answer R",
+          "Answer S",
+          "Answer T"
+        ];
+        question.answer = [[], [], [], []];
+      } else question.answer = [];
+      this.currentSection.end++;
+      for (var i = this.sectionIndex + 1; i < this.sections.length; i++) {
+        this.sections[i].start++;
+        this.sections[i].end++;
+      }
+      this.questions.splice(this.currentSection.end, 0, question);
+      this.changeQuestion(this.currentSection.end);
+    },
+    deleteQuestion(i) {
+      if (!this.validQuestionIndex) return;
+      this.sectionIndex = this.questions[i].section;
+      this.currentSection.end--;
+      for (var j = this.sectionIndex + 1; j < this.sections.length; j++) {
+        this.sections[j].start--;
+        this.sections[j].end--;
+        this.sections[j].questionIndex = Math.min(
+          this.sections[j].questionIndex,
+          this.sections[j].start
+        );
+      }
+      this.questions.splice(i, 1);
+      this.changeQuestion(i);
+    },
+    saveTest() {
+      this.$store.dispatch("tests/update", this.test);
     }
   },
   watch: {
-    currentSection: function(newSection, oldSection) {
-      this.questionIndex = this.sections[newSection].questionIndex;
-    },
     questionIndex: function(newQuestion, oldQuestion) {
       this.updateStatus(newQuestion);
     }
@@ -507,13 +651,20 @@ export default {
     test() {
       return this.$store.state.tests.test;
     },
+    sections() {
+      return this.test.sections;
+    },
     questions() {
-      if (this.test) return this.test.questions;
-      else return [{}];
+      return this.test.questions;
+    },
+    answers() {
+      return this.test.answers;
     },
     currentQuestion() {
-      if (this.test.questions) return this.test.questions[this.questionIndex];
-      else return {};
+      return this.test.questions[this.questionIndex];
+    },
+    currentSection() {
+      return this.test.sections[this.sectionIndex];
     }
   },
   created() {
@@ -536,7 +687,7 @@ export default {
 }
 .content{
   letter-spacing: 0.04em;
-  background-color: #f8f8f8;
+  background-color: #f6f6f6;
   font-family: 'Product Sans',Roboto,Arial,sans-serif;
 }
 .questionContainer{
@@ -554,7 +705,6 @@ export default {
     }
     .option{
       position: relative;
-      padding-left: 30px;
       margin-bottom: 5px;
       color: #787878;
 
@@ -564,5 +714,31 @@ export default {
       }
     }
   }
+}
+
+.dialog{
+  border: 1px solid #dadce0;
+  border-radius: 5px;
+  font-family: 'Product Sans Light',Roboto,Arial,sans-serif;
+  text-align: left;
+  .title{
+    font-size: 1.375rem;
+    line-height: 1.75rem;
+    color: #5e5766;
+  }
+}
+</style>
+<style scoped>
+.v-text-field {
+  padding-top: 0;
+}
+.v-chip {
+  padding-top: 15px;
+}
+.v-menu__content {
+  border-radius: 8px;
+  font-family: "Product Sans Light";
+  font-size: 1.3rem;
+  min-width: 160px;
 }
 </style>

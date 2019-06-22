@@ -53,12 +53,8 @@ export default {
     Footer
   },
   computed: {
-    auth() {
-      return this.$store.state.authentication.auth;
-    },
     user() {
-      if (this.auth) return this.auth.user;
-      else return null;
+      return this.$store.state.auth.user;
     }
   }
 };

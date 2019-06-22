@@ -16,20 +16,15 @@ class ReadOnly(permissions.BasePermission):
         return request.method in permissions.SAFE_METHODS
 
 class IsInstituteOwner(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.is_institute
 
     def has_object_permission(self, request, view, obj):
-        return request.user.is_authenticated and request.user.is_institute and obj.institute == request.user.institute
-
-class IsInstituteOrReadOnly(permissions.BasePermission):
-
-    def has_permission(self, request, view):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        return request.user.is_authenticated and request.user.is_institute
+        return obj.institute == request.user.institute
 
 class IsStudentOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        return request.user.is_authenticated and request.user.is_student and obj.institute == request.user.student      
+        return request.user.is_authenticated and request.user.is_student and obj.user == request.user.student      
 
 class InstitutesListView(viewsets.ViewSet):
     permission_classes = (ReadOnly,)
@@ -66,13 +61,24 @@ class TagListView(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
         
 class TestSeriesListCreateView(generics.ListCreateAPIView):
-    permission_classes = (IsInstituteOrReadOnly | permissions.IsAdminUser,)
+    permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
     serializer_class = TestSeriesSerializer
-    queryset = TestSeries.objects.all()
+    def get_queryset(self):
+
+        if self.request.user.is_authenticated:
+            if self.request.user.is_institute:
+                return TestSeries.objects.filter(institute=self.request.user.institute)
+            elif self.request.user.is_staff:
+                return TestSeries.objects.all()
+        else:
+            return None
+    
+    def perform_create(self, serializer):
+        serializer.save(institute=self.request.user.institute)
     
 
 class TestSeriesRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsInstituteOwner, permissions.IsAdminUser)
+    permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
     serializer_class = TestSeriesSerializer
 
     def get_queryset(self):
@@ -87,12 +93,23 @@ class TestSeriesRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView)
 
 
 class TestListCreateView(generics.ListCreateAPIView):
-    permission_classes = (IsInstituteOrReadOnly | permissions.IsAdminUser,)
+    permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
     serializer_class = TestSerializer
-    queryset = Test.objects.all()
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            if self.request.user.is_institute:
+                return Test.objects.filter(institute=self.request.user.institute)
+            elif self.request.user.is_staff:
+                return Test.objects.all()
+        else:
+            return None
+
+    def perform_create(self, serializer):
+        serializer.save(institute=self.request.user.institute)
         
 class TestRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsInstituteOwner, permissions.IsAdminUser)
+    permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
     serializer_class = TestSerializer
 
     def get_queryset(self):
@@ -105,12 +122,23 @@ class TestRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
             return None
         
 class UnitTestListCreateView(generics.ListCreateAPIView):
-    permission_classes = (IsInstituteOrReadOnly | permissions.IsAdminUser,)
+    permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
     serializer_class = UnitTestSerializer
-    queryset = UnitTest.objects.all()
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            if self.request.user.is_institute:
+                return UnitTest.objects.filter(institute=self.request.user.institute)
+            elif self.request.user.is_staff:
+                return UnitTest.objects.all()
+        else:
+            return None    
+            
+    def perform_create(self, serializer):
+        serializer.save(institute=self.request.user.institute)
         
 class UnitTestRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsInstituteOwner,)
+    permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
     serializer_class = UnitTestSerializer
 
     def get_queryset(self):

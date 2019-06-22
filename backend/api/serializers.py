@@ -21,11 +21,11 @@ class TestSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class TestSeriesSerializer(serializers.ModelSerializer):
-    tests = TestSerializer(many=True)
+    tests = TestSerializer(many=True, read_only=True)
 
     class Meta:
         model = TestSeries
-        fields = ("pk", "name", "price", "visible", "exam", "tests")
+        fields = ("id", "name", "price", "visible", "exam", "tests")
 
 class UnitTestSerializer(serializers.ModelSerializer):
     class Meta:

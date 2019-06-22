@@ -8,6 +8,7 @@ import "./stylus/main.styl";
 import "chartist/dist/chartist.min.css";
 import store from "./store";
 import VueFullPage from "vue-fullpage.js";
+import "./registerServiceWorker";
 
 Vue.use(VueFullPage);
 
