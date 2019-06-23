@@ -46,8 +46,21 @@
     </div>
     <div slot="actions">
       <template v-if="this.showActions">
-        <v-btn icon flat color="success lighten-1">
+        <v-btn
+          icon
+          flat
+          color="success lighten-1"
+          @click="$router.push({ name: 'test', params: { id: test.id } })"
+        >
           <v-icon class="px-1">mdi-eye</v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          flat
+          color="info lighten-1"
+          @click="$router.push({ name: 'edit-test', params: { id: test.id } })"
+        >
+          <v-icon class="px-1">mdi-square-edit-outline</v-icon>
         </v-btn>
 
         <v-btn icon flat color="error lighten-1" @click="deleteDialog = true">
@@ -91,8 +104,9 @@
 </template>
 
 <script>
-import ObjectCard from "@components/testLayouts/ObjectCard";
+import ObjectCard from "./ObjectCard";
 import { mapState } from "vuex";
+import { testTemplate } from "@/js/test";
 
 export default {
   props: {
@@ -101,6 +115,10 @@ export default {
       default: () => {
         return { name: "", description: "", new: true };
       },
+      type: Object
+    },
+    testSeries: {
+      required: true,
       type: Object
     },
     new: {
@@ -116,20 +134,22 @@ export default {
       loading: false,
       showActions: !this.new,
       meta: {
-        type: "unit test",
-        action: this.new ? "unitTests/create" : "unitTests/edit",
+        type: "test",
+        action: this.new ? "tests/create" : "tests/edit",
         new: this.new,
         data: {
           name: "",
           price: 0,
-          questions: [{}]
+          sections: [],
+          questions: [],
+          answers: []
         }
       }
     };
   },
   computed: {
     ...mapState({
-      status: state => state.unitTests.status
+      status: state => state.tests.status
     })
   },
   components: {
@@ -150,13 +170,17 @@ export default {
       const { dispatch } = this.$store;
       var data = this.meta.data;
       data.name = this.test.name;
+      data.test_series = this.testSeries.id;
+      data.questions = testTemplate.questions;
+      data.answers = testTemplate.answers;
+      data.sections = testTemplate.sections;
       var unwatch = this.$watch("status", this.updateStatus);
       dispatch(this.meta.action, data).then((this.editing = false), unwatch);
     },
     remove() {
       const { dispatch } = this.$store;
       var unwatch = this.$watch("status", this.updateStatus);
-      dispatch("unitTests/remove", this.test.id).then(
+      dispatch("tests/remove", this.test.id).then(
         (this.deleteDialog = false),
         unwatch
       );

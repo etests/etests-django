@@ -23,12 +23,12 @@
             <v-text-field
               autofocus
               placeholder="Name"
-              v-model="testSeries.name"
+              v-model="test.name"
               :class="$style.editTitle"
               v-if="editing"
             />
             <v-text-field
-              v-model="testSeries.description"
+              v-model="test.description"
               :class="$style.editDescription"
               v-if="editing"
             />
@@ -36,53 +36,30 @@
         </template>
         <template v-else>
           <v-card-title :class="$style.title">
-            {{ testSeries.name }}
+            {{ test.name }}
           </v-card-title>
           <v-card-text :class="$style.description">
-            {{ testSeries.text }}
+            {{ test.text }}
           </v-card-text>
         </template>
       </template>
     </div>
     <div slot="actions">
       <template v-if="this.showActions">
-        <v-btn icon flat color="success lighten-1" @click="viewDialog = true">
+        <v-btn icon flat color="success lighten-1">
           <v-icon class="px-1">mdi-eye</v-icon>
         </v-btn>
 
         <v-btn icon flat color="error lighten-1" @click="deleteDialog = true">
           <v-icon class="px-1">mdi-delete</v-icon>
         </v-btn>
-
-        <v-dialog
-          v-model="viewDialog"
-          fullscreen
-          transition="dialog-bottom-transition"
-        >
-          <v-card :class="$style.dialog">
-            <v-toolbar dark color="grey darken-2">
-              <v-btn dark icon @click="viewDialog = false">
-                <v-icon>close</v-icon>
-              </v-btn>
-              <v-toolbar-title>{{ testSeries.name }}</v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-toolbar-items>
-                <v-btn dark flat @click="viewDialog = false">Save</v-btn>
-              </v-toolbar-items>
-            </v-toolbar>
-            <v-layout row wrap class="mx-4 my-5">
-              <slot></slot>
-            </v-layout>
-          </v-card>
-        </v-dialog>
-
         <v-dialog v-model="deleteDialog" max-width="290">
           <v-card :class="$style.deleteDialog">
             <v-card-title :class="$style.title">
-              Are you sure you want to delete {{ testSeries.name }}
+              Are you sure you want to delete {{ test.name }}
             </v-card-title>
             <v-card-text>
-              You will not be able to restore this test series if you continue.
+              You will not be able to restore this test if you continue.
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
@@ -114,12 +91,12 @@
 </template>
 
 <script>
-import ObjectCard from "@components/testLayouts/ObjectCard";
+import ObjectCard from "./ObjectCard";
 import { mapState } from "vuex";
 
 export default {
   props: {
-    testSeries: {
+    test: {
       required: false,
       default: () => {
         return { name: "", description: "", new: true };
@@ -137,11 +114,10 @@ export default {
       editing: false,
       deleteDialog: false,
       loading: false,
-      viewDialog: false,
       showActions: !this.new,
       meta: {
-        type: "test series",
-        action: this.new ? "testSeries/create" : "testSeries/edit",
+        type: "unit test",
+        action: this.new ? "unitTests/create" : "unitTests/edit",
         new: this.new,
         data: {
           name: "",
@@ -153,7 +129,7 @@ export default {
   },
   computed: {
     ...mapState({
-      status: state => state.testSeries.status
+      status: state => state.unitTests.status
     })
   },
   components: {
@@ -162,10 +138,10 @@ export default {
   methods: {
     updateStatus(newValue, oldValue) {
       this.loading =
-        (newValue.removing && newValue.id === this.testSeries.id) ||
+        (newValue.removing && newValue.id === this.test.id) ||
         (newValue.creating && this.new);
 
-      if (newValue.removed && newValue.id === this.testSeries.id) {
+      if (newValue.removed && newValue.id === this.test.id) {
         this.$destroy();
         this.$el.parentNode.removeChild(this.$el);
       }
@@ -173,14 +149,14 @@ export default {
     save(e) {
       const { dispatch } = this.$store;
       var data = this.meta.data;
-      data.name = this.testSeries.name;
+      data.name = this.test.name;
       var unwatch = this.$watch("status", this.updateStatus);
       dispatch(this.meta.action, data).then((this.editing = false), unwatch);
     },
     remove() {
       const { dispatch } = this.$store;
       var unwatch = this.$watch("status", this.updateStatus);
-      dispatch("testSeries/remove", this.testSeries.id).then(
+      dispatch("unitTests/remove", this.test.id).then(
         (this.deleteDialog = false),
         unwatch
       );

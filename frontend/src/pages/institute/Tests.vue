@@ -33,10 +33,10 @@
 <script>
 import StandardLayout from "@components/layouts/StandardLayout";
 import SectionLayout from "@components/layouts/SectionLayout";
-import TestSeriesCard from "@components/testLayouts/TestSeriesCard";
-import TestCard from "@components/testLayouts/TestCard";
-import UnitTestCard from "@components/testLayouts/UnitTestCard";
-import ObjectCard from "@components/testLayouts/ObjectCard";
+import TestSeriesCard from "@components/institute/tests/TestSeriesCard";
+import TestCard from "@components/institute/tests/TestCard";
+import UnitTestCard from "@components/institute/tests/UnitTestCard";
+import ObjectCard from "@components/institute/tests/ObjectCard";
 
 export default {
   data() {
