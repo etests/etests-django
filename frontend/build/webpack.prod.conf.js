@@ -7,6 +7,7 @@ const merge = require("webpack-merge");
 const baseWebpackConfig = require("./webpack.base.conf");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const SWPrecacheWebpackPlugin = require("sw-precache-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const OptimizeCSSPlugin = require("optimize-css-assets-webpack-plugin");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
@@ -112,8 +113,19 @@ const webpackConfig = merge(baseWebpackConfig, {
         from: path.resolve(__dirname, "../static"),
         to: config.build.assetsSubDirectory,
         ignore: [".*"]
+      },
+      {
+        from: path.resolve(__dirname, "../public"),
+        to: ""
       }
-    ])
+    ]),
+    new SWPrecacheWebpackPlugin({
+      cacheId: "eTests",
+      filename: "service-worker.js",
+      staticFileGlobs: ["dist/**/*.{js,html,css}"],
+      minify: true,
+      stripPrefix: "dist/"
+    })
   ]
 });
 

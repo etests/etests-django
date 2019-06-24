@@ -192,8 +192,8 @@ router.beforeEach((to, from, next) => {
 
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (isLoggedIn) {
-      const isStudent = store.state.authentication.auth.user.is_student;
-      const isInstitute = store.state.authentication.auth.user.is_institute;
+      const isStudent = store.state.authentication.user.is_student;
+      const isInstitute = store.state.authentication.user.is_institute;
 
       if (to.matched.some(record => record.meta.requiresStudent)) {
         if (isStudent) return next();
@@ -203,15 +203,14 @@ router.beforeEach((to, from, next) => {
         if (isInstitute) return next();
         else return next("/home");
       }
-    }
-
-    return next({
-      name: "auth",
-      params: { authType: 2 },
-      query: {
-        redirect: to.fullPath
-      }
-    });
+    } else
+      return next({
+        name: "auth",
+        params: { authType: 2 },
+        query: {
+          redirect: to.fullPath
+        }
+      });
   }
 
   if (isLoggedIn && to === "auth/2")

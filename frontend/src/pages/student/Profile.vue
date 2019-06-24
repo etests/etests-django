@@ -43,12 +43,8 @@ import Footer from "@components/Footer.vue";
 
 export default {
   computed: {
-    auth() {
-      return this.$store.state.authentication.auth;
-    },
     user() {
-      if (this.auth) return this.auth.user;
-      else return null;
+      return this.$store.state.authentication.user;
     }
   },
   components: {

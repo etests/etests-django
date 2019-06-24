@@ -1,22 +1,25 @@
 import { userService } from "@/api/user.service";
-import router from "@/router";
 
-const auth = JSON.parse(localStorage.getItem("auth"));
-const initialState = auth
-  ? { status: { loggedIn: true }, auth }
-  : { status: {}, auth: null };
+const user = JSON.parse(localStorage.getItem("user"));
+const initialState = user
+  ? { status: { loggedIn: true }, user }
+  : { status: {}, user: null };
 
 export const authentication = {
   namespaced: true,
   state: initialState,
   actions: {
     login({ dispatch, commit }, { username, password }) {
-      commit("loginRequest", { username });
+      commit("loginRequest", { name: username });
 
       userService.login(username, password).then(
-        auth => {
-          commit("loginSuccess", auth);
-          router.push("/");
+        data => {
+          commit("loginSuccess", data);
+          setTimeout(() => {
+            dispatch("alert/success", "Logged in successfully!", {
+              root: true
+            });
+          });
         },
         error => {
           commit("loginFailure", error);
@@ -24,16 +27,18 @@ export const authentication = {
         }
       );
     },
-    register({ dispatch, commit }, userData) {
-      commit("registerRequest", userData.user);
-
-      userService.register(userData).then(
-        userData => {
-          commit("registerSuccess", userData.user);
+    register({ dispatch, commit }, data) {
+      commit("registerRequest", data);
+      const credentials = {
+        username: data.email || data.phone,
+        password: data.password
+      };
+      console.log(credentials);
+      userService.register(data).then(
+        data => {
+          commit("registerSuccess", data);
           setTimeout(() => {
-            dispatch("alert/success", "Registration successful", {
-              root: true
-            });
+            dispatch("login", credentials);
           });
         },
         error => {
@@ -42,27 +47,32 @@ export const authentication = {
         }
       );
     },
-    logout({ commit }) {
+    logout({ dispatch, commit }) {
       userService.logout();
       commit("logout");
+      setTimeout(() => {
+        dispatch("alert/success", "See you soon!", {
+          root: true
+        });
+      });
     }
   },
   mutations: {
-    loginRequest(state, auth) {
+    loginRequest(state, user) {
       state.status = { loggingIn: true };
-      state.auth = auth;
+      state.user = user;
     },
-    loginSuccess(state, auth) {
+    loginSuccess(state, data) {
       state.status = { loggedIn: true };
-      state.auth = auth;
+      state.user = data.user;
     },
     loginFailure(state) {
       state.status = {};
-      state.auth = null;
+      state.user = null;
     },
     logout(state) {
       state.status = {};
-      state.auth = null;
+      state.user = null;
     },
     registerRequest(state, user) {
       state.status = { registering: true };

@@ -9,6 +9,12 @@ import "chartist/dist/chartist.min.css";
 import store from "./store";
 import VueFullPage from "vue-fullpage.js";
 import vueMq from "vue-mq";
+import "./registerServiceWorker";
+import Notifications from "vue-notification";
+
+Vue.use(Notifications, {
+  componentName: "Notification"
+});
 
 Vue.use(vueMq, {
   breakpoints: {

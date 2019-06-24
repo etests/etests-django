@@ -6,6 +6,7 @@ const merge = require("webpack-merge");
 const path = require("path");
 const baseWebpackConfig = require("./webpack.base.conf");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const SWPrecacheWebpackPlugin = require("sw-precache-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const FriendlyErrorsPlugin = require("friendly-errors-webpack-plugin");
 const portfinder = require("portfinder");
@@ -69,8 +70,19 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         from: path.resolve(__dirname, "../static"),
         to: config.dev.assetsSubDirectory,
         ignore: [".*"]
+      },
+      {
+        from: path.resolve(__dirname, "../public"),
+        to: ""
       }
-    ])
+    ]),
+    new SWPrecacheWebpackPlugin({
+      cacheId: "eTests",
+      filename: "service-worker.js",
+      staticFileGlobs: ["dist/**/*.{js,html,css}"],
+      minify: true,
+      stripPrefix: "dist/"
+    })
   ]
 });
 

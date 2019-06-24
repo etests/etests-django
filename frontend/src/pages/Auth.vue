@@ -1,38 +1,16 @@
 <template>
-  <v-container>
-    <Header :showDrawer="false" :temporaryDrawer="true">
-      <v-tabs slot="tabs" v-model="showTab" color="transparent" centered>
-        <v-tabs-slider color="white"></v-tabs-slider>
-        <v-tab v-for="(tab, i) in tabs" :key="i">
-          <v-icon>{{ tab.icon }}</v-icon>
-          &nbsp;
-          <strong>{{ tab.title }}</strong>
-        </v-tab>
-      </v-tabs>
-    </Header>
-    <v-content>
-      <v-layout row>
-        <v-flex xs12>
-          <v-tabs-items v-model="showTab">
-            <v-tab-item v-for="(tab, i) in tabs" :key="i">
-              <component :is="tab.component" />
-            </v-tab-item>
-          </v-tabs-items>
-        </v-flex>
-      </v-layout>
-      <Footer />
-    </v-content>
-  </v-container>
+  <StandardLayout>
+    <v-layout justify-center>
+      <v-flex xs12 lg10>
+        <Login />
+      </v-flex>
+    </v-layout>
+  </StandardLayout>
 </template>
 
 <script>
-import Header from "@components/Header.vue";
-import Footer from "@components/Footer.vue";
-import RegisterStudent from "../components/auth/RegisterStudent";
-import RegisterInstitute from "../components/auth/RegisterInstitute";
-import Login from "../components/auth/Login";
-import ForgotPassword from "../components/auth/ForgotPassword";
-import ChangePassword from "../components/auth/ChangePassword";
+import StandardLayout from "@components/layouts/StandardLayout";
+import Login from "@components/Login";
 
 export default {
   props: {
@@ -67,13 +45,8 @@ export default {
     };
   },
   components: {
-    Header,
-    RegisterStudent,
-    RegisterInstitute,
-    Login,
-    ForgotPassword,
-    ChangePassword,
-    Footer
+    StandardLayout,
+    Login
   }
 };
 </script>

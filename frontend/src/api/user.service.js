@@ -1,4 +1,5 @@
 import { authHeader } from "./auth-header";
+import handleResponse from "./handleResponse";
 
 export const userService = {
   login,
@@ -17,41 +18,40 @@ function login(username, password) {
 
   return fetch(`${process.env.API_URL}/login/`, requestOptions)
     .then(handleResponse)
-    .then(auth => {
+    .then(data => {
       // login successful if there's a jwt token in the response
-      if (auth.token) {
+      if (data.token) {
         // store user details and jwt token in local storage to keep user logged in between page refreshes
-        localStorage.setItem("auth", JSON.stringify(auth));
+        if (data.user) {
+          if (data.user["is_student"]) data.user.type = "student";
+          else if (data.user["is_institute"]) data.user.type = "institute";
+          else if (data.user["is_staff"]) data.user.type = "staff";
+        }
+        localStorage.setItem("token", JSON.stringify(data.token));
+        localStorage.setItem("user", JSON.stringify(data.user));
       }
 
-      return auth;
+      return data;
     });
 }
 
-function register(userData) {
+function register(data) {
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(userData)
+    body: JSON.stringify(data)
   };
 
-  if (userData.user.is_student)
-    return fetch(
-      `${process.env.API_URL}/register/student/`,
-      requestOptions
-    ).then(handleResponse);
-  else if (userData.user.is_institute)
-    return fetch(
-      `${process.env.API_URL}/register/institute/`,
-      requestOptions
-    ).then(handleResponse);
+  return fetch(`${process.env.API_URL}/register/`, requestOptions).then(
+    handleResponse
+  );
 }
 
-function updateProfile(userData) {
+function updateProfile(data) {
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(userData)
+    body: JSON.stringify(data)
   };
 
   return fetch(`${process.env.API_URL}/user/`, requestOptions).then(
@@ -67,7 +67,8 @@ function logout() {
   return fetch(`${process.env.API_URL}/logout/`, requestOptions)
     .then(handleResponse)
     .then(function() {
-      localStorage.removeItem("auth");
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
     });
 }
 
@@ -80,22 +81,4 @@ function getAll() {
   return fetch(`${process.env.API_URL}/users/`, requestOptions).then(
     handleResponse
   );
-}
-
-function handleResponse(response) {
-  return response.text().then(text => {
-    const data = text && JSON.parse(text);
-    if (!response.ok) {
-      if (response.status === 401) {
-        // auto logout if 401 response returned from api
-        // logout();
-        // location.reload(true);
-      }
-
-      const error = (data && data.message) || response.statusText;
-      return Promise.reject(error);
-    }
-
-    return data;
-  });
 }

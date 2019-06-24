@@ -1,4 +1,5 @@
 import { authHeader } from "./auth-header";
+import handleResponse from "./handleResponse";
 
 export const testService = {
   get,
@@ -62,15 +63,4 @@ function getAll() {
   return fetch(`${process.env.API_URL}/tests/`, requestOptions).then(
     handleResponse
   );
-}
-function handleResponse(response) {
-  return response.text().then(text => {
-    const data = text && JSON.parse(text);
-    if (!response.ok) {
-      const error = (data && data.message) || response.statusText;
-      return Promise.reject(error);
-    }
-
-    return data;
-  });
 }

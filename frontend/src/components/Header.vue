@@ -94,6 +94,10 @@
         </template>
       </slot>
 
+      <v-dialog v-model="showLoginDialog" max-width="600px">
+        <Login />
+      </v-dialog>
+
       <v-menu bottom left transition="slide-y-transition">
         <template v-slot:activator="{ on }">
           <v-btn flat color="primary" icon v-on="on">
@@ -102,22 +106,23 @@
         </template>
 
         <v-list>
-          <v-list-tile
-            v-for="(item, i) in dotMenu"
-            :key="i"
-            :to="item.link"
-            @click="item.action"
-          >
-            <v-list-tile-action>
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-tile-action>
+          <span v-for="(item, i) in dotMenu" :key="i">
+            <v-list-tile
+              :to="item.link"
+              @click="item.action"
+              v-if="item.requiresLogin == loggedIn"
+            >
+              <v-list-tile-action>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-tile-action>
 
-            <v-list-tile-content>
-              <v-list-tile-title>
-                {{ item.title }}
-              </v-list-tile-title>
-            </v-list-tile-content>
-          </v-list-tile>
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  {{ item.title }}
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </span>
         </v-list>
       </v-menu>
 
@@ -129,6 +134,8 @@
 </template>
 
 <script>
+import Login from "./Login";
+
 export default {
   props: {
     isAbsolute: {
@@ -164,6 +171,7 @@ export default {
       drawer: this.showDrawer,
       title: "eTests",
       slogan: "an online testing platform",
+      showLoginDialog: false,
       topNavMenu: [
         { title: "Home", icon: "mdi-home-outline", link: { name: "home" } },
 
@@ -255,18 +263,20 @@ export default {
         {
           title: "Login",
           icon: "mdi-key-outline",
-          link: { name: "auth", params: { authType: 2 } },
+          link: "",
           action: _ => {
-            return false;
-          }
+            return (this.showLoginDialog = true);
+          },
+          requiresLogin: false
         },
         {
           title: "Register",
           icon: "mdi-account-plus-outline",
-          link: { name: "auth", params: { authType: 0 } },
+          link: "",
           action: _ => {
-            return false;
-          }
+            return (this.showLoginDialog = true);
+          },
+          requiresLogin: false
         },
         {
           title: "Profile",
@@ -274,31 +284,39 @@ export default {
           link: { name: "profile" },
           action: _ => {
             return false;
-          }
+          },
+          requiresLogin: true
         },
         {
           title: "Logout",
           icon: "mdi-logout-variant",
           link: "",
-          action: this.logout
+          action: this.logout,
+          requiresLogin: true
         }
       ]
     };
   },
+  components: {
+    Login
+  },
   methods: {
     logout() {
-      if (this.$store.state.authentication.status.loggedIn)
-        this.$store.dispatch("authentication/logout");
+      if (this.loggedIn) this.$store.dispatch("authentication/logout");
     }
   },
   computed: {
+    loggedIn() {
+      if (this.$store.state.authentication.status.loggedIn) return true;
+      return false;
+    },
     isStudent() {
-      if (!this.$store.state.authentication.status.loggedIn) return false;
-      return this.$store.state.authentication.auth.user.is_student;
+      if (!this.loggedIn) return false;
+      return this.$store.state.authentication.user.is_student;
     },
     isInstitute() {
-      if (!this.$store.state.authentication.status.loggedIn) return false;
-      return this.$store.state.authentication.auth.user.is_institute;
+      if (!this.loggedIn) return false;
+      return this.$store.state.authentication.user.is_institute;
     }
   },
   mounted() {

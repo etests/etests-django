@@ -62,13 +62,11 @@ export default {
         window.matchMedia("(orientation: landscape)").matches
       );
     },
-    auth() {
-      return this.$store.state.authentication.auth;
-    },
     user() {
-      return this.$store.state.auth.user;
+      return this.$store.state.authentication.user;
     }
-  }
+  },
+  mounted() {}
 };
 </script>
 
