@@ -47,7 +47,10 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = User.objects.create(**validated_data)
         user.set_password(validated_data['password'])
         user.save()
-
+        if user.is_student:
+            Student.objects.create(user=user)
+        elif user.is_institute:
+            Institute.objects.create(user=user)
         return user
 
 class RegisterStudentSerializer(serializers.ModelSerializer):
@@ -95,7 +98,6 @@ class LoginSerializer(serializers.Serializer):
 
     def _validate_username(self, username, password):
         user = None
-
         instance = User.objects.filter(email=username).first() or \
                     User.objects.filter(phone=username).first()
         if instance:
@@ -103,7 +105,7 @@ class LoginSerializer(serializers.Serializer):
         else:
             msg = _('No user with this email/password.')
             raise exceptions.ValidationError(msg)
-
+        
         return user
 
     def validate(self, attrs):

@@ -63,7 +63,7 @@ class RegisterView(CreateAPIView):
                         headers=headers)
 
     def perform_create(self, serializer):
-        user = serializer.save(self.request)
+        user = serializer.create(self.request.data)
         self.token = jwt_encode(user)
         return user
 
