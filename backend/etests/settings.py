@@ -15,7 +15,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["etests.netlify.com"]
 
 # Application definition
 INSTALLED_APPS = [
@@ -43,13 +43,14 @@ JWT_AUTH = {
     "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
 }
 
-LOGIN_URL = "api-auth/login/"
+LOGIN_URL = "rest/login/"
 LOGOUT_URL = "accounts/logout/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -58,6 +59,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -89,7 +91,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "etests.wsgi.application"
 
-
 AUTH_USER_MODEL = "authentication.User"
 
 # Password validation
@@ -118,7 +119,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CORS_ORIGIN_ALLOW_ALL = False
 
@@ -131,6 +136,7 @@ django_heroku.settings(locals())
 
 try:
     from local_settings import *
+
 except ImportError:
     # Database
     DATABASE_URL = os.environ['DATABASE_URL']
