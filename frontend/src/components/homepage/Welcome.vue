@@ -69,7 +69,7 @@ export default {
     width: 90%;
     max-width: 300px;
     height: auto;
-    min-height: 160px;
+    min-height: 150px;
 
     .icon{
       margin: auto;

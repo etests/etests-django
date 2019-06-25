@@ -147,7 +147,8 @@ export default {
   .form{
     margin: auto;
     width: 80%;
-    min-width: 300px;
+    min-width: 250px;
+    max-width: 95%;
     border-radius: 8px;
     font-family: 'Product Sans Light', Roboto;
   }
