@@ -619,7 +619,7 @@ export default {
   },
   computed: {
     test() {
-      return this.$store.state.tests.test;
+      return this.$store.state[this.testType].test;
     },
     sections() {
       return this.test.sections;

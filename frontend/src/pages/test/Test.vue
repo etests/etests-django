@@ -376,7 +376,7 @@ export default {
     },
     clearQuestion(i) {
       if (this.validQuestionIndex(i)) {
-        if (this.questions[i].type === "MATRIX")
+        if (this.questions[i].type === 3)
           this.answers[i].answer = [[], [], [], []];
         else this.answers[i].answer = [];
         this.questions[i].status = 1;
@@ -399,7 +399,7 @@ export default {
   },
   computed: {
     test() {
-      return this.$store.state.tests.test;
+      return this.$store.state[this.testType].test;
     },
     sections() {
       return this.test.sections;
