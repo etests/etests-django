@@ -39,8 +39,8 @@ INSTALLED_APPS = [
 JWT_AUTH = {
     "JWT_AUTH_HEADER_PREFIX": "Bearer",
     "JWT_ALLOW_REFRESH": True,
-    "JWT_EXPIRATION_DELTA": timedelta(days=1),
-    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=7),
+    "JWT_EXPIRATION_DELTA": timedelta(days=20),
+    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=30),
 }
 
 LOGIN_URL = "rest/login/"
@@ -120,8 +120,6 @@ USE_TZ = True
 STATIC_URL = "/static/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 

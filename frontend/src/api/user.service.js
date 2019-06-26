@@ -4,9 +4,10 @@ import handleResponse from "./handleResponse";
 export const userService = {
   login,
   register,
-  updateProfile,
+  update,
   logout,
-  getAll
+  getAll,
+  refresh
 };
 
 function login(username, password) {
@@ -19,9 +20,7 @@ function login(username, password) {
   return fetch(`${process.env.API_URL}/login/`, requestOptions)
     .then(handleResponse)
     .then(data => {
-      // login successful if there's a jwt token in the response
       if (data.token) {
-        // store user details and jwt token in local storage to keep user logged in between page refreshes
         if (data.user) {
           if (data.user["is_student"]) data.user.type = "student";
           else if (data.user["is_institute"]) data.user.type = "institute";
@@ -33,6 +32,22 @@ function login(username, password) {
 
       return data;
     });
+}
+
+function refresh() {
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: {
+      token: JSON.parse(localStorage.getItem("token"))
+    }
+  };
+  console.log(requestOptions);
+  return fetch(`${process.env.API_URL}/refresh/`, requestOptions).then(
+    response => {
+      return response;
+    }
+  );
 }
 
 function register(data) {
@@ -47,9 +62,9 @@ function register(data) {
   );
 }
 
-function updateProfile(data) {
+function update(data) {
   const requestOptions = {
-    method: "POST",
+    method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data)
   };
