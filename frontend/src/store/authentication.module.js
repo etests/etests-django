@@ -33,7 +33,7 @@ export const authentication = {
         username: data.email || data.phone,
         password: data.password
       };
-      console.log(credentials);
+
       userService.register(data).then(
         data => {
           commit("registerSuccess", data);

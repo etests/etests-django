@@ -271,12 +271,16 @@ import TestLayout from "@components/test/TestLayout.vue";
 
 export default {
   props: {
-    id: {
-      required: true
+    testType: {
+      required: true,
+      validator: function(value) {
+        return ["tests", "unitTests"].indexOf(value) !== -1;
+      }
     }
   },
   data() {
     return {
+      id: this.$route.params.id,
       questionTypes: [
         { value: 0, text: "Single Correct" },
         { value: 1, text: "Multiple Correct" },
@@ -419,7 +423,7 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch("tests/get", this.id);
+    this.$store.dispatch(`${this.testType}/get`, this.id);
   },
   mounted() {}
 };

@@ -50,7 +50,12 @@
           icon
           flat
           color="success lighten-1"
-          @click="$router.push({ name: 'test', params: { id: test.id } })"
+          @click="
+            $router.push({
+              name: 'test',
+              params: { id: test.id }
+            })
+          "
         >
           <v-icon class="px-1">mdi-eye</v-icon>
         </v-btn>
@@ -58,7 +63,12 @@
           icon
           flat
           color="info lighten-1"
-          @click="$router.push({ name: 'edit-test', params: { id: test.id } })"
+          @click="
+            $router.push({
+              name: 'edit-test',
+              params: { id: test.id }
+            })
+          "
         >
           <v-icon class="px-1">mdi-square-edit-outline</v-icon>
         </v-btn>

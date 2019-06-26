@@ -136,9 +136,18 @@ const router = new Router({
           path: "test/:id/edit",
           name: "edit-test",
           component: () => import("@/pages/institute/EditTest"),
-          props: true,
+          props: { testType: "tests" },
           meta: {
-            title: "Create New Test"
+            title: "Edit Test"
+          }
+        },
+        {
+          path: "unittest/:id/edit",
+          name: "edit-unittest",
+          component: () => import("@/pages/institute/EditTest"),
+          props: { testType: "unitTests" },
+          meta: {
+            title: "Edit Unit Test"
           }
         },
         {
@@ -179,9 +188,18 @@ const router = new Router({
       path: "/test/:id",
       name: "test",
       component: () => import("@/pages/test/Test"),
-      props: true,
+      props: { testType: "tests" },
       meta: {
         title: "Test"
+      }
+    },
+    {
+      path: "/unittest/:id",
+      name: "unittest",
+      component: () => import("@/pages/test/Test"),
+      props: { testType: "unitTests" },
+      meta: {
+        title: "Unit Test"
       }
     }
   ]

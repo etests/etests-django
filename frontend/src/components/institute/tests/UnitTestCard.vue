@@ -46,8 +46,31 @@
     </div>
     <div slot="actions">
       <template v-if="this.showActions">
-        <v-btn icon flat color="success lighten-1">
+        <v-btn
+          icon
+          flat
+          color="success lighten-1"
+          @click="
+            $router.push({
+              name: 'unittest',
+              params: { id: test.id }
+            })
+          "
+        >
           <v-icon class="px-1">mdi-eye</v-icon>
+        </v-btn>
+        <v-btn
+          icon
+          flat
+          color="info lighten-1"
+          @click="
+            $router.push({
+              name: 'edit-unittest',
+              params: { id: test.id }
+            })
+          "
+        >
+          <v-icon class="px-1">mdi-square-edit-outline</v-icon>
         </v-btn>
 
         <v-btn icon flat color="error lighten-1" @click="deleteDialog = true">
@@ -93,6 +116,7 @@
 <script>
 import ObjectCard from "./ObjectCard";
 import { mapState } from "vuex";
+import { testTemplate } from "@/js/test";
 
 export default {
   props: {
@@ -150,6 +174,9 @@ export default {
       const { dispatch } = this.$store;
       var data = this.meta.data;
       data.name = this.test.name;
+      data.questions = testTemplate.questions;
+      data.answers = testTemplate.answers;
+      data.sections = testTemplate.sections;
       var unwatch = this.$watch("status", this.updateStatus);
       dispatch(this.meta.action, data).then((this.editing = false), unwatch);
     },
