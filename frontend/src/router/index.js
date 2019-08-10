@@ -79,7 +79,7 @@ const router = new Router({
         {
           path: "dashboard",
           name: "institute-dashboard",
-          component: () => import("@/pages/institute/dashboard"),
+          component: () => import("@/pages/institute/Dashboard"),
           meta: {
             title: "Dashboard"
           }
