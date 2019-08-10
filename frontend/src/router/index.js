@@ -28,8 +28,8 @@ const router = new Router({
       component: () => import("@/components/layouts/EmptyLayout"),
       meta: {
         title: "Student",
-        requiresAuth: true,
-        requiresStudent: true
+        requiresAuth: false,
+        requiresStudent: false
       },
       children: [
         {
@@ -72,14 +72,14 @@ const router = new Router({
       component: () => import("@/components/layouts/EmptyLayout"),
       meta: {
         title: "Institute",
-        requiresAuth: true,
-        requiresInstitute: true
+        requiresAuth: false,
+        requiresInstitute: false
       },
       children: [
         {
           path: "dashboard",
           name: "institute-dashboard",
-          component: () => import("@/pages/institute/Dashboard"),
+          component: () => import("@/pages/institute/dashboard"),
           meta: {
             title: "Dashboard"
           }
