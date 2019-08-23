@@ -1,9 +1,8 @@
 import { authHeader } from "./auth-header";
 import handleResponse from "./handleResponse";
 
-export const unitTestService = {
+export const sessionService = {
   get,
-  create,
   update,
   remove,
   getAll
@@ -15,21 +14,14 @@ function get(id) {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.API_URL}/unittests/${id}/`, requestOptions).then(
-    handleResponse
-  );
-}
-
-function create(data) {
-  const requestOptions = {
-    method: "POST",
-    headers: authHeader(),
-    body: JSON.stringify(data)
-  };
-
-  return fetch(`${process.env.API_URL}/unittests/`, requestOptions).then(
-    handleResponse
-  );
+  return fetch(`${process.env.API_URL}/get-session/${id}/`, requestOptions)
+    .then(handleResponse)
+    .then(data => {
+      if (data) {
+        localStorage.setItem("session", JSON.stringify(data));
+      }
+      return data;
+    });
 }
 
 function update(data) {
@@ -38,9 +30,8 @@ function update(data) {
     headers: authHeader(),
     body: JSON.stringify(data)
   };
-
   return fetch(
-    `${process.env.API_URL}/unittests/${data.id}/`,
+    `${process.env.API_URL}/update-session/${data.id}/`,
     requestOptions
   ).then(handleResponse);
 }
@@ -51,9 +42,11 @@ function remove(id) {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.API_URL}/unittests/${id}`, requestOptions).then(
-    handleResponse
-  );
+  return fetch(`${process.env.API_URL}/update-session/${id}/`, requestOptions)
+    .then(handleResponse)
+    .then(_ => {
+      localStorage.removeItem("session");
+    });
 }
 
 function getAll() {
@@ -61,7 +54,7 @@ function getAll() {
     method: "GET",
     headers: authHeader()
   };
-  return fetch(`${process.env.API_URL}/unittests/`, requestOptions).then(
+  return fetch(`${process.env.API_URL}/get-sessions/`, requestOptions).then(
     handleResponse
   );
 }

@@ -42,7 +42,6 @@ function refresh() {
       token: JSON.parse(localStorage.getItem("token"))
     }
   };
-  console.log(requestOptions);
   return fetch(`${process.env.API_URL}/refresh/`, requestOptions).then(
     response => {
       return response;

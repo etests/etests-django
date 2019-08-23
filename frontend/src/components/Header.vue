@@ -223,12 +223,6 @@ export default {
           link: { name: "exams" },
           requiresStudent: true
         },
-        {
-          title: "Test",
-          icon: "mdi-monitor-screenshot",
-          link: { name: "test" },
-          requiresStudent: true
-        },
 
         { divider: true, requiresStudent: true },
 

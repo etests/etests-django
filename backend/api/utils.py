@@ -1,4 +1,39 @@
 from django.utils.text import slugify
+from collections import namedtuple
+
+class SessionEvaluation:
+    def __init__(self, test, session):
+        self.total_marks = 0
+        self.sectionwise_marks = [0 for i in range(len(test.sections))]
+        self.test = test
+        self.questions = test.questions
+        self.session = session
+
+    def markCorrect(self, question):
+        self.sectionwise_marks[question['section']] += question['correctMarks']
+        self.total_marks += question['correctMarks']
+
+    def markIncorrect(self, question):
+        self.sectionwise_marks[question['section']] += question['incorrectMarks']
+        self.total_marks -= question['incorrectMarks']
+
+    def evaluate(self):
+        for i in range(len(self.questions)):
+            if self.questions[i]['type']==0:
+                if self.session['response'][i]['answer'] == self.test.answers[i]['answer']:
+                    self.markCorrect(self.questions[i])
+                else:
+                    self.markIncorrect(self.questions[i])
+                    
+            elif self.questions[i]['type']==1:
+                if(all(x in  self.test.answers[i]['answer'] for x in self.session['response'][i]['answer'])): 
+                    self.markCorrect(self.questions[i])
+                else:
+                    self.markIncorrect(self.questions[i])
+        return {
+            "total": self.total_marks,
+            "sectionwise": self.sectionwise_marks
+        }
 
 
 def get_unique_slug(model_instance, slugable_field_name, slug_field_name="slug"):

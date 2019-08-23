@@ -16,7 +16,7 @@
           centered
         >
           <v-tab v-for="(tab, i) in tabs" :key="i">
-            <v-btn color="indigo" :large="!isSmallScreen" round dark>
+            <v-btn color="primary" :large="!isSmallScreen" round dark>
               <v-icon>{{ tab.icon }}</v-icon> &nbsp;
               <strong>{{ tab.title }}</strong>
             </v-btn>

@@ -33,7 +33,7 @@ sensitive_post_parameters_m = method_decorator(
 )
 
 from .serializers import (
-    RegisterStudentSerializer, RegisterInstituteSerializer, StudentDetailsSerializer, InstituteDetailsSerializer, VerifyEmailSerializer,
+    StudentDetailsSerializer, InstituteDetailsSerializer, VerifyEmailSerializer,
 )
 
 
@@ -66,66 +66,6 @@ class RegisterView(CreateAPIView):
         user = serializer.create(self.request.data)
         self.token = jwt_encode(user)
         return user
-
-class RegisterStudentView(CreateAPIView):
-    serializer_class = RegisterStudentSerializer
-    permission_classes = register_permission_classes()
-
-    @sensitive_post_parameters_m
-    def dispatch(self, *args, **kwargs):
-        return super(RegisterStudentView, self).dispatch(*args, **kwargs)
-
-    def get_response_data(self, student):
-        data = {
-            'user': student.user,
-            'token': self.token
-        }
-        return JWTSerializer(data).data
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        student = self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-
-        return Response(self.get_response_data(student),
-                        status=status.HTTP_201_CREATED,
-                        headers=headers)
-
-    def perform_create(self, serializer):
-        student = serializer.save()
-        self.token = jwt_encode(student.user)
-        return student
-
-class RegisterInstituteView(CreateAPIView):
-    serializer_class = RegisterInstituteSerializer
-    permission_classes = register_permission_classes()
-
-    @sensitive_post_parameters_m
-    def dispatch(self, *args, **kwargs):
-        return super(RegisterInstituteView, self).dispatch(*args, **kwargs)
-
-    def get_response_data(self, institute):
-        data = {
-            'user': institute.user,
-            'token': self.token
-        }
-        return JWTSerializer(data).data
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        institute = self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-
-        return Response(self.get_response_data(institute),
-                        status=status.HTTP_201_CREATED,
-                        headers=headers)
-
-    def perform_create(self, serializer):
-        institute = serializer.save()
-        self.token = jwt_encode(institute.user)
-        return institute
 
 class VerifyEmailView(APIView):
     permission_classes = (AllowAny,)

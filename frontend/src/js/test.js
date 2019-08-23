@@ -17,6 +17,7 @@ export const testTemplate = {
       status: 0,
       correctMarks: 4,
       incorrectMarks: 1,
+      partialMarks: 0,
       answers: ["Answer P", "Answer Q", "Answer R", "Answer S", "Answer T"]
     }
   ],

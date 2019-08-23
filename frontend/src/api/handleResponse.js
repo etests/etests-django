@@ -1,5 +1,3 @@
-import { userService } from "./user.service";
-
 function isObject(value) {
   return value && typeof value === "object" && value.constructor === Object;
 }
@@ -13,10 +11,7 @@ export default function handleResponse(response) {
     const data = text && JSON.parse(text);
     var messages = [];
     if (!response.ok) {
-      if (response.status === 401) {
-        userService.logout();
-        location.reload(true);
-      } else if (isObject(data))
+      if (isObject(data))
         for (var prop in data) {
           if (!data.hasOwnProperty(prop)) continue;
           if (isArray(data[prop]))

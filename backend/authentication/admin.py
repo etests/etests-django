@@ -13,9 +13,9 @@ class UserModelAdmin(admin.ModelAdmin):
 admin.site.register(User, UserModelAdmin)
 
 class StudentModelAdmin(admin.ModelAdmin):
-    list_display = ["user", "birth_date", "institute"]
-    list_filter = ["gender", "institute"]
-    search_fields = [ "user", "institute"]
+    list_display = ["user", "birth_date"]
+    list_filter = ["gender", "institutes"]
+    search_fields = [ "user", "institutes"]
     class Meta:
         model = Student
 

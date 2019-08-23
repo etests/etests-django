@@ -2,6 +2,7 @@ from rest_framework import serializers, exceptions
 from rest_framework.exceptions import ValidationError
 from authentication.models import User, Institute
 from .models import *
+from authentication.serializers import UserDetailsSerializer
 
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -17,8 +18,18 @@ class InstituteListSerializer(serializers.ModelSerializer):
 
 class TestSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Test
+        model=Test
         fields = '__all__'
+
+class StudentTestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Test
+        fields = ('id','name','institute','slug','active','practice','tags','date_added','activation_time','time_alotted','sections','questions')
+
+class TestRegisterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Test
+        fields = ('id','name','institute','slug','active','practice','tags','date_added','activation_time','time_alotted')
 
 class TestSeriesSerializer(serializers.ModelSerializer):
     tests = TestSerializer(many=True, read_only=True)
@@ -27,15 +38,11 @@ class TestSeriesSerializer(serializers.ModelSerializer):
         model = TestSeries
         fields = ("id", "name", "price", "visible", "exam", "tests")
 
-class UnitTestSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UnitTest
-        fields = '__all__'
-
 class SessionSerializer(serializers.ModelSerializer):
+    test = TestSerializer(many=False, read_only=True)
     class Meta:
         model = Session
-        fields = '__all__'
+        fields = ('id', 'response', 'test', 'duration', 'current', 'completed')
 
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -58,4 +65,8 @@ class TagSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
+class ResultSerializer(serializers.ModelSerializer):
+    test = TestSerializer(many=False, read_only=True)
+    class Meta:
+        model = Session
+        fields = ('id', 'response', 'test', 'result', 'marks')

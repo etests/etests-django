@@ -3,14 +3,12 @@ from django.urls import path
 from rest_framework_jwt.views import refresh_jwt_token
 
 from .views import (
-    RegisterView, RegisterStudentView ,RegisterInstituteView, VerifyEmailView, LoginView, LogoutView, UserDetailsView, PasswordChangeView,
+    RegisterView, VerifyEmailView, LoginView, LogoutView, UserDetailsView, PasswordChangeView,
     PasswordResetView, PasswordResetConfirmView
 )
 
 urlpatterns = [
     path("register/", RegisterView.as_view(), name="register"),
-    path("register/student/", RegisterStudentView.as_view(), name="register/student"),
-    path("register/institute/", RegisterInstituteView.as_view(), name="register/institute"),
     path("email/verify", VerifyEmailView.as_view(), name="verify_email"),
     path("email/verify/confirm/", TemplateView.as_view(), name="confirm_email"),
     path("password/reset/", PasswordResetView.as_view(), name="password_reset"),

@@ -9,8 +9,6 @@ import random
 import string
 from .utils import get_unique_slug
 
-
-
 def generateRandomKey(length = 10):
     return ''.join(random.choice(string.ascii_letters + string.digits) for i in range(length))
 
@@ -66,7 +64,6 @@ class Topic(models.Model):
     def __str__(self):
         return self.name
 
-
 class AccessCode(models.Model):
     id = models.AutoField(primary_key = True)
     limit = models.IntegerField()
@@ -89,16 +86,17 @@ class TestSeries(models.Model):
     visible = models.BooleanField(default = False)
     exam = models.ForeignKey(Exam, related_name = 'test_series', blank = True, null = True, on_delete = models.SET_NULL)
     institute = models.ForeignKey(Institute, related_name = 'test_series', blank = True, null = True, on_delete = models.CASCADE)
-    registered_student = models.ManyToManyField(Student, related_name = 'test_series', blank = True)
+    registered_student = models.ManyToManyField(Student, blank = True)
     access_code = models.ForeignKey(AccessCode, related_name = 'test_series', blank = True, null = True, on_delete = models.SET_NULL)
     tags = models.ManyToManyField(Tag, related_name = 'test_series', blank = True)
+    tests = models.ManyToManyField("Test", related_name = 'test_series', blank = True)
 
     class Meta:
         verbose_name = 'Test Series'
         verbose_name_plural = 'Test Series'
 
     def __str__(self):
-       return self.name
+        return self.name
 
     def free(self):
         return self.price == 0
@@ -116,8 +114,9 @@ QUESTION_TYPES = [
     ('MATRIX', 'MATRIX MATCH')
 ]
 
-class BaseTest(models.Model):
+class Test(models.Model):
     id = models.AutoField(primary_key = True)
+    registered_student = models.ManyToManyField(Student, blank = True)
     name = models.CharField(max_length = 20)
     institute = models.ForeignKey(Institute, blank = True, null = True, on_delete = models.CASCADE)
     slug = models.SlugField(unique = True, editable = False)
@@ -131,36 +130,23 @@ class BaseTest(models.Model):
     questions = JSONField(blank = True, null = True)
     answers = JSONField(blank = True, null = True)
 
-    class Meta:
-        abstract = True
-    
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = get_unique_slug(self, "name")
-        super(BaseTest, self).save(*args, **kwargs)
-
-class Test(BaseTest):
-    id = models.AutoField(primary_key = True)
-    test_series = models.ForeignKey(TestSeries, related_name = 'tests', blank = True, null = True, on_delete = models.CASCADE)
-
-class UnitTest(BaseTest):
-    id = models.AutoField(primary_key = True)
-    visible = models.BooleanField(default = False)
-    exam = models.ForeignKey(Exam, related_name = 'unit_tests', blank = True, null = True, on_delete = models.SET_NULL)
-    registered_students = models.ManyToManyField(Student, blank = True)
-    access_code = models.ForeignKey(AccessCode, related_name = 'unit_tests', blank = True, null = True, on_delete = models.SET_NULL)
-    price = models.FloatField()
+        super(Test, self).save(*args, **kwargs)
 
 class Session(models.Model):
     id = models.AutoField(primary_key=True)
-    user = models.ForeignKey(User, related_name='sessions', on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, related_name='sessions', on_delete=models.CASCADE)
     test = models.ForeignKey(Test, related_name='sessions', null=True, on_delete=models.CASCADE)
     practice = models.BooleanField(default = False)
-    current = models.IntegerField(default=1)
     checkin_time = models.DateTimeField(auto_now_add = True)
     duration = models.DurationField(default = timedelta(hours = 3))
-    response = JSONField()
-    result = JSONField()
+    completed = models.BooleanField(default=False)
+    response = JSONField(blank = True, null = True)
+    result = JSONField(blank = True, null = True)
+    current = JSONField(blank = True, null = True)
+    marks = JSONField(blank = True, null = True)
 
     def expired(self):
         if self.practice:
@@ -175,7 +161,7 @@ class Session(models.Model):
         super(Session, self).save(*args, **kwargs)
     
     class Meta:
-        ordering = ["-practice","user","test"]
+        ordering = ["-practice","student","test"]
 
 class Buyer(models.Model):
     id = models.AutoField(primary_key=True)
@@ -190,3 +176,5 @@ class Buyer(models.Model):
 
     def __str__(self):
         return self.user.name
+
+

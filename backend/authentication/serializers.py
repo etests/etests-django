@@ -53,39 +53,6 @@ class RegisterSerializer(serializers.ModelSerializer):
             Institute.objects.create(user=user)
         return user
 
-class RegisterStudentSerializer(serializers.ModelSerializer):
-    user = RegisterSerializer(required=True)
-
-    class Meta:
-        model = Student
-        fields = ("user", "gender", "institute", "birth_date")
-
-    def create(self, validated_data):
-        user_data = validated_data.pop("user")
-        user = RegisterSerializer.create(RegisterSerializer(), validated_data=user_data)
-        student = Student.objects.create(
-            user=user,
-            gender=validated_data.pop("gender"),
-            institute=validated_data.pop("institute"),
-            birth_date=validated_data.pop("birth_date"),
-        )
-        return student
-    
-class RegisterInstituteSerializer(serializers.ModelSerializer):
-    user = RegisterSerializer(required=True)
-
-    class Meta:
-        model = Institute
-        fields = ("user", "pincode")
-
-    def create(self, validated_data):
-        user_data = validated_data.pop("user")
-        user = RegisterSerializer.create(RegisterSerializer(), validated_data=user_data)
-        institute = Institute.objects.create(
-            user=user, pincode=validated_data.pop("pincode")
-        )
-        return institute
-
 class VerifyEmailSerializer(serializers.Serializer):
     key = serializers.CharField()
 
@@ -136,18 +103,20 @@ class UserDetailsSerializer(serializers.ModelSerializer):
         exclude = ("is_active", "password", "last_login" ,"user_permissions")
         read_only_fields = ('email', )
 
-class StudentDetailsSerializer(serializers.ModelSerializer):
-    user = UserDetailsSerializer()
-
-    class Meta:
-        model = Student
-        fields = '__all__' 
-
 class InstituteDetailsSerializer(serializers.ModelSerializer):
     user = UserDetailsSerializer()
 
     class Meta:
         model = Institute
+        fields = '__all__' 
+
+
+class StudentDetailsSerializer(serializers.ModelSerializer):
+    user = UserDetailsSerializer()
+    institutes = InstituteDetailsSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Student
         fields = '__all__' 
 
 class JWTSerializer(serializers.Serializer):

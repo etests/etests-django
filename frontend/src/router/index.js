@@ -28,8 +28,8 @@ const router = new Router({
       component: () => import("@/components/layouts/EmptyLayout"),
       meta: {
         title: "Student",
-        requiresAuth: false,
-        requiresStudent: false
+        requiresAuth: true,
+        requiresStudent: true
       },
       children: [
         {
@@ -43,7 +43,7 @@ const router = new Router({
         {
           path: "profile",
           name: "profile",
-          component: () => import("@/pages/student/Profile"),
+          component: () => import("@/components/auth/RegisterStudent"),
           meta: {
             title: "Profile"
           }
@@ -72,8 +72,8 @@ const router = new Router({
       component: () => import("@/components/layouts/EmptyLayout"),
       meta: {
         title: "Institute",
-        requiresAuth: false,
-        requiresInstitute: false
+        requiresAuth: true,
+        requiresInstitute: true
       },
       children: [
         {
@@ -87,7 +87,7 @@ const router = new Router({
         {
           path: "profile",
           name: "institute-profile",
-          component: () => import("@/pages/institute/Profile"),
+          component: () => import("@/components/auth/RegisterInstitute"),
           meta: {
             title: "Profile"
           }
@@ -136,18 +136,8 @@ const router = new Router({
           path: "test/:id/edit",
           name: "edit-test",
           component: () => import("@/pages/institute/EditTest"),
-          props: { testType: "tests" },
           meta: {
             title: "Edit Test"
-          }
-        },
-        {
-          path: "unittest/:id/edit",
-          name: "edit-unittest",
-          component: () => import("@/pages/institute/EditTest"),
-          props: { testType: "unitTests" },
-          meta: {
-            title: "Edit Unit Test"
           }
         },
         {
@@ -188,18 +178,16 @@ const router = new Router({
       path: "/test/:id",
       name: "test",
       component: () => import("@/pages/test/Test"),
-      props: { testType: "tests" },
       meta: {
         title: "Test"
       }
     },
     {
-      path: "/unittest/:id",
-      name: "unittest",
-      component: () => import("@/pages/test/Test"),
-      props: { testType: "unitTests" },
+      path: "/result/:id",
+      name: "result",
+      component: () => import("@/pages/test/Result"),
       meta: {
-        title: "Unit Test"
+        title: "Result"
       }
     }
   ]
@@ -236,11 +224,7 @@ router.beforeEach((to, from, next) => {
       name: "dashboard"
     });
 
-  router.beforeEach((to, from, next) => {
-    document.title = to.meta.title;
-    next();
-  });
-
+  document.title = to.meta.title;
   next();
 });
 

@@ -417,14 +417,6 @@
 import TestLayout from "@components/test/TestLayout.vue";
 
 export default {
-  props: {
-    testType: {
-      required: true,
-      validator: function(value) {
-        return ["tests", "unitTests"].indexOf(value) !== -1;
-      }
-    }
-  },
   data() {
     return {
       id: this.$route.params.id,
@@ -582,7 +574,7 @@ export default {
       } else return false;
     },
     saveTest() {
-      this.$store.dispatch(`${this.testType}/update`, this.test);
+      this.$store.dispatch(`tests/update`, this.test);
     },
     addSection(name) {
       this.sections.push({
@@ -619,7 +611,7 @@ export default {
   },
   computed: {
     test() {
-      return this.$store.state[this.testType].test;
+      return this.$store.state.tests.test;
     },
     sections() {
       return this.test.sections;
@@ -643,7 +635,7 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch(`${this.testType}/get`, this.id);
+    this.$store.dispatch(`tests/get`, this.id);
   },
   mounted() {}
 };

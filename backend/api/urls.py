@@ -20,11 +20,11 @@ urlpatterns = [
 
     path("tests/<int:pk>/", TestRetrieveUpdateDestoryView.as_view(), name="test-update-delete"),
 
-    path("unittests/", UnitTestListCreateView.as_view(), name="unittests-list-create"),
+    path("get-session/<int:test_id>/", SessionRetrieveUpdateView.as_view()),
 
-    path("unittests/<int:pk>/", UnitTestRetrieveUpdateDestoryView.as_view(), name="unittests-update-delete"),
+    path("update-session/<int:pk>/", SessionRetrieveUpdateView.as_view()),
 
-    path("sessions/", SessionListView.as_view({"get": "retrieve", "post": "create", "put": "update", "patch": "partial_update", "delete": "destroy"}), name="sessions-list"),
+    path("get-result/<int:pk>/", ResultView.as_view()),
 
     path("buyers/", BuyerListView.as_view({"get": "retrieve", "post": "create", "put": "update", "patch": "partial_update", "delete": "destroy"}), name="buyers-list"),
 ]

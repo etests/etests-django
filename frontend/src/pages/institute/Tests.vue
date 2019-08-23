@@ -18,13 +18,9 @@
         <TestSeriesCard new />
       </SectionLayout>
 
-      <SectionLayout heading="Unit Tests">
-        <UnitTestCard
-          v-for="(unitTest, i) in unitTests"
-          :key="i"
-          :test="unitTest"
-        />
-        <UnitTestCard new />
+      <SectionLayout heading="Tests">
+        <TestCard v-for="test in tests" :key="test.name" :test="test" />
+        <TestCard new />
       </SectionLayout>
     </v-layout>
   </StandardLayout>
@@ -35,7 +31,7 @@ import StandardLayout from "@components/layouts/StandardLayout";
 import SectionLayout from "@components/layouts/SectionLayout";
 import TestSeriesCard from "@components/institute/tests/TestSeriesCard";
 import TestCard from "@components/institute/tests/TestCard";
-import UnitTestCard from "@components/institute/tests/UnitTestCard";
+
 import ObjectCard from "@components/institute/tests/ObjectCard";
 
 export default {
@@ -44,22 +40,22 @@ export default {
   },
   created() {
     this.fetchTestSeries();
-    this.fetchUnitTests();
+    this.fetchTests();
   },
   computed: {
     allTestSeries() {
       return this.$store.state.testSeries.all.items;
     },
-    unitTests() {
-      return this.$store.state.unitTests.all.items;
+    tests() {
+      return this.$store.state.tests.all.items;
     }
   },
   methods: {
     fetchTestSeries() {
       this.$store.dispatch("testSeries/getAll");
     },
-    fetchUnitTests() {
-      this.$store.dispatch("unitTests/getAll");
+    fetchTests() {
+      this.$store.dispatch("tests/getAll");
     }
   },
   components: {
@@ -67,7 +63,6 @@ export default {
     SectionLayout,
     TestSeriesCard,
     TestCard,
-    UnitTestCard,
     ObjectCard
   }
 };

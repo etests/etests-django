@@ -1,23 +1,29 @@
-import { unitTestService } from "@/api/unitTest.service";
+import { sessionService } from "@/api/session.service";
 
-const initialState = {
-  status: {},
-  test: {},
-  all: { items: [] }
-};
+const session = JSON.parse(localStorage.getItem("session"));
+const initialState = session
+  ? {
+      status: { exists: true },
+      session,
+      all: { items: [] }
+    }
+  : {
+      status: {},
+      session: null,
+      all: { items: [] }
+    };
 
-export const unitTests = {
+export const sessions = {
   namespaced: true,
   state: initialState,
   actions: {
     get({ dispatch, commit }, id) {
       commit("getRequest", id);
-
-      unitTestService.get(id).then(
-        test => {
-          commit("getSuccess", test);
+      sessionService.get(id).then(
+        session => {
+          commit("getSuccess", session);
           setTimeout(() => {
-            dispatch("alert/success", "Unit test fetched successfully!", {
+            dispatch("alert/success", "Session fetched successfully!", {
               root: true
             });
           });
@@ -28,20 +34,20 @@ export const unitTests = {
         }
       );
     },
-    create({ dispatch, commit }, data) {
-      commit("createRequest", data);
+    update({ dispatch, commit }, data) {
+      commit("updateRequest", data);
 
-      unitTestService.create(data).then(
+      sessionService.update(data).then(
         data => {
-          commit("createSuccess", data);
+          commit("updateSuccess", data);
           setTimeout(() => {
-            dispatch("alert/success", "Unit Test created successfully!", {
+            dispatch("alert/success", "Session updated successfully!", {
               root: true
             });
           });
         },
         error => {
-          commit("createFailure", error);
+          commit("updateFailure", error);
           dispatch("alert/error", error, { root: true });
         }
       );
@@ -49,11 +55,11 @@ export const unitTests = {
     remove({ dispatch, commit }, id) {
       commit("removeRequest", id);
 
-      unitTestService.remove(id).then(
+      sessionService.remove(id).then(
         _ => {
           commit("removeSuccess", id);
           setTimeout(() => {
-            dispatch("alert/success", "Unit Test removed successfully!", {
+            dispatch("alert/success", "Session removed successfully!", {
               root: true
             });
           });
@@ -67,10 +73,10 @@ export const unitTests = {
     getAll({ commit }) {
       commit("getAllRequest");
 
-      unitTestService
+      sessionService
         .getAll()
         .then(
-          unitTests => commit("getAllSuccess", unitTests),
+          sessions => commit("getAllSuccess", sessions),
           error => commit("getAllFailure", error)
         );
     }
@@ -79,9 +85,9 @@ export const unitTests = {
     getRequest(state) {
       state.status = { loading: true };
     },
-    getSuccess(state, test) {
-      state.status = {};
-      state.test = test;
+    getSuccess(state, session) {
+      state.status = { exists: true };
+      state.session = session;
     },
     getFailure(state, error) {
       state.status = { error };
@@ -89,20 +95,19 @@ export const unitTests = {
     getAllRequest(state) {
       state.all = { loading: true };
     },
-    getAllSuccess(state, unitTests) {
-      state.all = { items: unitTests };
+    getAllSuccess(state, sessions) {
+      state.all = { items: sessions };
     },
     getAllFailure(state, error) {
       state.all = { error };
     },
-    createRequest(state, data) {
+    updateRequest(state, data) {
       state.status = { creating: true };
     },
-    createSuccess(state, data) {
-      state.all.items.push(data);
-      state.status = { created: true, test: data };
+    updateSuccess(state, data) {
+      state.status = { created: true, session: data };
     },
-    createFailure(state, error) {
+    updateFailure(state, error) {
       state.status = { error: error };
     },
     removeRequest(state, id) {

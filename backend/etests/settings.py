@@ -2,9 +2,7 @@
 
 import os
 from datetime import timedelta
-import django_heroku
-import dj_database_url
-import psycopg2
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -129,13 +127,15 @@ CORS_ORIGIN_WHITELIST = (
     "https://etests.netlify.com"
 )
 
-# Activate Django-Heroku.
-django_heroku.settings(locals())
-
 try:
     from local_settings import *
 
 except ImportError:
+    import django_heroku
+    import dj_database_url
+    import psycopg2
+    # Activate Django-Heroku.
+    django_heroku.settings(locals())
     # Database
     DATABASE_URL = os.environ['DATABASE_URL']
     conn = psycopg2.connect(DATABASE_URL, sslmode='require')

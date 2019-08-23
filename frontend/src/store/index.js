@@ -7,7 +7,8 @@ import { users } from "./users.module";
 import { institutes } from "./institutes.module";
 import { testSeries } from "./testSeries.module";
 import { tests } from "./tests.module";
-import { unitTests } from "./unitTests.module";
+import { sessions } from "./sessions.module";
+import { results } from "./results.module";
 
 Vue.use(Vuex);
 
@@ -19,6 +20,7 @@ export default new Vuex.Store({
     institutes,
     testSeries,
     tests,
-    unitTests
+    sessions,
+    results
   }
 });

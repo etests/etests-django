@@ -65,7 +65,7 @@ class Student(models.Model):
     GENDERS = (("M", "Male"), ("F", "Female"), ("O", "Others"))
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     gender = models.CharField(max_length=1, choices=GENDERS)
-    institute = models.ForeignKey(Institute, on_delete=models.SET_NULL, null=True)
+    institutes = models.ManyToManyField(Institute, blank=True)
     birth_date = models.DateField()
 
     def __str__(self):

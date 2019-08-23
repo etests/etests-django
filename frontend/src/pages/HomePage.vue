@@ -19,7 +19,7 @@ import QuickStart from "@components/homepage/QuickStart.vue";
 import Exams from "@components/homepage/Exams.vue";
 import Demo from "@components/homepage/Demo.vue";
 import Subscribe from "@components/homepage/Subscribe.vue";
-import Footer from "@components/Footer.vue";
+import Footer from "@components/homepage/Footer.vue";
 
 export default {
   data() {

@@ -15,7 +15,7 @@
         >
           <h1 :class="$style.heading">Institutes</h1>
           <p :class="$style.description">{{ institute.description }}</p>
-          <v-btn round dark large color="light-blue">
+          <v-btn round dark large color="primary">
             create demo test
             <v-icon right dark>mdi-note-plus</v-icon>
           </v-btn>
@@ -26,7 +26,7 @@
         <v-sheet color="transparent" :class="$style.demoSheet">
           <h1 :class="$style.heading">Students</h1>
           <p :class="$style.description">{{ student.description }}</p>
-          <v-btn round dark large color="light-blue">
+          <v-btn round dark large color="primary">
             attempt demo test
             <v-icon right dark>mdi-pencil-plus</v-icon>
           </v-btn>
