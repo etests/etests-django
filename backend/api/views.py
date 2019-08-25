@@ -97,13 +97,15 @@ class TestSeriesRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView)
 
 
 class TestListCreateView(generics.ListCreateAPIView):
-    permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
-    serializer_class = TestSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = TestListSerializer
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
             if self.request.user.is_institute:
                 return Test.objects.filter(institute=self.request.user.institute)
+            if self.request.user.is_student:
+                return Test.objects.filter(institute__in=self.request.user.student.institutes.all())
             elif self.request.user.is_staff:
                 return Test.objects.all()
         else:
@@ -166,11 +168,11 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
                 if(len(sessions)==0 or test.practice):
                     session = self.create_session(test)
                 else:
-                    raise ParseError("You have already attempted this test!")
+                    raise ParseError("You have already attempted this test.")
             else:
-                raise ParseError("You are not registered for this test!")
+                raise ParseError("You are not registered for this test.")
         else:
-            raise PermissionDenied("You cannot attempt this test!")
+            raise PermissionDenied("You cannot attempt this test.")
         if session:
             return Response(self.get_serializer(session).data)
         else:
@@ -182,23 +184,17 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         session = self.request.data
         
         if session['completed']:
-            test = Test.objects.get(id=instance.test.id)
-            instance.marks = SessionEvaluation(test, session).evaluate()
+            if instance.completed:
+                raise PermissionDenied("You have already submitted this test.")
+            else:   
+                test = Test.objects.get(id=instance.test.id)
+                instance.marks = SessionEvaluation(test, session).evaluate()
 
         serializer = self.get_serializer(instance, data=self.request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)  
 
         return Response(serializer.data)
-
-        
-class BuyerListView(viewsets.ViewSet):
-    permission_classes = (ReadOnly,)
-    def list(self, request):
-        queryset = Buyer.objects.filter()
-        serializer = BuyerSerializer(queryset, many=True)
-        return Response(serializer.data)
-        
 
 class ResultView(generics.RetrieveAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
@@ -211,3 +207,23 @@ class ResultView(generics.RetrieveAPIView):
         elif self.request.user.is_staff:
             return Session.objects.all()
         return None
+
+class Review(generics.RetrieveAPIView):
+    permission_classes = (ReadOnly, permissions.IsAuthenticated)
+    serializer_class = ResultSerializer
+    def get_queryset(self):
+        if self.request.user.is_institute:
+            return Session.objects.filter(student__institutes = self.request.user.institute)
+        if self.request.user.is_student:
+            return Session.objects.filter(student = self.request.user.student)
+        elif self.request.user.is_staff:
+            return Session.objects.all()
+        return None
+
+    def retrieve(self, *args, **kwargs):
+        instance = self.get_object()
+        print(instance.result)
+        if instance.result or len(instance.result)!=0:
+            return Response(self.get_serializer(instance).data)
+        else:
+            raise ParseError("You cannot review this test yet.")

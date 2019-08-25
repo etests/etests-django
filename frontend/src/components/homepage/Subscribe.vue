@@ -23,8 +23,7 @@
             outline
             required
           ></v-text-field>
-          <v-btn round large dark color="red darken-1">
-            <v-icon>mdi-playlist-plus</v-icon>
+          <v-btn round large dark color="primary">
             Subscribe
           </v-btn>
         </v-form>

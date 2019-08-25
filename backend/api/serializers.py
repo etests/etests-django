@@ -14,7 +14,14 @@ class InstituteListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Institute
-        fields = ("pk", "user", "pincode")
+        fields = ("id", "user", "pincode")
+
+class TestListSerializer(serializers.ModelSerializer):
+    institute = InstituteListSerializer()
+
+    class Meta:
+        model=Test
+        fields = ("id", "name", "active", "practice", "activation_time", "institute")
 
 class TestSerializer(serializers.ModelSerializer):
     class Meta:

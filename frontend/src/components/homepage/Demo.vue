@@ -17,7 +17,6 @@
           <p :class="$style.description">{{ institute.description }}</p>
           <v-btn round dark large color="primary">
             create demo test
-            <v-icon right dark>mdi-note-plus</v-icon>
           </v-btn>
         </v-sheet>
       </v-flex>
@@ -28,7 +27,6 @@
           <p :class="$style.description">{{ student.description }}</p>
           <v-btn round dark large color="primary">
             attempt demo test
-            <v-icon right dark>mdi-pencil-plus</v-icon>
           </v-btn>
         </v-sheet>
       </v-flex>

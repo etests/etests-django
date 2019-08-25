@@ -220,7 +220,7 @@ export default {
         {
           title: "Exam Schedule",
           icon: "mdi-calendar-text-outline",
-          link: { name: "exams" },
+          link: { name: "schedule" },
           requiresStudent: true
         },
 

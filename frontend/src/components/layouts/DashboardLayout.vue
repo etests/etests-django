@@ -11,32 +11,28 @@
         <v-container grid-list-xs fluid>
           <v-layout row justify-center wrap mx-auto mt-4>
             <v-flex xs12 md4>
-              <v-card :class="[$style.dashboardCard, 'px-4 py-4']">
+              <v-card :class="[$style.dashboardCard, $style.profile, 'px-4']">
+                <div :class="$style.profilePicContainer">
+                  <v-img
+                    src="https://picsum.photos/id/11/500/300"
+                    lazy-src="https://picsum.photos/id/11/10/6"
+                    aspect-ratio="1"
+                    :class="$style.profilePic"
+                  />
+                </div>
                 <v-btn
-                  style="width:100%; margin: 15px auto"
                   round
                   color="primary"
-                  large
                   depressed
+                  style="width: 100%; margin: auto"
                 >
-                  <v-icon left large>laptop</v-icon>
-                  Dashboard
+                  {{ this.profile.name.value }}
                 </v-btn>
-                <v-img
-                  src="https://picsum.photos/id/11/500/300"
-                  lazy-src="https://picsum.photos/id/11/10/6"
-                  aspect-ratio="1"
-                  class="grey lighten-2"
-                  style="max-height:200px;"
-                ></v-img>
                 <v-divider class="my-3"></v-divider>
                 <v-flex xs12 md12 class="pb-4">
                   <v-sheet>
                     <v-list>
-                      <v-list-tile
-                        v-for="item in profile.basic.items"
-                        :key="item.title"
-                      >
+                      <v-list-tile v-for="item in profile" :key="item.title">
                         <v-layout row align-center wrap>
                           <v-flex xs2>
                             <v-list-tile-action>
@@ -44,7 +40,7 @@
                             </v-list-tile-action>
                           </v-flex>
 
-                          <v-flex xs5>
+                          <v-flex xs4>
                             <v-list-tile-content>
                               <v-list-tile-title>
                                 {{ item.title }}
@@ -52,16 +48,16 @@
                             </v-list-tile-content>
                           </v-flex>
 
-                          <v-flex xs5>
+                          <v-flex xs6>
                             <v-list-tile-content>
                               <span v-if="!editing">
-                                {{ item.detail }}
+                                {{ item.value }}
                               </span>
                               <span v-else>
                                 <input
                                   :class="$style.textbox"
                                   type="text"
-                                  v-model="item.detail"
+                                  v-model="item.value"
                                 />
                               </span>
                             </v-list-tile-content>
@@ -140,19 +136,14 @@
                       <v-card flat tile class="d-flex">
                         <v-layout column align-center justify-center>
                           <v-flex xs12>
-                            <v-hover>
-                              <v-img
-                                slot-scope="{ hover }"
-                                :class="[
-                                  `elevation-${hover ? 6 : 0}`,
-                                  $style.control
-                                ]"
-                                :src="control.image"
-                                aspect-ratio="1"
-                                width="100"
-                                class="my-4"
-                              />
-                            </v-hover>
+                            <v-img
+                              :class="$style.control"
+                              :src="control.image"
+                              aspect-ratio="1"
+                              width="100"
+                              class="my-4"
+                              @click="$router.push(control.link)"
+                            />
                           </v-flex>
                           <v-flex xs12>
                             <v-spacer></v-spacer>
@@ -192,12 +183,33 @@ export default {
 @require '~@stylus/theme/colors';
 
 .dashboardCard{
-    min-height: 500px;
     text-align: left;
     border: 1px solid #c9cbd0;
     border-radius: 8px;
     margin: 30px 15px;
-    font-family: "Product Sans Light";
+    margin-top: 100px;
+    font-family: "Product Sans";
+}
+
+.profile{
+    .profilePicContainer{
+      position: relative;
+        height: 100px;
+        width: 100%;
+        text-align: center;
+
+      .profilePic{
+        box-shadow: 0px 2px 10px #999;
+        position: absolute;
+        left: calc( 50% - 75px );
+        top: -70px;
+        border-radius: 100%;
+        height: 150px;
+        width: 150px;
+        margin: auto;
+      }
+    }
+
 }
 
 .control{

@@ -1,7 +1,7 @@
 import { authHeader } from "./auth-header";
 import handleResponse from "./handleResponse";
 
-export const resultService = {
+export const reviewService = {
   get
 };
 
@@ -11,7 +11,7 @@ function get(id) {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.API_URL}/result/${id}/`, requestOptions).then(
+  return fetch(`${process.env.API_URL}/review/${id}/`, requestOptions).then(
     handleResponse
   );
 }

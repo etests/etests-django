@@ -7,7 +7,7 @@
         </v-card>
       </v-flex>
       <v-flex xs12>
-        <Analysis v-if="this.report.result" />
+        <Analysis v-if="this.report && this.report.result" />
         <v-card v-else :class="[$style.card, $style.message]">
           Analysis of your test is not generated yet.
         </v-card>

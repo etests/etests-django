@@ -41,6 +41,13 @@ const router = new Router({
           }
         },
         {
+          path: "tests",
+          component: () => import("@/pages/student/Tests"),
+          meta: {
+            title: "Tests"
+          }
+        },
+        {
           path: "profile",
           name: "profile",
           component: () => import("@/components/auth/RegisterStudent"),
@@ -58,10 +65,17 @@ const router = new Router({
         },
         {
           path: "schedule",
-          name: "exams",
+          name: "schedule",
           component: () => import("@/pages/student/Schedule"),
           meta: {
-            title: "Exam Schedule"
+            title: "Test Schedule"
+          }
+        },
+        {
+          path: "batches",
+          component: () => import("@/pages/student/Batches"),
+          meta: {
+            title: "Batches"
           }
         }
       ]
@@ -189,6 +203,14 @@ const router = new Router({
       meta: {
         title: "Result"
       }
+    },
+    {
+      path: "/review/:id",
+      name: "review",
+      component: () => import("@/pages/test/Review"),
+      meta: {
+        title: "Review"
+      }
     }
   ]
 });
@@ -224,7 +246,7 @@ router.beforeEach((to, from, next) => {
       name: "dashboard"
     });
 
-  document.title = to.meta.title;
+  if (to.meta && to.meta.title) document.title = to.meta.title;
   next();
 });
 

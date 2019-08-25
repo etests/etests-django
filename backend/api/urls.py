@@ -24,7 +24,8 @@ urlpatterns = [
 
     path("update-session/<int:pk>/", SessionRetrieveUpdateView.as_view()),
 
-    path("get-result/<int:pk>/", ResultView.as_view()),
+    path("result/<int:pk>/", ResultView.as_view()),
 
-    path("buyers/", BuyerListView.as_view({"get": "retrieve", "post": "create", "put": "update", "patch": "partial_update", "delete": "destroy"}), name="buyers-list"),
+    path("review/<int:pk>/", Review.as_view()),
+
 ]

@@ -1,19 +1,19 @@
-import { resultService } from "@/api/result.service";
+import { reviewService } from "@/api/review.service";
 
 const initialState = {
   status: {},
-  result: null
+  review: null
 };
 
-export const results = {
+export const reviews = {
   namespaced: true,
   state: initialState,
   actions: {
     get({ dispatch, commit }, id) {
       commit("getRequest", id);
-      resultService.get(id).then(
-        result => {
-          commit("getSuccess", result);
+      reviewService.get(id).then(
+        review => {
+          commit("getSuccess", review);
         },
         error => {
           commit("getFailure", error);
@@ -25,9 +25,9 @@ export const results = {
     getRequest(state) {
       state.status = { loading: true };
     },
-    getSuccess(state, result) {
+    getSuccess(state, review) {
       state.status = { exists: true };
-      state.result = result;
+      state.review = review;
     },
     getFailure(state, error) {
       state.status = { error };

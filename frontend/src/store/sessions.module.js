@@ -1,6 +1,10 @@
 import { sessionService } from "@/api/session.service";
 
-const session = JSON.parse(localStorage.getItem("session"));
+var session = JSON.parse(localStorage.getItem("session"));
+if (session && session.completed) {
+  JSON.parse(localStorage.removeItem("session"));
+  session = null;
+}
 const initialState = session
   ? {
       status: { exists: true },
@@ -23,14 +27,13 @@ export const sessions = {
         session => {
           commit("getSuccess", session);
           setTimeout(() => {
-            dispatch("alert/success", "Session fetched successfully!", {
+            dispatch("alert/success", `Starting ${session.test.name}...`, {
               root: true
             });
           });
         },
         error => {
           commit("getFailure", error);
-          dispatch("alert/error", error, { root: true });
         }
       );
     },
@@ -41,7 +44,7 @@ export const sessions = {
         data => {
           commit("updateSuccess", data);
           setTimeout(() => {
-            dispatch("alert/success", "Session updated successfully!", {
+            dispatch("alert/success", "Test submitted successfully!", {
               root: true
             });
           });
@@ -51,34 +54,6 @@ export const sessions = {
           dispatch("alert/error", error, { root: true });
         }
       );
-    },
-    remove({ dispatch, commit }, id) {
-      commit("removeRequest", id);
-
-      sessionService.remove(id).then(
-        _ => {
-          commit("removeSuccess", id);
-          setTimeout(() => {
-            dispatch("alert/success", "Session removed successfully!", {
-              root: true
-            });
-          });
-        },
-        error => {
-          commit("removeFailure", error);
-          dispatch("alert/error", error, { root: true });
-        }
-      );
-    },
-    getAll({ commit }) {
-      commit("getAllRequest");
-
-      sessionService
-        .getAll()
-        .then(
-          sessions => commit("getAllSuccess", sessions),
-          error => commit("getAllFailure", error)
-        );
     }
   },
   mutations: {
@@ -92,15 +67,6 @@ export const sessions = {
     getFailure(state, error) {
       state.status = { error };
     },
-    getAllRequest(state) {
-      state.all = { loading: true };
-    },
-    getAllSuccess(state, sessions) {
-      state.all = { items: sessions };
-    },
-    getAllFailure(state, error) {
-      state.all = { error };
-    },
     updateRequest(state, data) {
       state.status = { creating: true };
     },
@@ -108,15 +74,6 @@ export const sessions = {
       state.status = { created: true, session: data };
     },
     updateFailure(state, error) {
-      state.status = { error: error };
-    },
-    removeRequest(state, id) {
-      state.status = { removing: true, id: id };
-    },
-    removeSuccess(state, id) {
-      state.status = { removed: true, id: id };
-    },
-    removeFailure(state, error) {
       state.status = { error: error };
     }
   }

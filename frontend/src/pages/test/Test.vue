@@ -335,18 +335,6 @@ export default {
         { value: 5, text: "Subjective" }
       ],
       isSmallScreen: this.$vuetify.breakpoint.smAndDown,
-      emptyQuestion: {
-        section: 0,
-        text: "",
-        image: null,
-        type: 0,
-        options: ["Option A", "Option B", "Option C", "Option D"],
-        status: 0,
-        correctMarks: 4,
-        incorrectMarks: 1,
-        answers: ["Answer P", "Answer Q", "Answer R", "Answer S", "Answer T"],
-        answer: 0
-      },
       submitDialog: false
     };
   },
@@ -476,7 +464,6 @@ export default {
       if (!this.session.completed) this.session.completed = true;
       this.updateSession();
       this.$router.push({ name: "result", params: { id: this.session.id } });
-      localStorage.removeItem("session");
     }
   },
   watch: {
@@ -546,15 +533,15 @@ export default {
     currentQuestion() {
       if (this.test && this.test.questions)
         return this.test.questions[this.questionIndex];
-      else return this.emptyQuestion;
+      else return [];
     },
     currentAnswer() {
       if (this.session) return this.response[this.questionIndex];
-      else return this.emptyQuestion;
+      else return [];
     },
     currentSection() {
       if (this.session) return this.test.sections[this.sectionIndex];
-      else return this.emptyQuestion;
+      else return [];
     }
   },
   created() {

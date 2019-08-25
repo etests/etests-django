@@ -51,7 +51,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('gender', models.CharField(choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Others')], max_length=1)),
-                ('birth_date', models.DateField()),
+                ('birth_date', models.DateField(null=True)),
                 ('institute', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='authentication.Institute')),
                 ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],

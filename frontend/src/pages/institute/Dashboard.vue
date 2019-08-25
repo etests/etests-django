@@ -1,5 +1,5 @@
 <template>
-  <DashboardLayout :profile="institute" :controls="controls" />
+  <DashboardLayout :profile="profile" :controls="controls" />
 </template>
 
 <script>
@@ -44,7 +44,7 @@ export default {
       },
       controls: [
         {
-          name: "Test",
+          name: "Tests",
           image: require("@assets/images/institute/dashboard/test.png")
         },
         {
@@ -52,7 +52,7 @@ export default {
           image: require("@assets/images/institute/dashboard/testseries.png")
         },
         {
-          name: "Question Bank",
+          name: "Practice Tests",
           image: require("@assets/images/institute/dashboard/questionbank.png")
         },
         {
@@ -84,6 +84,35 @@ export default {
   },
   components: {
     DashboardLayout
+  },
+  computed: {
+    user() {
+      return this.$store.state.authentication.user;
+    },
+    profile() {
+      return {
+        name: {
+          title: "Name",
+          value: this.user.name,
+          icon: "mdi-account-outline"
+        },
+        email: {
+          title: "Email",
+          value: this.user.email,
+          icon: "mdi-email-outline"
+        },
+        city: {
+          title: "City",
+          value: this.user.city,
+          icon: "mdi-home-outline"
+        },
+        phone: {
+          title: "Mobile",
+          value: this.user.phone,
+          icon: "mdi-phone-outline"
+        }
+      };
+    }
   }
 };
 </script>

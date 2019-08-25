@@ -9,6 +9,7 @@ import { testSeries } from "./testSeries.module";
 import { tests } from "./tests.module";
 import { sessions } from "./sessions.module";
 import { results } from "./results.module";
+import { reviews } from "./reviews.module";
 
 Vue.use(Vuex);
 
@@ -21,6 +22,7 @@ export default new Vuex.Store({
     testSeries,
     tests,
     sessions,
-    results
+    results,
+    reviews
   }
 });
