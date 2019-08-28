@@ -10,7 +10,7 @@ import django.contrib.auth.password_validation as validators
 from rest_framework import serializers, exceptions
 from rest_framework.exceptions import ValidationError
 
-from .models import Student, Institute
+from .models import *
 from .utils import import_callable
 
 from django.http import HttpRequest
@@ -113,7 +113,7 @@ class InstituteDetailsSerializer(serializers.ModelSerializer):
 
 class StudentDetailsSerializer(serializers.ModelSerializer):
     user = UserDetailsSerializer()
-    institutes = InstituteDetailsSerializer(many=True, read_only=True)
+    # institutes = InstituteDetailsSerializer(many=True, read_only=True)
 
     class Meta:
         model = Student
@@ -248,4 +248,3 @@ class PasswordChangeSerializer(serializers.Serializer):
         if not self.logout_on_password_change:
             from django.contrib.auth import update_session_auth_hash
             update_session_auth_hash(self.request, self.user)
-

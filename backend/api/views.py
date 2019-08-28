@@ -1,11 +1,12 @@
 from rest_framework import permissions
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, status
 from rest_framework.response import Response
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import APIException, MethodNotAllowed, PermissionDenied, NotFound, ParseError
 from django.apps import apps
+import json
 from .utils import SessionEvaluation
 from .serializers import *
 from .models import *
@@ -29,6 +30,50 @@ class IsStudentOwner(permissions.BasePermission):
 class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user.is_authenticated and  obj.user == request.user
+
+class BatchListView(generics.ListAPIView):
+    permission_classes = (ReadOnly, permissions.IsAuthenticated)
+    serializer_class = BatchListSerializer
+    def get_queryset(self):
+        if self.request.user.is_institute:
+            return Batch.objects.filter(institute=self.request.user.institute)
+        elif self.request.user.is_student:
+            return Batch.objects.filter(institute__in=self.request.user.student.institutes)
+        elif self.request.user.is_staff:
+            return Batch.objects.all()
+        else:
+            return None
+
+class BatchListCreateView(generics.ListCreateAPIView):
+    permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
+    serializer_class = InstituteBatchSerializer
+    def get_queryset(self):
+
+        if self.request.user.is_authenticated:
+            if self.request.user.is_institute:
+                return Batch.objects.filter(institute=self.request.user.institute)
+            elif self.request.user.is_staff:
+                return Batch.objects.all()
+        else:
+            return None
+    
+    def perform_create(self, serializer):
+        serializer.save(institute=self.request.user.institute)
+    
+
+class BatchRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
+    serializer_class = InstituteBatchSerializer
+
+    def get_queryset(self):
+
+        if self.request.user.is_authenticated:
+            if self.request.user.is_institute:
+                return Batch.objects.filter(institute=self.request.user.institute)
+            elif self.request.user.is_staff:
+                return Batch.objects.all()
+        else:
+            return None
 
 class InstitutesListView(viewsets.ViewSet):
     permission_classes = (ReadOnly,)
@@ -64,7 +109,6 @@ class TagListView(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
         
 class TestSeriesListCreateView(generics.ListCreateAPIView):
-    serializer_class = SessionSerializer
     permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
     serializer_class = TestSeriesSerializer
     def get_queryset(self):
@@ -222,8 +266,58 @@ class Review(generics.RetrieveAPIView):
 
     def retrieve(self, *args, **kwargs):
         instance = self.get_object()
-        print(instance.result)
-        if instance.result or len(instance.result)!=0:
+        
+        if instance.result or (instance.result and len(instance.result)!=0):
             return Response(self.get_serializer(instance).data)
         else:
             raise ParseError("You cannot review this test yet.")
+
+
+class TransactionListView(generics.ListAPIView):
+    permission_classes = (ReadOnly, permissions.IsAuthenticated)
+    serializer_class = TransactionSerializer
+    def get_queryset(self):
+        if self.request.user.is_institute:
+            return Transaction.objects.filter(institute=self.request.user.institute)
+        return None
+
+class CreditListView(generics.ListAPIView):
+    permission_classes = (ReadOnly, permissions.IsAuthenticated)
+    serializer_class = CreditUseSerializer
+    def get_queryset(self):
+        if self.request.user.is_institute:
+            return CreditUse.objects.filter(institute=self.request.user.institute)
+        return None
+
+
+
+class EnrollmentView(generics.ListCreateAPIView):
+    permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
+    serializer_class = EnrollmentSerializer
+
+    def get_queryset(self):
+        if self.request.user.is_institute:
+            return Enrollment.objects.filter(institute=self.request.user.institute)
+        elif self.request.user.is_staff:
+            return Enrollment.objects.all()
+        return None
+
+    def create(self, request, *args, **kwargs):
+        enrollments = []
+        headers = []
+        data=[{
+                'institute': request.user.institute.pk,
+                'batch':  request.data['batch'],
+                'roll_number': roll_number 
+            }
+            for roll_number in request.data['rollNumbers']
+            ]
+            
+        serializer = self.get_serializer(data = data, many = True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        return Response(serializer.data,
+                        status=status.HTTP_201_CREATED,
+                        headers=headers)

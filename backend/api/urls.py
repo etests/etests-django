@@ -4,6 +4,16 @@ from django.urls import include, path
 from .views import *
 
 urlpatterns = [
+    path("batches/simple/", BatchListView.as_view()),
+
+    path("batches/", BatchListCreateView.as_view()),
+
+    path("batches/<int:pk>/", BatchRetrieveUpdateDestoryView.as_view()),
+
+    path("batch-enroll/", EnrollmentView.as_view()),
+
+    path("enrollments/", EnrollmentView.as_view()),
+
     path("institutes/", InstitutesListView.as_view({"get": "list"}), name="institutes-list"),
     
     path("subjects/", SubjectListView.as_view({"get": "list"}), name="subjects-list"),
@@ -28,4 +38,6 @@ urlpatterns = [
 
     path("review/<int:pk>/", Review.as_view()),
 
+    path("transactions/", TransactionListView.as_view(), name="transaction-list"),
+    path("credit-used/", CreditListView.as_view(), name="credits-list")
 ]

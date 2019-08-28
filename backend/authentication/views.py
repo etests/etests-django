@@ -16,14 +16,10 @@ from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, Creat
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.exceptions import NotFound
 
-from .models import Institute
+from .models import *
 
-from .app_settings import (
-    UserDetailsSerializer, LoginSerializer,
-    PasswordResetSerializer, PasswordResetConfirmSerializer,
-    PasswordChangeSerializer, JWTSerializer,
-    RegisterSerializer, register_permission_classes
-)
+from .app_settings import *
+
 from .utils import jwt_encode
 
 sensitive_post_parameters_m = method_decorator(
@@ -32,9 +28,7 @@ sensitive_post_parameters_m = method_decorator(
     )
 )
 
-from .serializers import (
-    StudentDetailsSerializer, InstituteDetailsSerializer, VerifyEmailSerializer,
-)
+from .serializers import *
 
 
 class RegisterView(CreateAPIView):

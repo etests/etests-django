@@ -70,12 +70,17 @@ class AccessCode(models.Model):
     key = models.CharField(default = generateRandomKey, max_length = 10, unique=True)
     use_count = models.IntegerField(default = 0)
 
+    def __str__(self):
+        return self.key
+
 class Tag(models.Model):
     id = models.AutoField(primary_key = True)
     TAG_TYPE_CHOICES = (("EXAM", "Exam"), ("TOPIC", "Topic"), ("OTHER", "Others"))
     name = models.CharField(max_length = 20)
     type = models.CharField(max_length = 10, choices = TAG_TYPE_CHOICES)
 
+    def __str__(self):
+        return self.name
 
 class TestSeries(models.Model):
     id = models.AutoField(primary_key = True)
@@ -135,6 +140,9 @@ class Test(models.Model):
             self.slug = get_unique_slug(self, "name")
         super(Test, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return self.name
+
 class Session(models.Model):
     id = models.AutoField(primary_key=True)
     student = models.ForeignKey(Student, related_name='sessions', on_delete=models.CASCADE)
@@ -147,6 +155,9 @@ class Session(models.Model):
     result = JSONField(blank = True, null = True)
     current = JSONField(blank = True, null = True)
     marks = JSONField(blank = True, null = True)
+
+    def __str__(self):
+        return self.student.user.name+" "+self.test.name
 
     def expired(self):
         if self.practice:
@@ -178,3 +189,52 @@ class Buyer(models.Model):
         return self.user.name
 
 
+class Variable(models.Model):
+    name = models.CharField(max_length=100)
+    value = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+class Transaction(models.Model):
+    TRANSACTIONS_TYPE_CHOICES = (("CASH", "Cash"), ("UPI", "UPI"), ("NETBANKING", "Netbanking"), ("PAYTM", "PayTM"), ("OTHERS","Others"))
+    id = models.AutoField(primary_key = True)
+    institute = models.ForeignKey(Institute, null=True, on_delete=models.SET_NULL)
+    date_added = models.DateField(auto_now_add=True)
+    credits_added = models.IntegerField(default=0)
+    transaction_id = models.CharField(max_length=200 , null=True , blank=True , unique=True)
+    mode = models.CharField(max_length = 10, choices = TRANSACTIONS_TYPE_CHOICES)
+    amount = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.institute.user.name + "/Mode-"+ self.mode + "/TID-" + self.transaction_id
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            try:
+                self.credits_added = self.amount * Variable.objects.get(name="CREDITS_PER_RUPEE").value
+            except:
+                self.credits_added = 0
+            institute = self.institute
+            institute.current_credits+=self.credits_added
+            institute.save()
+        super().save(*args, **kwargs)
+
+
+class CreditUse(models.Model):
+    id = models.AutoField(primary_key = True)
+    institute = models.ForeignKey(Institute, null=True, on_delete=models.SET_NULL)
+    test = models.ForeignKey(Test, null=True, on_delete=models.SET_NULL)
+    date_added = models.DateField(auto_now_add=True)
+    credits_used = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.institute.user.name+" / "+str(self.date_added)+" / "+str(self.credits_used)
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            institute = self.institute
+            # Later: calculate credits_used using fixed rate
+            institute.current_credits -= self.credits_used
+            institute.save()
+        super().save(*args, **kwargs)

@@ -99,6 +99,14 @@ const router = new Router({
           }
         },
         {
+          path: "transactions",
+          name: "institute-transactions",
+          component: () => import("@/pages/institute/Transactions"),
+          meta: {
+            title: "Dashboard"
+          }
+        },
+        {
           path: "profile",
           name: "institute-profile",
           component: () => import("@/components/auth/RegisterInstitute"),

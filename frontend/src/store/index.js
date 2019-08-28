@@ -10,6 +10,10 @@ import { tests } from "./tests.module";
 import { sessions } from "./sessions.module";
 import { results } from "./results.module";
 import { reviews } from "./reviews.module";
+import { batches } from "./batches.module";
+import { transactions } from "./transactions.module";
+import { credits } from "./credits.module";
+import { enrollments } from "./enrollments.module";
 
 Vue.use(Vuex);
 
@@ -23,6 +27,10 @@ export default new Vuex.Store({
     tests,
     sessions,
     results,
-    reviews
+    reviews,
+    batches,
+    transactions,
+    credits,
+    enrollments
   }
 });

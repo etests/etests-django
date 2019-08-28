@@ -9,75 +9,51 @@ export default {
   data() {
     return {
       editing: false,
-      institute: {
-        basic: {
-          title: "Basic",
-          items: [
-            { title: "Name", detail: "abc", icon: "domain" },
-            { title: "Email", detail: "xyz@gmail", icon: "email" },
-            { title: "City", detail: "jnk", icon: "home" },
-            { title: "Mobile", detail: "55479", icon: "phone" }
-          ]
-        },
-        account: {
-          title: "Account",
-          items: [
-            {
-              title: "Tests",
-              detail: 5,
-              icon: "mdi-clipboard-text-outline"
-            },
-            {
-              title: "TestSeries",
-              detail: 5,
-              icon: "mdi-clipboard-text-play-outline"
-            },
-            {
-              title: "Question Banks",
-              detail: 5,
-              icon: "mdi-book-open-page-variant"
-            },
-            { title: "Batches", detail: 5, icon: "mdi-group" },
-            { title: "Students", detail: 5, icon: "mdi-account-group-outline" }
-          ]
-        }
-      },
       controls: [
         {
           name: "Tests",
-          image: require("@assets/images/institute/dashboard/test.png")
+          image: require("@assets/images/institute/dashboard/test.png"),
+          link: { path: "tests" }
         },
         {
           name: "Test Series",
-          image: require("@assets/images/institute/dashboard/testseries.png")
+          image: require("@assets/images/institute/dashboard/testseries.png"),
+          link: { path: "tests-series" }
         },
         {
           name: "Practice Tests",
-          image: require("@assets/images/institute/dashboard/questionbank.png")
+          image: require("@assets/images/institute/dashboard/questionbank.png"),
+          link: { path: "testseries" }
         },
         {
           name: "Results",
-          image: require("@assets/images/institute/dashboard/results.png")
+          image: require("@assets/images/institute/dashboard/results.png"),
+          link: { path: "results" }
         },
         {
           name: "Transactions",
-          image: require("@assets/images/institute/dashboard/transactions.png")
+          image: require("@assets/images/institute/dashboard/transactions.png"),
+          link: { path: "transactions" }
         },
         {
           name: "Notifications",
-          image: require("@assets/images/institute/dashboard/notifications.png")
+          image: require("@assets/images/institute/dashboard/notifications.png"),
+          link: { path: "notifications" }
         },
         {
           name: "Discuss",
-          image: require("@assets/images/institute/dashboard/discuss.png")
+          image: require("@assets/images/institute/dashboard/discuss.png"),
+          link: { path: "discuss" }
         },
         {
           name: "Analytics",
-          image: require("@assets/images/institute/dashboard/analytics.png")
+          image: require("@assets/images/institute/dashboard/analytics.png"),
+          link: { path: "analytis" }
         },
         {
-          name: "Groups",
-          image: require("@assets/images/institute/dashboard/groups.png")
+          name: "Batches",
+          image: require("@assets/images/institute/dashboard/groups.png"),
+          link: { path: "batches" }
         }
       ]
     };

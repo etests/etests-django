@@ -5,6 +5,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from datetime import datetime, timedelta
+from .utils import randomKey
+from django.core.exceptions import ValidationError
 
 class MyUserManager(BaseUserManager):
     def _create_user(self, email, password, **extra_fields):
@@ -51,6 +53,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Institute(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     pincode = models.CharField(max_length=10)
+    current_credits = models.IntegerField(default=0)
 
     def __str__(self):
         return self.user.name
@@ -60,12 +63,44 @@ class Institute(models.Model):
             self.user.is_institute = True
         super(Institute, self).save(*args, **kwargs)
 
+class Batch(models.Model):
+    joining_key = models.CharField(max_length=8, default=randomKey)
+    name = models.CharField(max_length=100)
+    institute = models.ForeignKey(Institute, related_name="batches", on_delete=models.CASCADE)
+
+    def students(self):
+        return Student.objects.filter(institutes=self.institute)
+
+    def __str__(self):
+        return self.name
+
+class Enrollment(models.Model):
+    institute = models.ForeignKey(Institute, on_delete=models.CASCADE)
+    batch = models.ForeignKey(Batch, related_name="enrollments", on_delete=models.CASCADE)
+    roll_number = models.CharField(max_length=25)
+    joining_key = models.CharField(max_length=8, default=randomKey)
+    student = models.ForeignKey("Student", related_name="enrollment", null=True, on_delete=models.SET_NULL)
+    date_joined = models.DateField(null=True)
+
+    class Meta:
+        unique_together = ('batch', 'roll_number')
+
+    def __str__(self):
+        return self.roll_number
+
+    def save(self, *args, **kwargs):
+        errors = {}
+        if self.batch not in self.institute.batches.all():
+            errors['batch'] = ("This batch does not belong to the institute.",)
+            raise ValidationError(errors)
+        else:
+            super(Enrollment, self).save(*args, **kwargs)
 
 class Student(models.Model):
     GENDERS = (("M", "Male"), ("F", "Female"), ("O", "Others"))
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     gender = models.CharField(max_length=1, choices=GENDERS)
-    institutes = models.ManyToManyField(Institute, blank=True)
+    institutes = models.ManyToManyField(Institute, related_name="students", through=Enrollment, blank=True)
     birth_date = models.DateField()
 
     def __str__(self):
@@ -75,3 +110,4 @@ class Student(models.Model):
         if not self.pk:
             self.user.is_student = True
         super(Student, self).save(*args, **kwargs)
+

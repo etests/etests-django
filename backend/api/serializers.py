@@ -1,8 +1,8 @@
 from rest_framework import serializers, exceptions
 from rest_framework.exceptions import ValidationError
-from authentication.models import User, Institute
+from authentication.models import *
 from .models import *
-from authentication.serializers import UserDetailsSerializer
+from authentication.serializers import UserDetailsSerializer, StudentDetailsSerializer, InstituteDetailsSerializer
 
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -77,3 +77,40 @@ class ResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = Session
         fields = ('id', 'response', 'test', 'result', 'marks')
+
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = ('__all__')
+
+class CreditUseSerializer(serializers.ModelSerializer):
+    test = serializers.SerializerMethodField('get_test_name')
+
+    class Meta:
+        model = CreditUse
+        fields = ('__all__')
+
+    def get_test_name(self, obj):
+        return obj.test.name
+
+class EnrollmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Enrollment
+        fields = ("institute", "batch", "roll_number", "joining_key")
+
+class BatchJoinSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Enrollment
+        fields = ("institute", "batch", "roll_number", "joining_key", "student")
+
+class InstituteBatchSerializer(serializers.ModelSerializer):
+    enrollments = BatchJoinSerializer(many=True)
+    class Meta:
+        model = Batch
+        fields = ("pk", "name", "joining_key", "enrollments")
+
+class BatchListSerializer(serializers.ModelSerializer):
+    institute = InstituteDetailsSerializer()
+    class Meta:
+        model = Batch
+        fields = ("pk", "name", "institute")
