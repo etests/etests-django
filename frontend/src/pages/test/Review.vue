@@ -239,20 +239,6 @@
           </v-btn>
         </span>
       </template>
-
-      <template slot="submit">
-        <v-btn
-          outline
-          color="indigo"
-          fixed
-          bottom
-          :left="isSmallScreen"
-          @click="submitDialog = true"
-        >
-          <v-icon>mdi-exit-to-app</v-icon>
-          <span>Submit this test</span>
-        </v-btn>
-      </template>
     </TestLayout>
   </div>
 </template>

@@ -3,6 +3,7 @@ import handleResponse from "./handleResponse";
 
 export const enrollmentService = {
   batchEnroll,
+  remove,
   getAll
 };
 
@@ -16,6 +17,18 @@ function batchEnroll(data) {
   return fetch(`${process.env.API_URL}/batch-enroll/`, requestOptions).then(
     handleResponse
   );
+}
+
+function remove(id) {
+  const requestOptions = {
+    method: "DELETE",
+    headers: authHeader()
+  };
+
+  return fetch(
+    `${process.env.API_URL}/enrollments/${id}/`,
+    requestOptions
+  ).then(handleResponse);
 }
 
 function getAll() {

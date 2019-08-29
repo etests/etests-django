@@ -14,6 +14,8 @@ urlpatterns = [
 
     path("enrollments/", EnrollmentView.as_view()),
 
+    path("enrollments/<int:pk>/", EnrollmentRetrieveUpdateDestoryView.as_view()),
+
     path("institutes/", InstitutesListView.as_view({"get": "list"}), name="institutes-list"),
     
     path("subjects/", SubjectListView.as_view({"get": "list"}), name="subjects-list"),
@@ -26,7 +28,9 @@ urlpatterns = [
 
     path("testseries/<int:pk>/", TestSeriesRetrieveUpdateDestoryView.as_view(), name="testseries-update-delete"),
 
-    path("tests/", TestListCreateView.as_view(), name="test-list-create"),
+    path("tests/", TestListView.as_view(), name="test-list"),
+
+    path("create-test/", TestCreateView.as_view()),
 
     path("tests/<int:pk>/", TestRetrieveUpdateDestoryView.as_view(), name="test-update-delete"),
 

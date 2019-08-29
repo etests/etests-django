@@ -1,9 +1,11 @@
 <template>
   <WideLayout>
-    <v-layout column align-center>
+    <v-layout column align-center v-if="marks">
       <v-flex xs12>
         <v-card :class="[$style.card, $style.message]">
-          You got {{ this.marks.total }}/{{ this.marks.total }}
+          You got {{ marks.total }}/{{
+            marks.max_marks[marks.max_marks.length - 1]
+          }}
         </v-card>
       </v-flex>
       <v-flex xs12>

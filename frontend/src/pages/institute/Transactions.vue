@@ -1,5 +1,5 @@
 <template>
-  <GeneralHeroLayout>
+  <StandardLayout>
     <SectionLayout heading="Transactions">
       <v-flex xs12>
         <v-text-field
@@ -50,12 +50,18 @@
           </template>
         </v-data-table>
       </v-flex>
+      <v-tooltip left>
+        <template v-slot:activator="{ on }">
+          <v-btn color="primary" dark v-on="on">Left</v-btn>
+        </template>
+        <span>Left tooltip</span>
+      </v-tooltip>
     </SectionLayout>
-  </GeneralHeroLayout>
+  </StandardLayout>
 </template>
 
 <script>
-import GeneralHeroLayout from "@components/layouts/GeneralHeroLayout";
+import StandardLayout from "@components/layouts/StandardLayout";
 import SectionLayout from "@components/layouts/SectionLayout";
 
 export default {
@@ -115,7 +121,7 @@ export default {
     }
   },
   components: {
-    GeneralHeroLayout,
+    StandardLayout,
     SectionLayout
   }
 };

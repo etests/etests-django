@@ -23,6 +23,11 @@ class TestListSerializer(serializers.ModelSerializer):
         model=Test
         fields = ("id", "name", "active", "practice", "activation_time", "institute")
 
+class TestCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Test
+        fields = ("name", "institute", "questions", "answers", "sections")
+
 class TestSerializer(serializers.ModelSerializer):
     class Meta:
         model=Test
@@ -71,12 +76,18 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = '__all__'
 
-
 class ResultSerializer(serializers.ModelSerializer):
     test = TestSerializer(many=False, read_only=True)
     class Meta:
         model = Session
+        fields = ('id', 'test', 'marks')
+
+class ReviewSerializer(serializers.ModelSerializer):
+    test = TestSerializer(many=False, read_only=True)
+    class Meta:
+        model = Session
         fields = ('id', 'response', 'test', 'result', 'marks')
+
 
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
@@ -96,12 +107,12 @@ class CreditUseSerializer(serializers.ModelSerializer):
 class EnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollment
-        fields = ("institute", "batch", "roll_number", "joining_key")
+        fields = ("pk", "institute", "batch", "roll_number", "joining_key")
 
 class BatchJoinSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollment
-        fields = ("institute", "batch", "roll_number", "joining_key", "student")
+        fields = ("pk", "institute", "batch", "roll_number", "joining_key", "student")
 
 class InstituteBatchSerializer(serializers.ModelSerializer):
     enrollments = BatchJoinSerializer(many=True)

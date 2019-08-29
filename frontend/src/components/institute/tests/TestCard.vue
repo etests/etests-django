@@ -58,7 +58,7 @@
           icon
           flat
           color="info lighten-1"
-          @click="$router.push({ path: `/edit-test/${test.id}` })"
+          @click="$router.push({ path: `test/${test.id}/edit` })"
         >
           <v-icon class="px-1">mdi-square-edit-outline</v-icon>
         </v-btn>
@@ -170,7 +170,7 @@ export default {
       const { dispatch } = this.$store;
       var data = this.meta.data;
       data.name = this.test.name;
-      data.test_series = this.testSeries.id;
+      if (this.testSeries) data.test_series = this.testSeries.id;
       data.questions = testTemplate.questions;
       data.answers = testTemplate.answers;
       data.sections = testTemplate.sections;

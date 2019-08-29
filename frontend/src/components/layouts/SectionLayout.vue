@@ -27,7 +27,7 @@ export default {
 
 .section{
     font-family: 'Product Sans',Roboto,Arial,sans-serif;
-    margin: 50px auto;
+    margin-bottom: 50px;
     .heading{
         text-align: left;
         letter-spacing: .014em;

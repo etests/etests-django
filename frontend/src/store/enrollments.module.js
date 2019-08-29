@@ -21,6 +21,24 @@ export const enrollments = {
         }
       );
     },
+    remove({ dispatch, commit }, id) {
+      commit("removeRequest", id);
+
+      enrollmentService.remove(id).then(
+        _ => {
+          commit("removeSuccess", id);
+          setTimeout(() => {
+            dispatch("alert/success", "Student removed successfully!", {
+              root: true
+            });
+          });
+        },
+        error => {
+          commit("removeFailure", error);
+          dispatch("alert/error", error, { root: true });
+        }
+      );
+    },
     getAll({ dispatch, commit }, data) {
       commit("getAllRequest");
       enrollmentService.getAll(data).then(
@@ -53,6 +71,15 @@ export const enrollments = {
     },
     getAllFailure(state, error) {
       state.status = { error };
+    },
+    removeRequest(state, id) {
+      state.status = { removing: true, id: id };
+    },
+    removeSuccess(state, id) {
+      state.status = { removed: true, id: id };
+    },
+    removeFailure(state, error) {
+      state.status = { error: error };
     }
   }
 };

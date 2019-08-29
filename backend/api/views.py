@@ -140,7 +140,7 @@ class TestSeriesRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView)
             return None
 
 
-class TestListCreateView(generics.ListCreateAPIView):
+class TestListView(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = TestListSerializer
 
@@ -148,12 +148,16 @@ class TestListCreateView(generics.ListCreateAPIView):
         if self.request.user.is_authenticated:
             if self.request.user.is_institute:
                 return Test.objects.filter(institute=self.request.user.institute)
-            if self.request.user.is_student:
+            elif self.request.user.is_student:
                 return Test.objects.filter(institute__in=self.request.user.student.institutes.all())
             elif self.request.user.is_staff:
                 return Test.objects.all()
         else:
             return None
+
+class TestCreateView(generics.CreateAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = TestCreateSerializer
 
     def perform_create(self, serializer):
         serializer.save(institute=self.request.user.institute)
@@ -232,7 +236,9 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
                 raise PermissionDenied("You have already submitted this test.")
             else:   
                 test = Test.objects.get(id=instance.test.id)
-                instance.marks = SessionEvaluation(test, session).evaluate()
+                evaluated = SessionEvaluation(test, session).evaluate()
+                instance.marks = evaluated[0]
+                instance.result = {"question_wise_marks":evaluated[1]}
 
         serializer = self.get_serializer(instance, data=self.request.data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -246,7 +252,7 @@ class ResultView(generics.RetrieveAPIView):
     def get_queryset(self):
         if self.request.user.is_institute:
             return Session.objects.filter(student__institutes = self.request.user.institute)
-        if self.request.user.is_student:
+        elif self.request.user.is_student:
             return Session.objects.filter(student = self.request.user.student)
         elif self.request.user.is_staff:
             return Session.objects.all()
@@ -254,7 +260,7 @@ class ResultView(generics.RetrieveAPIView):
 
 class Review(generics.RetrieveAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
-    serializer_class = ResultSerializer
+    serializer_class = ReviewSerializer
     def get_queryset(self):
         if self.request.user.is_institute:
             return Session.objects.filter(student__institutes = self.request.user.institute)
@@ -321,3 +327,17 @@ class EnrollmentView(generics.ListCreateAPIView):
         return Response(serializer.data,
                         status=status.HTTP_201_CREATED,
                         headers=headers)
+
+class EnrollmentRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = (ReadOnly | IsInstituteOwner | permissions.IsAdminUser,)
+    serializer_class = EnrollmentSerializer
+
+    def get_queryset(self):
+        if self.request.user.is_institute:
+            return Enrollment.objects.filter(institute=self.request.user.institute)
+        elif self.request.user.is_student:
+            return Enrollment.objects.filter(institute=self.request.user.student.institute)
+        elif self.request.user.is_staff:
+            return Enrollment.objects.all()
+        else:
+            return None

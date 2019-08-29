@@ -91,9 +91,35 @@
           <v-list-tile
             v-for="n in 20"
             :key="n"
-            @click="currentQuestion.correctMarks = n"
+            @click="currentQuestion.inCorrectMarks = n"
           >
             <v-list-tile-title>{{ n }}</v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-menu>
+
+      <v-menu
+        v-if="[1, 3].includes(currentQuestion.type)"
+        offset-y
+        transition="slide-y-transition"
+        bottom
+        max-height="300"
+      >
+        <template v-slot:activator="{ on }">
+          <v-btn color="blue" round outline v-on="on">
+            <v-icon>mdi-plus</v-icon>
+            <span v-if="!isSmallScreen">
+              {{ currentQuestion.partialMarks }} &nbsp;
+            </span>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-tile
+            v-for="n in 21"
+            :key="n"
+            @click="currentQuestion.partialMarks = n - 1"
+          >
+            <v-list-tile-title>{{ n - 1 }}</v-list-tile-title>
           </v-list-tile>
         </v-list>
       </v-menu>
@@ -447,6 +473,7 @@ export default {
         status: 0,
         correctMarks: 4,
         incorrectMarks: 1,
+        partialMarks: 0,
         answers: ["Answer P", "Answer Q", "Answer R", "Answer S", "Answer T"]
       }
     };

@@ -27,7 +27,7 @@ function create(data) {
     body: JSON.stringify(data)
   };
 
-  return fetch(`${process.env.API_URL}/tests/`, requestOptions).then(
+  return fetch(`${process.env.API_URL}/create-test/`, requestOptions).then(
     handleResponse
   );
 }

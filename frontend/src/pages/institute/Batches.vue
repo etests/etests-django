@@ -1,5 +1,32 @@
 <template>
-  <WideLayout>
+  <StandardLayout>
+    <v-dialog v-if="batches" v-model="deleteDialog" max-width="400">
+      <v-card :class="$style.addDialog">
+        <v-card-title :class="$style.title">
+          Remove student with roll number
+          {{ rollNumber }}?
+        </v-card-title>
+        <v-card-text>
+          The student will be removed from this batch. Are you sure you want to
+          continue?
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="error" flat @click="deleteDialog = false">
+            Cancel
+          </v-btn>
+          <v-btn
+            color="error"
+            @click="
+              remove(enrollmentId);
+              deleteDialog = false;
+            "
+          >
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-dialog v-if="batches" v-model="addDialog" max-width="400">
       <v-card :class="$style.addDialog">
         <v-card-title :class="$style.title">
@@ -53,37 +80,43 @@
             Add students
           </v-btn>
         </v-toolbar>
-        <SectionLayout heading="Enrollmets">
-          <v-layout row wrap align-center>
-            <v-data-table
-              :headers="enrollmentHeaders"
-              :items="batches[batchIndex].enrollments"
-              class="elevation-2"
-            >
-              <template v-slot:items="props">
-                <td class="text-xs-center">{{ props.item.roll_number }}</td>
-                <td class="text-xs-center">{{ props.item.joining_key }}</td>
-                <td class="text-xs-center">
-                  <v-text class="success--text" v-if="props.item.student">
-                    Joined
-                  </v-text>
-                  <v-text class="error--text" v-else>
-                    Pending
-                  </v-text>
-                </td>
-                <td class="text-xs-center">
-                  <v-btn flat icon color="error"
-                    ><v-icon>mdi-delete</v-icon></v-btn
-                  >
-                  <!-- <v-btn flat icon color="cyan"
+        <v-layout row wrap align-center pa-5>
+          <v-data-table
+            :headers="enrollmentHeaders"
+            :items="batches[batchIndex].enrollments"
+            class="elevation-2"
+          >
+            <template v-slot:items="props">
+              <td class="text-xs-center">{{ props.item.roll_number }}</td>
+              <td class="text-xs-center">{{ props.item.joining_key }}</td>
+              <td class="text-xs-center">
+                <span class="success--text" v-if="props.item.student">
+                  Joined
+                </span>
+                <span class="error--text" v-else>
+                  Pending
+                </span>
+              </td>
+              <td class="text-xs-center">
+                <v-btn
+                  flat
+                  icon
+                  color="error"
+                  @click="
+                    rollNumber = props.item.roll_number;
+                    enrollmentId = props.item.pk;
+                    deleteDialog = true;
+                  "
+                  ><v-icon>mdi-delete</v-icon></v-btn
+                >
+                <!-- <v-btn flat icon color="cyan"
                   ><v-icon>mdi-pencil</v-icon></v-btn
                 >
                 <v-btn flat icon color="green"><v-icon>mdi-redo</v-icon></v-btn> -->
-                </td>
-              </template>
-            </v-data-table>
-          </v-layout>
-        </SectionLayout>
+              </td>
+            </template>
+          </v-data-table>
+        </v-layout>
       </v-card>
     </v-dialog>
     <v-layout row wrap v-if="batches">
@@ -125,11 +158,11 @@
         </v-card>
       </v-flex>
     </v-layout>
-  </WideLayout>
+  </StandardLayout>
 </template>
 
 <script>
-import WideLayout from "@components/layouts/WideLayout";
+import StandardLayout from "@components/layouts/StandardLayout";
 import SectionLayout from "@components/layouts/SectionLayout";
 
 export default {
@@ -137,7 +170,10 @@ export default {
     return {
       dialog: false,
       batchIndex: 0,
+      rollNumber: 0,
+      enrollmentId: 0,
       addDialog: false,
+      deleteDialog: false,
       rollNumbers: "",
       enrollmentHeaders: [
         {
@@ -167,7 +203,7 @@ export default {
     };
   },
   components: {
-    WideLayout,
+    StandardLayout,
     SectionLayout
   },
   created() {
@@ -188,6 +224,9 @@ export default {
         rollNumbers: this.rollNumbers.trim().split(" ")
       };
       this.$store.dispatch("enrollments/batchEnroll", data);
+    },
+    remove(i) {
+      this.$store.dispatch("enrollments/remove", i);
     }
   }
 };

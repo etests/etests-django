@@ -172,27 +172,6 @@ export default {
       title: "eTests",
       slogan: "an online testing platform",
       showLoginDialog: false,
-      topNavMenu: [
-        { title: "Home", icon: "mdi-home-outline", link: { name: "home" } },
-
-        {
-          title: "Institutes",
-          icon: "mdi-domain",
-          link: { name: "institutes" }
-        },
-        {
-          title: "Tests",
-          icon: "mdi-note-multiple-outline",
-          link: { path: "/institute/tests" },
-          requiresInstitute: true
-        },
-
-        {
-          title: "Discuss",
-          icon: "mdi-account-group-outline",
-          link: { name: "discuss" }
-        }
-      ],
       menu: [
         { title: "Home", icon: "mdi-home-outline", link: { name: "home" } },
 
@@ -304,13 +283,45 @@ export default {
       if (this.$store.state.authentication.status.loggedIn) return true;
       return false;
     },
+    user() {
+      if (!this.loggedIn) return { type: "student" };
+      else return this.$store.state.authentication.user;
+    },
     isStudent() {
       if (!this.loggedIn) return false;
-      return this.$store.state.authentication.user.is_student;
+      else return this.user.is_student;
     },
     isInstitute() {
       if (!this.loggedIn) return false;
-      return this.$store.state.authentication.user.is_institute;
+      else return this.user.is_institute;
+    },
+    topNavMenu() {
+      return [
+        { title: "Home", icon: "mdi-home-outline", link: { name: "home" } },
+
+        {
+          title: "Institutes",
+          icon: "mdi-domain",
+          link: { name: "institutes" }
+        },
+        {
+          title: "Tests",
+          icon: "mdi-note-multiple-outline",
+          link: { path: `/${this.user.type}/tests` },
+          requiresInstitute: true
+        },
+        {
+          title: "Dashboard",
+          icon: "mdi-note-multiple-outline",
+          link: { path: `/${this.user.type}/dashboard` },
+          requiresInstitute: true
+        },
+        {
+          title: "Discuss",
+          icon: "mdi-account-group-outline",
+          link: { name: "discuss" }
+        }
+      ];
     }
   },
   mounted() {
