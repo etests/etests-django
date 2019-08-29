@@ -67,6 +67,24 @@ export const batches = {
         }
       );
     },
+    join({ dispatch, commit }, data) {
+      commit("joinRequest", data.rollNumber);
+
+      batchService.join(data).then(
+        _ => {
+          commit("joinSuccess", data.rollNumber);
+          setTimeout(() => {
+            dispatch("alert/success", "Joined successfully!", {
+              root: true
+            });
+          });
+        },
+        error => {
+          commit("joinFailure", error);
+          dispatch("alert/error", error, { root: true });
+        }
+      );
+    },
     remove({ dispatch, commit }, id) {
       commit("removeRequest", id);
 
@@ -151,6 +169,15 @@ export const batches = {
       state.status = { created: true, batch: data };
     },
     updateFailure(state, error) {
+      state.status = { error: error };
+    },
+    joinRequest(state, id) {
+      state.status = { joining: true, id: id };
+    },
+    joinSuccess(state, id) {
+      state.status = { joined: true, id: id };
+    },
+    joinFailure(state, error) {
       state.status = { error: error };
     },
     removeRequest(state, id) {

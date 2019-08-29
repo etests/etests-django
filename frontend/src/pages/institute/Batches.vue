@@ -257,9 +257,7 @@ export default {
 
 .studentCard, .batchCard{
     text-align: center;
-    border: 1px solid #c9cbd0;
     border-radius: 8px;
-    padding: 10px;
     font-family: "Product Sans Light";
     font-size: 12pt;
 }

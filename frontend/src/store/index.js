@@ -14,6 +14,7 @@ import { batches } from "./batches.module";
 import { transactions } from "./transactions.module";
 import { credits } from "./credits.module";
 import { enrollments } from "./enrollments.module";
+import { subjects } from "./subjectTopic.module";
 
 Vue.use(Vuex);
 
@@ -31,6 +32,7 @@ export default new Vuex.Store({
     batches,
     transactions,
     credits,
-    enrollments
+    enrollments,
+    subjects
   }
 });

@@ -88,7 +88,7 @@ class SessionEvaluation:
         return [{
             "total": self.total_marks,
             "sectionwise": self.sectionwise_marks,
-            "max_marks":self.max_marks
+            "max_marks": self.max_marks
         },self.questionwise_marks]
 
 

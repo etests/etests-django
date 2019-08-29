@@ -7,6 +7,7 @@ export const batchService = {
   detailedList,
   create,
   update,
+  join,
   remove
 };
 
@@ -44,6 +45,18 @@ function update(data) {
     `${process.env.API_URL}/batches/${data.id}/`,
     requestOptions
   ).then(handleResponse);
+}
+
+function join(data) {
+  const requestOptions = {
+    method: "POST",
+    headers: authHeader(),
+    body: JSON.stringify(data)
+  };
+
+  return fetch(`${process.env.API_URL}/batch/join/`, requestOptions).then(
+    handleResponse
+  );
 }
 
 function remove(id) {

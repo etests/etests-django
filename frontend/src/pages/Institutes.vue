@@ -1,6 +1,14 @@
 <template>
   <StandardLayout>
-    <v-flex v-for="institute in institutes" :key="institute.id" xs12 md6 lg4>
+    <v-flex
+      v-for="institute in institutes"
+      :key="institute.id"
+      class="ma-3"
+      xs12
+      md4
+      lg3
+      xl2
+    >
       <v-card>
         <v-img :src="institute.src" height="200px">
           <template v-slot:placeholder>

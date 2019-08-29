@@ -16,7 +16,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <WideLayout v-if="loading || error">
+    <StandardLayout v-if="loading || error">
       <v-card :class="$style.card">
         <v-layout column py-5 align-center>
           <template v-if="loading">
@@ -37,7 +37,7 @@
           </v-flex>
         </v-layout>
       </v-card>
-    </WideLayout>
+    </StandardLayout>
     <TestLayout v-else :sections="sections" :sectionIndex.sync="sectionIndex">
       <template slot="controls">
         <v-btn color="primary" flat>
@@ -315,7 +315,7 @@
 
 <script>
 import TestLayout from "@components/test/TestLayout.vue";
-import WideLayout from "@components/layouts/WideLayout.vue";
+import StandardLayout from "@components/layouts/StandardLayout.vue";
 import { mapState } from "vuex";
 
 export default {
@@ -339,7 +339,7 @@ export default {
     };
   },
   components: {
-    WideLayout,
+    StandardLayout,
     TestLayout
   },
   methods: {

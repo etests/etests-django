@@ -112,13 +112,13 @@ class EnrollmentSerializer(serializers.ModelSerializer):
 class BatchJoinSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollment
-        fields = ("pk", "institute", "batch", "roll_number", "joining_key", "student")
+        fields = ("batch", "roll_number", "joining_key", "student")
 
 class InstituteBatchSerializer(serializers.ModelSerializer):
     enrollments = BatchJoinSerializer(many=True)
     class Meta:
         model = Batch
-        fields = ("pk", "name", "joining_key", "enrollments")
+        fields = ("pk", "name", "enrollments")
 
 class BatchListSerializer(serializers.ModelSerializer):
     institute = InstituteDetailsSerializer()

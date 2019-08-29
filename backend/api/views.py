@@ -1,12 +1,14 @@
-from rest_framework import permissions
+import json
+from django.apps import apps
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, generics, status
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework.views import APIView
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import APIException, MethodNotAllowed, PermissionDenied, NotFound, ParseError
-from django.apps import apps
-import json
+from rest_framework import permissions
 from .utils import SessionEvaluation
 from .serializers import *
 from .models import *
@@ -24,8 +26,10 @@ class IsInstituteOwner(permissions.BasePermission):
         return obj.institute == request.user.institute
 
 class IsStudentOwner(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.is_student
     def has_object_permission(self, request, view, obj):
-        return request.user.is_authenticated and request.user.is_student and obj.student == request.user.student
+        return request.user.is_authenticated and request.user.is_student and (not obj.student or obj.student == request.user.student)
 
 class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -35,10 +39,10 @@ class BatchListView(generics.ListAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
     serializer_class = BatchListSerializer
     def get_queryset(self):
-        if self.request.user.is_institute:
-            return Batch.objects.filter(institute=self.request.user.institute)
-        elif self.request.user.is_student:
+        if self.request.user.is_student:
             return Batch.objects.filter(institute__in=self.request.user.student.institutes)
+        elif self.request.user.is_institute:
+            return Batch.objects.filter(institute=self.request.user.institute)
         elif self.request.user.is_staff:
             return Batch.objects.all()
         else:
@@ -74,6 +78,23 @@ class BatchRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
                 return Batch.objects.all()
         else:
             return None
+
+
+class BatchJoinView(APIView):
+    permission_classes = (IsStudentOwner,)
+
+    def post(self, request):
+        roll_number = request.data['rollNumber']
+        joining_key = request.data['joiningKey']
+        try:
+            batch = Batch.objects.get(pk=self.request.data['batch'])
+            enrollment = Enrollment.objects.get(batch=batch, roll_number=roll_number)
+            if enrollment.joining_key == joining_key:
+                enrollment.student = request.user.student
+            enrollment.save()
+            return Response("Joined Successfully")
+        except:
+            raise ParseError("Invalid roll number or joining key!") 
 
 class InstitutesListView(viewsets.ViewSet):
     permission_classes = (ReadOnly,)
@@ -250,10 +271,10 @@ class ResultView(generics.RetrieveAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
     serializer_class = ResultSerializer
     def get_queryset(self):
-        if self.request.user.is_institute:
-            return Session.objects.filter(student__institutes = self.request.user.institute)
-        elif self.request.user.is_student:
+        if self.request.user.is_student:
             return Session.objects.filter(student = self.request.user.student)
+        elif self.request.user.is_institute:
+            return Session.objects.filter(student__institutes = self.request.user.institute)
         elif self.request.user.is_staff:
             return Session.objects.all()
         return None

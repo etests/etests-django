@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{ detailedReport }}
     <GChart
       style="width: 800px; height: 500px;"
       type="ColumnChart"
@@ -43,9 +44,13 @@ export default {
     };
   },
   created() {
-    this.$store.dispatch("results/get", this.id);
+    this.$store.dispatch("reviews/get", this.id);
   },
-  computed: {},
+  computed: {
+    detailedReport() {
+      return this.$store.state.reviews.review;
+    }
+  },
   methods: {
     onChartReady(chart, google) {
       const query = new google.visualization.Query(

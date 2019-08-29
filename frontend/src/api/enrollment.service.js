@@ -14,7 +14,7 @@ function batchEnroll(data) {
     body: JSON.stringify(data)
   };
 
-  return fetch(`${process.env.API_URL}/batch-enroll/`, requestOptions).then(
+  return fetch(`${process.env.API_URL}/batch/enroll/`, requestOptions).then(
     handleResponse
   );
 }

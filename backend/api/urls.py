@@ -8,9 +8,11 @@ urlpatterns = [
 
     path("batches/", BatchListCreateView.as_view()),
 
+    path("batch/join/", BatchJoinView.as_view()),
+
     path("batches/<int:pk>/", BatchRetrieveUpdateDestoryView.as_view()),
 
-    path("batch-enroll/", EnrollmentView.as_view()),
+    path("batch/enroll/", EnrollmentView.as_view()),
 
     path("enrollments/", EnrollmentView.as_view()),
 

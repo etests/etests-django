@@ -7,7 +7,7 @@
     >
     </Header>
     <v-content app class="my-0 py-4">
-      <v-layout row wrap class="mb-4 mt-4 pb-4">
+      <v-layout row wrap :class="[$style.layout, 'mb-4 mt-4 pb-4']">
         <slot></slot>
       </v-layout>
     </v-content>
@@ -33,6 +33,10 @@ export default {
 body{
   margin: 0;
   padding: 0;
+}
+
+.layout{
+  font-family: "Product Sans Light";
 }
 
 .logo{
