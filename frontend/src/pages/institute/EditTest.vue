@@ -145,6 +145,14 @@
           </v-list-tile>
         </v-list>
       </v-menu>
+      <v-autocomplete
+        v-model="x"
+        :items="topics[currentSection.subjectIndex]"
+        :readonly="false"
+        label="Subject"
+        persistent-hint
+        prepend-icon="mdi-book"
+      />
     </template>
 
     <template slot="text-image">
@@ -366,11 +374,14 @@
             <v-container grid-list-md>
               <v-layout wrap>
                 <v-flex xs12>
-                  <v-text-field
-                    label="Subject"
+                  <v-autocomplete
                     v-model="newSectionSubject"
-                    required
-                  ></v-text-field>
+                    :items="subjects"
+                    :readonly="false"
+                    label="Subject"
+                    persistent-hint
+                    prepend-icon="mdi-book"
+                  />
                 </v-flex>
               </v-layout>
             </v-container>
@@ -441,6 +452,7 @@
 
 <script>
 import TestLayout from "@components/test/TestLayout.vue";
+import { subjectTopics } from "@js/subjects";
 
 export default {
   data() {
@@ -607,7 +619,8 @@ export default {
       this.sections.push({
         subject: name,
         start: this.questions.length,
-        end: this.questions.length - 1
+        end: this.questions.length - 1,
+        subjectIndex: this.subjects.indexOf(name)
       });
       this.changeSection(this.sections.length - 1);
       this.addQuestion(0);
@@ -637,6 +650,12 @@ export default {
     }
   },
   computed: {
+    subjects() {
+      return subjectTopics.subjects;
+    },
+    topics() {
+      return subjectTopics.topics;
+    },
     test() {
       return this.$store.state.tests.test;
     },

@@ -1,7 +1,7 @@
-export const subjects = [
-  {
-    name: "Physics",
-    topics: [
+export const subjectTopics = {
+  subjects: ["Physics", "Mathematics", "Chemistry", "botany", "Zoology"],
+  topics: [
+    [
       "Physics and Measurement",
       "Kinematics",
       "Laws of Motion",
@@ -25,11 +25,8 @@ export const subjects = [
       "Communication Systems",
       "Experimental Skills",
       "Thermal Physics"
-    ]
-  },
-  {
-    name: "Mathematics",
-    topics: [
+    ],
+    [
       "Sets, relations and functions",
       "Complex numbers and quadratic equations",
       "Matrices and determinants",
@@ -45,11 +42,8 @@ export const subjects = [
       "Statistics and probability",
       "Trigonometry",
       "Mathematical reasoning"
-    ]
-  },
-  {
-    name: "Chemistry",
-    topics: [
+    ],
+    [
       "Some Basic Concepts in Chemistry",
       "States of Matter",
       "Atomic Structure",
@@ -78,11 +72,8 @@ export const subjects = [
       "Biomolecules",
       "Chemistry In Everyday Life",
       "Principles Related to Practical Chemistry"
-    ]
-  },
-  {
-    name: "Botany",
-    topics: [
+    ],
+    [
       "Biological Classification",
       "Kingdom Monera",
       "Virus",
@@ -136,11 +127,8 @@ export const subjects = [
       "Embryo Sac",
       "Endosperm",
       "Pollination"
-    ]
-  },
-  {
-    name: "Zoology",
-    topics: [
+    ],
+    [
       "Animal Kingdom",
       "Chordates and Hemichordates",
       "Mammals",
@@ -184,5 +172,5 @@ export const subjects = [
       "Animal Husbandry",
       "Artificial Selection"
     ]
-  }
-];
+  ]
+};
