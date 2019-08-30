@@ -56,7 +56,7 @@ export const enrollments = {
       state.status = { loading: true };
     },
     batchEnrollSuccess(state, enrollments) {
-      state.status = { exists: true };
+      state.status = { loaded: true };
       state.generated = enrollments;
     },
     batchEnrollFailure(state, error) {

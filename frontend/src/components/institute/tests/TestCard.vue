@@ -104,7 +104,7 @@
 </template>
 
 <script>
-import ObjectCard from "./ObjectCard";
+import ObjectCard from "@components/layouts/ObjectCard";
 import { mapState } from "vuex";
 import { testTemplate } from "@/js/test";
 

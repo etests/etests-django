@@ -20,11 +20,9 @@
 @require '~@stylus/theme/colors';
 
 .objectCard{
-  border: 1px solid #dadce0;
   border-radius: 8px;
   margin: 10px;
   font-family: 'Product Sans Light',Roboto,Arial,sans-serif;
   letter-spacing: 0.06rem;
-
 }
 </style>

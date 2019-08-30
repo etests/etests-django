@@ -4,7 +4,8 @@ export const testTemplate = {
     {
       subject: "Subject 1",
       start: 0,
-      end: 0
+      end: 0,
+      subjectIndex: 0
     }
   ],
   questions: [
@@ -18,6 +19,7 @@ export const testTemplate = {
       correctMarks: 4,
       incorrectMarks: 1,
       partialMarks: 0,
+      topicIndex: 0,
       answers: ["Answer P", "Answer Q", "Answer R", "Answer S", "Answer T"]
     }
   ],

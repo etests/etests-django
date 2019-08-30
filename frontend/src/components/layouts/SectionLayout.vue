@@ -29,11 +29,12 @@ export default {
     font-family: 'Product Sans',Roboto,Arial,sans-serif;
     margin-bottom: 50px;
     .heading{
-        text-align: left;
-        letter-spacing: .014em;
-        font-size: 2.08rem;
-        line-height: 1.25rem;
-        color: #5f6368;
+      margin: 10px;
+      text-align: left;
+      letter-spacing: .014em;
+      font-size: 2.08rem;
+      line-height: 1.25rem;
+      color: #5f6368;
     }
 }
 </style>

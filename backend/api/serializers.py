@@ -14,7 +14,7 @@ class InstituteListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Institute
-        fields = ("id", "user", "pincode")
+        fields = ("pk", "user", "pincode")
 
 class TestListSerializer(serializers.ModelSerializer):
     institute = InstituteListSerializer()
@@ -115,7 +115,7 @@ class BatchJoinSerializer(serializers.ModelSerializer):
         fields = ("batch", "roll_number", "joining_key", "student")
 
 class InstituteBatchSerializer(serializers.ModelSerializer):
-    enrollments = BatchJoinSerializer(many=True)
+    enrollments = BatchJoinSerializer(many=True, required=False)
     class Meta:
         model = Batch
         fields = ("pk", "name", "enrollments")

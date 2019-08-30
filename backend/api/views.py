@@ -52,7 +52,6 @@ class BatchListCreateView(generics.ListCreateAPIView):
     permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
     serializer_class = InstituteBatchSerializer
     def get_queryset(self):
-
         if self.request.user.is_authenticated:
             if self.request.user.is_institute:
                 return Batch.objects.filter(institute=self.request.user.institute)
@@ -95,6 +94,21 @@ class BatchJoinView(APIView):
             return Response("Joined Successfully")
         except:
             raise ParseError("Invalid roll number or joining key!") 
+
+class InstituteJoinView(APIView):
+    permission_classes = (IsStudentOwner,)
+
+    def post(self, request, pk):
+        try:
+            institute = Institute.objects.get(pk=pk)
+            if institute in request.user.student.institutes.all():
+                return Response("Already following ;)")
+            else:
+                request.user.student.institutes.add(institute)
+                return Response("Followed Successfully!")
+        except Exception as e:
+            print(e)
+            raise ParseError("Sorry, you can't follow this institute!") 
 
 class InstitutesListView(viewsets.ViewSet):
     permission_classes = (ReadOnly,)

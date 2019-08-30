@@ -18,6 +18,8 @@ urlpatterns = [
 
     path("enrollments/<int:pk>/", EnrollmentRetrieveUpdateDestoryView.as_view()),
 
+    path("institute/join/<int:pk>/", InstituteJoinView.as_view()),
+
     path("institutes/", InstitutesListView.as_view({"get": "list"}), name="institutes-list"),
     
     path("subjects/", SubjectListView.as_view({"get": "list"}), name="subjects-list"),

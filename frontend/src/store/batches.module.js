@@ -38,9 +38,6 @@ export const batches = {
             dispatch("alert/success", "Batch created successfully!", {
               root: true
             });
-            dispatch("batchSeries/addTest", data, {
-              root: true
-            });
           });
         },
         error => {
@@ -158,6 +155,7 @@ export const batches = {
     },
     createSuccess(state, data) {
       state.status = { created: true, batch: data };
+      state.all.items.push(data);
     },
     createFailure(state, error) {
       state.status = { error: error };
@@ -185,6 +183,7 @@ export const batches = {
     },
     removeSuccess(state, id) {
       state.status = { removed: true, id: id };
+      state.all.items = state.all.items.filter(batch => batch.pk !== id);
     },
     removeFailure(state, error) {
       state.status = { error: error };

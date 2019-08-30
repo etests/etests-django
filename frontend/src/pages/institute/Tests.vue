@@ -32,7 +32,7 @@ import SectionLayout from "@components/layouts/SectionLayout";
 import TestSeriesCard from "@components/institute/tests/TestSeriesCard";
 import TestCard from "@components/institute/tests/TestCard";
 
-import ObjectCard from "@components/institute/tests/ObjectCard";
+import ObjectCard from "@components/layouts/ObjectCard";
 
 export default {
   data() {

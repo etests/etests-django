@@ -143,6 +143,7 @@ export const tests = {
     },
     removeSuccess(state, id) {
       state.status = { removed: true, id: id };
+      state.all.items = state.all.items.filter(test => test.id !== id);
     },
     removeFailure(state, error) {
       state.status = { error: error };

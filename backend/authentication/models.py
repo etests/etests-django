@@ -76,7 +76,7 @@ class Batch(models.Model):
 
 class Enrollment(models.Model):
     institute = models.ForeignKey(Institute, on_delete=models.CASCADE)
-    batch = models.ForeignKey(Batch, related_name="enrollments", on_delete=models.CASCADE)
+    batch = models.ForeignKey(Batch, blank=True, null=True, related_name="enrollments", on_delete=models.CASCADE)
     roll_number = models.CharField(max_length=25)
     joining_key = models.CharField(max_length=8, default=randomKey)
     student = models.ForeignKey("Student", related_name="enrollment", null=True, on_delete=models.SET_NULL)
@@ -86,7 +86,12 @@ class Enrollment(models.Model):
         unique_together = ('batch', 'roll_number')
 
     def __str__(self):
-        return self.roll_number
+        if self.roll_number:
+            return self.roll_number
+        elif self.student:
+            return self.student.user.name
+        else:
+            return self.pk
 
     def save(self, *args, **kwargs):
         errors = {}

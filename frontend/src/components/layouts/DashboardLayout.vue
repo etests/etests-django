@@ -174,7 +174,7 @@ export default {
     border-radius: 8px;
     margin: 30px 15px;
     margin-top: 70px;
-    font-family: "Product Sans";
+    font-family: "Product Sans Light";
     box-shadow: 2px 5px 15px #ccc;
 }
 
