@@ -38,7 +38,8 @@ export const demoSession = {
         options: ["Chutiya", "Bsdike", "gandu", "BCMC"],
         section: 0,
         correctMarks: 4,
-        incorrectMarks: 1
+        incorrectMarks: 1,
+        partialMarks: 1
       },
       {
         text: "hdjgf",
@@ -53,7 +54,7 @@ export const demoSession = {
         incorrectMarks: 1
       },
       {
-        text: "",
+        text: "adsfasdf",
         type: 0,
         image: null,
         status: 3,

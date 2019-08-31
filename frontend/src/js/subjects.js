@@ -1,5 +1,5 @@
 export const subjectTopics = {
-  subjects: ["Physics", "Mathematics", "Chemistry", "botany", "Zoology"],
+  subjects: ["Physics", "Mathematics", "Chemistry", "Botany", "Zoology"],
   topics: [
     [
       "Physics and Measurement",

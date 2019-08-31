@@ -10,13 +10,23 @@
           <v-btn color="info" flat @click="submitDialog = false">
             Cancel
           </v-btn>
-          <v-btn dark color="indigo" @click="submitTest">
+          <v-btn
+            dark
+            color="indigo"
+            @click="
+              submitTest();
+              submitDialog = false;
+            "
+          >
             Submit
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <TestLayout :sections="sections" :sectionIndex.sync="sectionIndex">
+    <StandardLayout v-if="session && session.completed">
+      <Marks :questionWise="questionWise" :report="report" />
+    </StandardLayout>
+    <TestLayout v-else :sections="sections" :sectionIndex.sync="sectionIndex">
       <template slot="controls">
         <v-btn color="primary" flat>
           <v-icon> mdi-clock </v-icon>
@@ -294,11 +304,32 @@
 <script>
 import TestLayout from "@components/test/TestLayout.vue";
 import StandardLayout from "@components/layouts/StandardLayout.vue";
+import Marks from "./Marks";
 import { demoSession } from "@js/demoTest";
 
 export default {
   data() {
     return {
+      headers: [
+        {
+          text: "Subjects",
+          align: "center",
+          sortable: false,
+          value: "name"
+        },
+        {
+          text: "Marks Scored",
+          value: "score",
+          align: "center",
+          sortable: true
+        },
+        {
+          text: "Maximum Marks",
+          value: "total_marks",
+          align: "center",
+          sortable: false
+        }
+      ],
       error: false,
       questionTypes: [
         { value: 0, text: "Single Correct" },
@@ -308,6 +339,8 @@ export default {
         { value: 4, text: "One Word Answer" },
         { value: 5, text: "Subjective" }
       ],
+      report: {},
+      questionWise: [],
       isSmallScreen: this.$vuetify.breakpoint.smAndDown,
       submitDialog: false,
       session: localStorage.getItem("demoSession")
@@ -317,7 +350,8 @@ export default {
   },
   components: {
     StandardLayout,
-    TestLayout
+    TestLayout,
+    Marks
   },
   methods: {
     getRandom(min, max) {
@@ -436,6 +470,93 @@ export default {
     },
     submitTest() {
       if (!this.session.completed) this.session.completed = true;
+      this.calculateResult();
+    },
+    calculateResult() {
+      var responses = this.session.response;
+      var i = 0;
+      var answers = this.test.answers;
+      var noOfSection = this.sections.length;
+      var maxMarks = [];
+      var sectionWise = [];
+      var currentQuestion = {};
+      var questionWise = [];
+      for (i = 0; i < noOfSection; i++) {
+        maxMarks.push(0);
+        sectionWise.push(0);
+      }
+      maxMarks.push(0);
+      var marks = { total: 0, maxMarks, sectionWise };
+      console.log(marks);
+      for (i = 0; i < this.test.questions.length; i++) {
+        questionWise.push({ marks: 0, status: 0 });
+      }
+      console.log(questionWise);
+      var report = { test: {}, marks };
+      report.test = this.test;
+      for (i = 0; i < this.test.questions.length; i++) {
+        currentQuestion = this.test.questions[i];
+        marks.maxMarks[noOfSection] += currentQuestion.correctMarks;
+        marks.maxMarks[currentQuestion.section] += currentQuestion.correctMarks;
+        if (
+          this.session.test.questions[i].type === 0 &&
+          responses[i].answer !== null
+        ) {
+          if (responses[i].answer === answers[i].answer) {
+            console.log("Correct Single");
+            questionWise[i].marks = currentQuestion.correctMarks;
+            questionWise[i].status = 2;
+            report.marks.total += currentQuestion.correctMarks;
+            report.marks.sectionWise[currentQuestion.section] +=
+              currentQuestion.correctMarks;
+          } else if (responses[i].answer !== answers[i].answer) {
+            console.log("Incorrect Single");
+            questionWise[i].marks = -currentQuestion.incorrectMarks;
+            questionWise[i].status = 1;
+            report.marks.total -= currentQuestion.incorrectMarks;
+            report.marks.sectionWise[currentQuestion.section] -=
+              currentQuestion.incorrectMarks;
+          }
+        } else if (
+          this.test.questions[i].type === 1 &&
+          responses[i].answer.length !== 0
+        ) {
+          var arrayOfChildrenNames = responses[i].answer;
+          var arrayOfFamilyMemberNames = answers[i].answer;
+          var isarrayOfNamesSubsetOfFamily = arrayOfChildrenNames.every(
+            function(val) {
+              return arrayOfFamilyMemberNames.indexOf(val) >= 0;
+            }
+          );
+          if (
+            isarrayOfNamesSubsetOfFamily &&
+            arrayOfChildrenNames.length < arrayOfFamilyMemberNames.length &&
+            currentQuestion.partialMarks !== 0
+          ) {
+            report.marks.total +=
+              arrayOfChildrenNames.length * currentQuestion.partialMarks;
+            questionWise[i].marks =
+              currentQuestion.partialMarks * arrayOfChildrenNames.length;
+            questionWise[i].status = 3;
+            report.marks.sectionWise[currentQuestion.section] +=
+              currentQuestion.partialMarks * arrayOfChildrenNames.length;
+          } else if (isarrayOfNamesSubsetOfFamily) {
+            questionWise[i].marks = currentQuestion.correctMarks;
+            questionWise[i].status = 2;
+            report.marks.total += currentQuestion.correctMarks;
+            report.marks.sectionWise[currentQuestion.section] +=
+              currentQuestion.correctMarks;
+          } else {
+            questionWise[i].marks = -currentQuestion.incorrectMarks;
+            questionWise[i].status = 3;
+            report.marks.total -= currentQuestion.incorrectMarks;
+            report.marks.sectionWise[currentQuestion.section] -=
+              currentQuestion.incorrectMarks;
+          }
+        }
+      }
+      this.report = report;
+      this.questionWise = questionWise;
     }
   },
   watch: {

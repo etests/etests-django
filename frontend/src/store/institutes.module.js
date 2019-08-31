@@ -36,6 +36,7 @@ export const institutes = {
     },
     followSuccess(state, data) {
       state.status = { followed: true, message: data.message, id: data.id };
+      this.dispatch("users/followInstitute", data.id);
     },
     followFailure(state, error) {
       state.status = { error: error };

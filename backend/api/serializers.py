@@ -51,7 +51,7 @@ class TestSeriesSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "price", "visible", "exam", "tests")
 
 class SessionSerializer(serializers.ModelSerializer):
-    test = TestSerializer(many=False, read_only=True)
+    test = StudentTestSerializer(many=False, read_only=True)
     class Meta:
         model = Session
         fields = ('id', 'response', 'test', 'duration', 'current', 'completed')
@@ -77,7 +77,7 @@ class TagSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ResultSerializer(serializers.ModelSerializer):
-    test = TestSerializer(many=False, read_only=True)
+    test = StudentTestSerializer(many=False, read_only=True)
     class Meta:
         model = Session
         fields = ('id', 'test', 'marks')

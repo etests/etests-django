@@ -26,6 +26,7 @@ function login(username, password) {
           else if (data.user["is_institute"]) data.user.type = "institute";
           else if (data.user["is_staff"]) data.user.type = "staff";
         }
+        if (data.profile) data.user.profile = data.profile;
         localStorage.setItem("token", JSON.stringify(data.token));
         localStorage.setItem("user", JSON.stringify(data.user));
       }

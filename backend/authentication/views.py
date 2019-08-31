@@ -22,6 +22,8 @@ from .app_settings import *
 
 from .utils import jwt_encode
 
+import json 
+
 sensitive_post_parameters_m = method_decorator(
     sensitive_post_parameters(
         'password', 'old_password', 'new_password1', 'new_password2'
@@ -96,7 +98,6 @@ class LoginView(GenericAPIView):
         django_login(self.request, self.user)
 
     def login(self):
-        print(self.serializer.validated_data)
         self.user = self.serializer.validated_data['user']
         self.token = jwt_encode(self.user)
 
@@ -108,8 +109,6 @@ class LoginView(GenericAPIView):
 
         data = {
             'user': self.user,
-            'student': self.student,
-            'institute': self.institute,
             'token': self.token
         }
 
@@ -182,18 +181,7 @@ class UserDetailsView(RetrieveUpdateAPIView):
     serializer_class = UserDetailsSerializer
     permission_classes = (IsAuthenticated,)
 
-    def get_serializer_class(self):
-        if self.request.user.is_student:
-            return StudentDetailsSerializer
-        if self.request.user.is_institute:
-            return InstituteDetailsSerializer
-        return UserDetailsSerializer
-
     def get_object(self):
-        if self.request.user.is_student:
-            return self.request.user.student
-        if self.request.user.is_institute:
-            return self.request.user.institute
         return self.request.user
 
     def get_queryset(self):

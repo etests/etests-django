@@ -1,17 +1,17 @@
 <template>
   <StandardLayout>
-    <v-dialog v-if="loggedIn" v-model="joinDialog" max-width="400">
+    <v-dialog v-if="loggedIn" v-model="followDialog" max-width="400">
       <v-card :class="$style.dialog">
         <v-card-title :class="$style.title">
           Follow {{ selectedInstitute.name }}
         </v-card-title>
-        <template v-if="status.joining && status.id === selectedInstitute.id">
+        <template v-if="status.following && status.id === selectedInstitute.id">
           <v-card-text>
             Please wait...
           </v-card-text>
         </template>
         <template
-          v-else-if="status.joined && status.id === selectedInstitute.id"
+          v-else-if="status.followed && status.id === selectedInstitute.id"
         >
           <v-card-text>
             {{ status.message }}
@@ -19,23 +19,23 @@
         </template>
         <template v-else>
           <v-card-text>
-            After following this institute, you can join a batch and then
+            After following this institute, you can follow a batch and then
             attempt live tests.
           </v-card-text>
         </template>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="info" flat @click="joinDialog = false">
+          <v-btn color="info" flat @click="followDialog = false">
             Close
           </v-btn>
           <v-btn
             v-if="
-              (!status.joining && !status.joined) ||
+              (!status.following && !status.followed) ||
                 !status.id ||
                 status.id !== selectedInstitute.id
             "
             color="info"
-            @click="join(selectedInstitute.id)"
+            @click="follow(selectedInstitute.id)"
           >
             Follow
           </v-btn>
@@ -74,7 +74,7 @@
             flat
             @click="
               selectedInstitute = institute;
-              joinDialog = true;
+              followDialog = true;
             "
           >
             Follow
@@ -95,7 +95,7 @@ export default {
     return {
       searchInstitute: "",
       filteredInstitutes: [],
-      joinDialog: false,
+      followDialog: false,
       selectedInstitute: {}
     };
   },
@@ -122,7 +122,7 @@ export default {
     ...mapState({
       status: state => state.institutes.status,
       loggedIn: state => state.authentication.status.loggedIn,
-      user: state => state.authentication.user
+      user: state => state.users.user
     }),
     institutes() {
       var list = [];
@@ -139,14 +139,14 @@ export default {
     }
   },
   methods: {
-    join(id) {
+    follow(id) {
       this.$store.dispatch("institutes/follow", id);
     },
     showFollowing(id) {
       if (
         this.loggedIn &&
-        this.user.type === "student" &&
-        !this.user.student.following.includes(id)
+        this.user.profile &&
+        !this.user.profile.following.includes(id)
       )
         return true;
       else return false;

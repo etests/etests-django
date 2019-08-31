@@ -7,7 +7,6 @@
           v-model="test['time_alotted']"
         />
       </v-btn>
-
       <v-menu offset-y transition="slide-y-transition" bottom>
         <template v-slot:activator="{ on }">
           <v-btn
@@ -63,9 +62,7 @@
         <template v-slot:activator="{ on }">
           <v-btn color="success" round outline v-on="on">
             <v-icon>mdi-plus</v-icon>
-            <span v-if="!isSmallScreen">
-              {{ currentQuestion.correctMarks }} &nbsp;
-            </span>
+            <span> {{ currentQuestion.correctMarks }} &nbsp; </span>
           </v-btn>
         </template>
         <v-list>
@@ -82,9 +79,7 @@
         <template v-slot:activator="{ on }">
           <v-btn color="error" round outline v-on="on">
             <v-icon>mdi-minus</v-icon>
-            <span v-if="!isSmallScreen">
-              {{ currentQuestion.incorrectMarks }} &nbsp;
-            </span>
+            <span> {{ currentQuestion.incorrectMarks }} &nbsp; </span>
           </v-btn>
         </template>
         <v-list>
@@ -108,9 +103,7 @@
         <template v-slot:activator="{ on }">
           <v-btn color="blue" round outline v-on="on">
             <v-icon>mdi-plus</v-icon>
-            <span v-if="!isSmallScreen">
-              {{ currentQuestion.partialMarks }} &nbsp;
-            </span>
+            <span> {{ currentQuestion.partialMarks }} &nbsp; </span>
           </v-btn>
         </template>
         <v-list>
@@ -126,9 +119,7 @@
       <v-menu offset-y transition="slide-y-transition" bottom>
         <template v-slot:activator="{ on }">
           <v-btn color="indigo" round outline v-on="on">
-            <span v-if="!isSmallScreen">
-              {{ questionTypes[currentQuestion.type].text }} &nbsp;
-            </span>
+            <span> {{ questionTypes[currentQuestion.type].text }} &nbsp; </span>
             <v-icon>mdi-chevron-down</v-icon>
           </v-btn>
         </template>
@@ -145,14 +136,15 @@
           </v-list-tile>
         </v-list>
       </v-menu>
-      <v-autocomplete
-        v-model="x"
-        :items="topics[currentSection.subjectIndex]"
-        :readonly="false"
-        label="Subject"
-        persistent-hint
-        prepend-icon="mdi-book"
-      />
+      <v-btn flat round outline color="info">
+        <v-autocomplete
+          v-model="currentQuestion.topic"
+          :items="topics[currentSection.subjectIndex]"
+          :readonly="false"
+          label="Topic"
+          single-line
+        />
+      </v-btn>
     </template>
 
     <template slot="text-image">
@@ -340,14 +332,9 @@
     <template slot="test-name">{{ test.name }}</template>
 
     <template slot="sections">
-      <v-tabs
-        slot="tabs"
-        v-model="sectionIndex"
-        color="transparent"
-        hide-slider
-        centered
-      >
+      <v-flex xs12>
         <v-tab
+          :class="index == sectionIndex ? 'primary--text' : ''"
           active-class="primary--text"
           v-for="(section, index) in sections"
           :key="section.subject"
@@ -355,10 +342,54 @@
         >
           {{ section.subject }}
         </v-tab>
-      </v-tabs>
+      </v-flex>
     </template>
 
     <template slot="section-controls">
+      <v-dialog v-model="editSectionDialog" persistent max-width="400px">
+        <template v-slot:activator="{ on }">
+          <v-btn round outline small color="info" dark v-on="on">
+            <v-icon>mdi-pencil</v-icon>
+            Change subject
+          </v-btn>
+        </template>
+        <v-card :class="$style.dialog">
+          <v-card-title>
+            <span :class="$style.title">Select a subject</span>
+          </v-card-title>
+          <v-card-text>
+            <v-container grid-list-md>
+              <v-layout wrap>
+                <v-flex xs12>
+                  <v-autocomplete
+                    v-model="subjectName"
+                    :items="subjects"
+                    :readonly="false"
+                    label="Subject"
+                    persistent-hint
+                    prepend-icon="mdi-book"
+                  />
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="error" flat @click="editSectionDialog = false">
+              Cancel
+            </v-btn>
+            <v-btn
+              color="success"
+              @click="
+                changeSectionSubject(sectionIndex, subjectName);
+                editSectionDialog = false;
+              "
+            >
+              Done
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
       <v-dialog v-model="newSectionDialog" persistent max-width="400px">
         <template v-slot:activator="{ on }">
           <v-btn round outline small color="primary" dark v-on="on">
@@ -474,7 +505,9 @@ export default {
       },
       sectionIndex: 0,
       questionIndex: 0,
+      editSectionDialog: false,
       newSectionDialog: false,
+      subjectName: "",
       newSectionSubject: "",
       emptyQuestion: {
         section: 0,
@@ -528,6 +561,12 @@ export default {
     },
     validSectionIndex(i) {
       return i >= 0 && i < this.sections.length;
+    },
+    changeSectionSubject(i, name) {
+      console.log(this.currentSection);
+      this.sections[i].subject = name;
+      this.sections[i].subjectIndex = this.subjects.indexOf(name);
+      console.log(this.currentSection);
     },
     changeSection(i) {
       console.log(`Going to section ${i + 1}...`);
@@ -677,7 +716,8 @@ export default {
       else return [];
     },
     currentSection() {
-      return this.test.sections[this.sectionIndex];
+      if (this.sections) return this.test.sections[this.sectionIndex];
+      else return {};
     }
   },
   created() {

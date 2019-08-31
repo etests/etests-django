@@ -11,7 +11,6 @@ function follow(id) {
     method: "POST",
     headers: authHeader()
   };
-
   return fetch(
     `${process.env.API_URL}/institute/follow/${id}/`,
     requestOptions

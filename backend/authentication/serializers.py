@@ -94,29 +94,26 @@ class LoginSerializer(serializers.Serializer):
         attrs['user'] = user
         return attrs
 
-class UserDetailsSerializer(serializers.ModelSerializer):
-    """
-    User model without password
-    """
-    class Meta:
-        model = User
-        exclude = ("is_active", "password", "last_login" ,"user_permissions")
-        read_only_fields = ('email', )
-
 class InstituteDetailsSerializer(serializers.ModelSerializer):
-    user = UserDetailsSerializer()
-
     class Meta:
         model = Institute
         fields = '__all__' 
 
 
 class StudentDetailsSerializer(serializers.ModelSerializer):
-    user = UserDetailsSerializer()
-
     class Meta:
         model = Student
         fields = '__all__' 
+
+class UserDetailsSerializer(serializers.ModelSerializer):
+    """
+    User details with profile
+    """
+
+    class Meta:
+        model = User
+        exclude = ("is_active", "password", "last_login" ,"user_permissions",)
+        read_only_fields = ('email', )
 
 class JWTSerializer(serializers.Serializer):
     """
@@ -124,9 +121,18 @@ class JWTSerializer(serializers.Serializer):
     """
     token = serializers.CharField()
     user = serializers.SerializerMethodField()
+    profile = serializers.SerializerMethodField()
 
     def get_user(self, obj):
         return UserDetailsSerializer(obj['user'], context=self.context).data
+        
+    def get_profile(self, obj):
+        if obj['user'].is_student:
+            return StudentDetailsSerializer(obj['user'].student, context=self.context).data
+        elif obj['user'].is_institute:
+            return InstituteDetailsSerializer(obj['user'].institute, context=self.context).data
+        else:
+            return None
 
 class PasswordResetSerializer(serializers.Serializer):
     """
