@@ -96,8 +96,8 @@ class LoginView(GenericAPIView):
         django_login(self.request, self.user)
 
     def login(self):
+        print(self.serializer.validated_data)
         self.user = self.serializer.validated_data['user']
-
         self.token = jwt_encode(self.user)
 
         if getattr(settings, 'REST_SESSION_LOGIN', True):
@@ -108,8 +108,11 @@ class LoginView(GenericAPIView):
 
         data = {
             'user': self.user,
+            'student': self.student,
+            'institute': self.institute,
             'token': self.token
         }
+
         serializer = serializer_class(instance=data,
                                         context={'request': self.request})
 

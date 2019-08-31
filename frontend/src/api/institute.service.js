@@ -3,17 +3,17 @@ import handleResponse from "./handleResponse";
 
 export const instituteService = {
   getAll,
-  join
+  follow
 };
 
-function join(id) {
+function follow(id) {
   const requestOptions = {
     method: "POST",
     headers: authHeader()
   };
 
   return fetch(
-    `${process.env.API_URL}/institute/join/${id}/`,
+    `${process.env.API_URL}/institute/follow/${id}/`,
     requestOptions
   ).then(handleResponse);
 }

@@ -113,7 +113,6 @@ class InstituteDetailsSerializer(serializers.ModelSerializer):
 
 class StudentDetailsSerializer(serializers.ModelSerializer):
     user = UserDetailsSerializer()
-    # institutes = InstituteDetailsSerializer(many=True, read_only=True)
 
     class Meta:
         model = Student

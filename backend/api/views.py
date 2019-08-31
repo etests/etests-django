@@ -95,16 +95,16 @@ class BatchJoinView(APIView):
         except:
             raise ParseError("Invalid roll number or joining key!") 
 
-class InstituteJoinView(APIView):
+class FollowInstituteView(APIView):
     permission_classes = (IsStudentOwner,)
 
     def post(self, request, pk):
         try:
             institute = Institute.objects.get(pk=pk)
-            if institute in request.user.student.institutes.all():
+            if institute in request.user.student.following.all():
                 return Response("Already following ;)")
             else:
-                request.user.student.institutes.add(institute)
+                request.user.student.following.add(institute)
                 return Response("Followed Successfully!")
         except Exception as e:
             print(e)

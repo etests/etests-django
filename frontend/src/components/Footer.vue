@@ -25,7 +25,7 @@ export default {
       icons: [
         "mdi-facebook",
         "mdi-twitter",
-        "mdi-google-plus",
+        "mdi-google",
         "mdi-linkedin",
         "mdi-instagram"
       ]

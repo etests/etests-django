@@ -29,8 +29,6 @@
                 :key="icon"
                 color="primary"
                 icon
-                outline
-                flat
                 large
               >
                 <v-icon size="20px">{{ icon }}</v-icon>
@@ -54,11 +52,13 @@
               <h3>Contact Us</h3>
             </v-flex>
             <v-flex xs12 :class="['mx-5 my-5', $style.text]">
-              <v-icon>mdi-phone</v-icon><br />
+              <v-icon color="primary">mdi-phone-outline</v-icon><br />
               +91 78 2298 6293
               <br /><br />
-              <v-icon>mdi-email</v-icon> <br />
-              etests@gmail.com
+              <v-icon color="primary">mdi-email-outline</v-icon> <br />
+              <a href="mailto:etests.service@gmail.com">
+                etests.service@gmail.com
+              </a>
             </v-flex>
           </v-layout>
         </v-card>
@@ -97,13 +97,7 @@ export default {
   },
   data() {
     return {
-      icons: [
-        "mdi-facebook",
-        "mdi-twitter",
-        "mdi-google-plus",
-        "mdi-linkedin",
-        "mdi-instagram"
-      ]
+      icons: ["mdi-facebook", "mdi-twitter", "mdi-linkedin", "mdi-instagram"]
     };
   },
   components: {

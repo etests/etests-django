@@ -1,6 +1,6 @@
 <template>
   <StandardLayout>
-    <v-dialog v-model="joinDialog" max-width="400">
+    <v-dialog v-if="loggedIn" v-model="joinDialog" max-width="400">
       <v-card :class="$style.dialog">
         <v-card-title :class="$style.title">
           Follow {{ selectedInstitute.name }}
@@ -70,6 +70,7 @@
           <v-spacer></v-spacer>
           <v-btn
             color="blue"
+            v-if="showFollowing(institute.id)"
             flat
             @click="
               selectedInstitute = institute;
@@ -119,7 +120,9 @@ export default {
   },
   computed: {
     ...mapState({
-      status: state => state.institutes.status
+      status: state => state.institutes.status,
+      loggedIn: state => state.authentication.status.loggedIn,
+      user: state => state.authentication.user
     }),
     institutes() {
       var list = [];
@@ -137,7 +140,16 @@ export default {
   },
   methods: {
     join(id) {
-      this.$store.dispatch("institutes/join", id);
+      this.$store.dispatch("institutes/follow", id);
+    },
+    showFollowing(id) {
+      if (
+        this.loggedIn &&
+        this.user.type === "student" &&
+        !this.user.student.following.includes(id)
+      )
+        return true;
+      else return false;
     }
   },
   mounted() {}
