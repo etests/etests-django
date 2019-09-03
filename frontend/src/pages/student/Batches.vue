@@ -1,9 +1,9 @@
 <template>
   <StandardLayout>
-    <v-dialog v-if="batches" v-model="joinDialog" max-width="400">
+    <v-dialog v-model="joinDialog" max-width="400">
       <v-card :class="$style.joinDialog">
         <v-card-title :class="$style.title">
-          Join {{ batches[batchIndex].name }}
+          Join {{ currentBatch.name }}
         </v-card-title>
         <template v-if="joining">
           <v-card-text>
@@ -44,40 +44,54 @@
           <v-btn
             v-if="!joining && !joined"
             color="info"
-            @click="join(batchIndex)"
+            @click="join(currentBatch.pk)"
           >
             Join
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-layout row wrap v-if="batches">
-      <v-flex xs12 md4 v-for="(batch, i) in batches" :key="i">
-        <v-card :class="$style.batchCard">
-          <v-img
-            class="white--text"
-            height="170px"
-            src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+    <v-layout row wrap v-if="status.following">
+      <SectionLayout
+        v-for="institute in following"
+        :key="institute.pk"
+        :heading="institute.user.name"
+      >
+        <template v-if="institute.batches.length">
+          <v-card
+            :class="$style.batchCard"
+            v-for="(batch, i) in institute.batches"
+            :key="i"
           >
-            <v-card-title class="align-end fill-height">
-              {{ batch.name }}
-            </v-card-title>
-          </v-img>
-
-          <v-card-actions>
-            <v-btn
-              flat
-              color="info"
-              @click="
-                batchIndex = i;
-                joinDialog = true;
-              "
+            <v-img
+              class="white--text"
+              height="170px"
+              src="https://www.theuiaa.org/wp-content/uploads/2017/12/2018_banner.jpg"
             >
-              Join
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-flex>
+              <v-card-title class="align-end fill-height">
+                {{ batch.name }}
+              </v-card-title>
+            </v-img>
+
+            <v-card-actions>
+              <v-btn
+                flat
+                color="info"
+                v-if="!institute.enrollments.includes(batch.pk)"
+                @click="
+                  currentBatch = batch;
+                  joinDialog = true;
+                "
+              >
+                Join
+              </v-btn>
+              <v-btn v-else color="info" flat>
+                Open
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </template>
+      </SectionLayout>
     </v-layout>
   </StandardLayout>
 </template>
@@ -85,6 +99,7 @@
 <script>
 import StandardLayout from "@components/layouts/StandardLayout";
 import SectionLayout from "@components/layouts/SectionLayout";
+import { mapState } from "vuex";
 
 export default {
   data() {
@@ -93,7 +108,8 @@ export default {
       rollNumber: "",
       joiningKey: "",
       joinDialog: false,
-      rollNumbers: ""
+      rollNumbers: "",
+      currentBatch: {}
     };
   },
   components: {
@@ -101,12 +117,13 @@ export default {
     SectionLayout
   },
   created() {
-    this.$store.dispatch("batches/detailedList");
+    this.$store.dispatch("institutes/getFollowing");
   },
   computed: {
-    batches() {
-      return this.$store.state.batches.all.items;
-    },
+    ...mapState({
+      status: state => state.institutes.status,
+      following: state => state.institutes.following
+    }),
     joining() {
       return this.$store.state.batches.status.joining;
     },
@@ -115,9 +132,9 @@ export default {
     }
   },
   methods: {
-    join(i) {
+    join(id) {
       var data = {
-        batch: this.batches[i].pk,
+        batch: id,
         rollNumber: this.rollNumber,
         joiningKey: this.joiningKey
       };
@@ -154,5 +171,6 @@ export default {
     border-radius: 8px;
     height: 220px;
     width: 250px;
+    margin: 10px;
 }
 </style>

@@ -3,7 +3,7 @@ import { batchService } from "@/api/batch.service";
 const initialState = {
   status: {},
   batch: {},
-  all: { items: [] }
+  items: []
 };
 
 export const batches = {
@@ -82,6 +82,9 @@ export const batches = {
         }
       );
     },
+    newEnrollments({ dispatch, commit }, data) {
+      commit("newEnrollmentsSuccess", data);
+    },
     remove({ dispatch, commit }, id) {
       commit("removeRequest", id);
 
@@ -99,6 +102,9 @@ export const batches = {
           dispatch("alert/error", error, { root: true });
         }
       );
+    },
+    removeStudent({ dispatch, commit }, id) {
+      commit("removeStudentSuccess", id);
     },
     list({ commit }) {
       commit("listRequest");
@@ -133,29 +139,29 @@ export const batches = {
       state.status = { error };
     },
     listRequest(state) {
-      state.all = { loading: true };
+      state.status = { loading: true };
     },
     listSuccess(state, batches) {
-      state.all = { items: batches };
+      state.items = batches;
     },
     listFailure(state, error) {
-      state.all = { error };
+      state.status = { error };
     },
     detailedListRequest(state) {
-      state.all = { loading: true };
+      state.status = { loading: true };
     },
     detailedListSuccess(state, batches) {
-      state.all = { items: batches };
+      state.items = batches;
     },
     detailedListFailure(state, error) {
-      state.all = { error };
+      state.status = { error };
     },
     createRequest(state, data) {
       state.status = { creating: true };
     },
     createSuccess(state, data) {
       state.status = { created: true, batch: data };
-      state.all.items.push(data);
+      state.items.push(data);
     },
     createFailure(state, error) {
       state.status = { error: error };
@@ -178,15 +184,29 @@ export const batches = {
     joinFailure(state, error) {
       state.status = { error: error };
     },
+    newEnrollmentsSuccess(state, data) {
+      var index = state.items.findIndex(item => item.pk === data.batchId);
+      console.log(index, data.batchId, state.items);
+      if (index >= 0)
+        data.enrollments.forEach(e => {
+          state.items[index].enrollments.push(e);
+        });
+    },
     removeRequest(state, id) {
       state.status = { removing: true, id: id };
     },
     removeSuccess(state, id) {
       state.status = { removed: true, id: id };
-      state.all.items = state.all.items.filter(batch => batch.pk !== id);
+      state.items = state.items.filter(batch => batch.pk !== id);
     },
     removeFailure(state, error) {
       state.status = { error: error };
+    },
+    removeStudentSuccess(state, id) {
+      state.items.forEach((item, i) => {
+        var index = item.enrollments.findIndex(e => e.pk === id);
+        if (index >= 0) item.enrollments.splice(index, 1);
+      });
     }
   }
 };

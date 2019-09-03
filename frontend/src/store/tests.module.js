@@ -56,7 +56,7 @@ export const tests = {
         data => {
           commit("updateSuccess", data);
           setTimeout(() => {
-            dispatch("alert/success", "Test update successfully!", {
+            dispatch("alert/success", "Test updated successfully!", {
               root: true
             });
             dispatch("testSeries/addTest", data, {
@@ -130,10 +130,10 @@ export const tests = {
       state.status = { error: error };
     },
     updateRequest(state, data) {
-      state.status = { creating: true };
+      state.status = { updating: true };
     },
     updateSuccess(state, data) {
-      state.status = { created: true, test: data };
+      state.status = { updated: true, test: data };
     },
     updateFailure(state, error) {
       state.status = { error: error };

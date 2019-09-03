@@ -24,7 +24,14 @@
       </v-card>
     </v-dialog>
     <StandardLayout v-if="session && session.completed">
-      <Marks :questionWise="questionWise" :report="report" />
+      <v-flex xs12 class="my-3">
+        <v-btn round color="info" @click="reAttempt">Reattempt this test</v-btn>
+      </v-flex>
+      <Marks :questionWiseMarks="questionWiseMarks" :report="report" />
+      <Analysis v-if="report && report.result" :report="report" />
+      <v-card v-else :class="[$style.card, $style.message]">
+        Analysis of your test is not generated yet.
+      </v-card>
     </StandardLayout>
     <TestLayout v-else :sections="sections" :sectionIndex.sync="sectionIndex">
       <template slot="controls">
@@ -305,6 +312,7 @@
 import TestLayout from "@components/test/TestLayout.vue";
 import StandardLayout from "@components/layouts/StandardLayout.vue";
 import Marks from "./Marks";
+import Analysis from "./Analysis";
 import { demoSession } from "@js/demoTest";
 
 export default {
@@ -339,8 +347,10 @@ export default {
         { value: 4, text: "One Word Answer" },
         { value: 5, text: "Subjective" }
       ],
-      report: {},
-      questionWise: [],
+      report: localStorage.getItem("report")
+        ? JSON.parse(localStorage.getItem("report"))
+        : {},
+      questionWiseMarks: [],
       isSmallScreen: this.$vuetify.breakpoint.smAndDown,
       submitDialog: false,
       session: localStorage.getItem("demoSession")
@@ -351,7 +361,8 @@ export default {
   components: {
     StandardLayout,
     TestLayout,
-    Marks
+    Marks,
+    Analysis
   },
   methods: {
     getRandom(min, max) {
@@ -474,51 +485,56 @@ export default {
     },
     calculateResult() {
       var responses = this.session.response;
-      var i = 0;
       var answers = this.test.answers;
-      var noOfSection = this.sections.length;
+      var noOfSections = this.sections.length;
       var maxMarks = [];
       var sectionWise = [];
       var currentQuestion = {};
-      var questionWise = [];
-      for (i = 0; i < noOfSection; i++) {
+      var questionWiseMarks = [];
+      var topicWiseMarks = [];
+      var i = 0;
+      for (i = 0; i < noOfSections; i++) {
         maxMarks.push(0);
         sectionWise.push(0);
       }
       maxMarks.push(0);
       var marks = { total: 0, maxMarks, sectionWise };
-      console.log(marks);
-      for (i = 0; i < this.test.questions.length; i++) {
-        questionWise.push({ marks: 0, status: 0 });
+      for (i = 0; i < this.questions.length; i++) {
+        questionWiseMarks.push({ marks: 0, status: 0 });
       }
-      console.log(questionWise);
-      var report = { test: {}, marks };
+      for (i = 0; i < this.sections.length; i++) {
+        topicWiseMarks.push({});
+      }
+      var report = {
+        test: {},
+        response: [],
+        result: {},
+        marks
+      };
       report.test = this.test;
-      for (i = 0; i < this.test.questions.length; i++) {
-        currentQuestion = this.test.questions[i];
-        marks.maxMarks[noOfSection] += currentQuestion.correctMarks;
+      for (i = 0; i < this.questions.length; i++) {
+        currentQuestion = this.questions[i];
+        marks.maxMarks[noOfSections] += currentQuestion.correctMarks;
         marks.maxMarks[currentQuestion.section] += currentQuestion.correctMarks;
         if (
           this.session.test.questions[i].type === 0 &&
-          responses[i].answer !== null
+          responses[i].answer.length !== 0
         ) {
           if (responses[i].answer === answers[i].answer) {
-            console.log("Correct Single");
-            questionWise[i].marks = currentQuestion.correctMarks;
-            questionWise[i].status = 2;
+            questionWiseMarks[i].marks = currentQuestion.correctMarks;
+            questionWiseMarks[i].status = 2;
             report.marks.total += currentQuestion.correctMarks;
             report.marks.sectionWise[currentQuestion.section] +=
               currentQuestion.correctMarks;
           } else if (responses[i].answer !== answers[i].answer) {
-            console.log("Incorrect Single");
-            questionWise[i].marks = -currentQuestion.incorrectMarks;
-            questionWise[i].status = 1;
+            questionWiseMarks[i].marks = -currentQuestion.incorrectMarks;
+            questionWiseMarks[i].status = 1;
             report.marks.total -= currentQuestion.incorrectMarks;
             report.marks.sectionWise[currentQuestion.section] -=
               currentQuestion.incorrectMarks;
           }
         } else if (
-          this.test.questions[i].type === 1 &&
+          this.questions[i].type === 1 &&
           responses[i].answer.length !== 0
         ) {
           var arrayOfChildrenNames = responses[i].answer;
@@ -535,28 +551,107 @@ export default {
           ) {
             report.marks.total +=
               arrayOfChildrenNames.length * currentQuestion.partialMarks;
-            questionWise[i].marks =
+            questionWiseMarks[i].marks =
               currentQuestion.partialMarks * arrayOfChildrenNames.length;
-            questionWise[i].status = 3;
+            questionWiseMarks[i].status = 3;
             report.marks.sectionWise[currentQuestion.section] +=
               currentQuestion.partialMarks * arrayOfChildrenNames.length;
           } else if (isarrayOfNamesSubsetOfFamily) {
-            questionWise[i].marks = currentQuestion.correctMarks;
-            questionWise[i].status = 2;
+            questionWiseMarks[i].marks = currentQuestion.correctMarks;
+            questionWiseMarks[i].status = 2;
             report.marks.total += currentQuestion.correctMarks;
             report.marks.sectionWise[currentQuestion.section] +=
               currentQuestion.correctMarks;
           } else {
-            questionWise[i].marks = -currentQuestion.incorrectMarks;
-            questionWise[i].status = 3;
+            questionWiseMarks[i].marks = -currentQuestion.incorrectMarks;
+            questionWiseMarks[i].status = 1;
             report.marks.total -= currentQuestion.incorrectMarks;
             report.marks.sectionWise[currentQuestion.section] -=
               currentQuestion.incorrectMarks;
           }
+        } else if (
+          this.questions[i].type === 2 &&
+          responses[i].answer.length !== 0
+        ) {
+          if (
+            parseFloat(responses[i].answer) / parseFloat(answers[i].answer) >=
+            0.99 <=
+            1.01
+          ) {
+            questionWiseMarks[i].marks = currentQuestion.correctMarks;
+            questionWiseMarks[i].status = 2;
+            report.marks.total += currentQuestion.correctMarks;
+            report.marks.sectionWise[currentQuestion.section] +=
+              currentQuestion.correctMarks;
+          } else {
+            questionWiseMarks[i].marks = -currentQuestion.incorrectMarks;
+            questionWiseMarks[i].status = 1;
+            report.marks.total -= currentQuestion.incorrectMarks;
+            report.marks.sectionWise[currentQuestion.section] -=
+              currentQuestion.incorrectMarks;
+          }
+        } else if (
+          this.questions[i].type === 3 &&
+          responses[i].answer.length !== 0
+        ) {
+          // For Matrix match for each part status 0 means unanswered 1 means incorrect 2 means correct
+          var responsesMatrix = responses[i].answer;
+          var answersMatrix = answers[i].answer;
+          var curMarks = [];
+          for (var j = 0; j < responsesMatrix.length; j++) {
+            curMarks.push({ marks: 0, status: 0 });
+          }
+          for (j = 0; j < responsesMatrix.length; j++) {
+            if (responsesMatrix[j].length !== 0) {
+              responsesMatrix[j].sort();
+              answersMatrix[j].sort();
+              console.log(responsesMatrix[j], answersMatrix[j]);
+              console.log(responsesMatrix[j] === answersMatrix[j]);
+
+              if (
+                JSON.stringify(responsesMatrix[j]) ===
+                JSON.stringify(answersMatrix[j])
+              ) {
+                curMarks[j]["marks"] = currentQuestion.partialMarks;
+                curMarks[j]["status"] = 2;
+              } else {
+                curMarks[j]["marks"] = currentQuestion.incorrectMarks * -1;
+                console.log("Matrix incorrect");
+                curMarks[j]["status"] = 1;
+              }
+            }
+          }
+          var totalMatrixMarks = 0;
+          var matrixMarks = [];
+          var matrixStatus = [];
+          for (j = 0; j < curMarks.length; j++) {
+            totalMatrixMarks += curMarks[j]["marks"];
+            matrixMarks.push(curMarks[j]["marks"]);
+            matrixStatus.push(curMarks[j]["status"]);
+          }
+          questionWiseMarks[i].marks = matrixMarks;
+          questionWiseMarks[i].status = matrixStatus;
+          report.marks.total += totalMatrixMarks;
+          report.marks.sectionWise[currentQuestion.section] += totalMatrixMarks;
         }
+        var currentTopic = topicWiseMarks[this.questions[i].section];
+        var curTopicMarks = 0;
+        if (Array.isArray(questionWiseMarks[i].marks))
+          curTopicMarks = questionWiseMarks[i].marks.reduce((a, b) => a + b, 0);
+        else curTopicMarks = questionWiseMarks[i].marks;
+        if (currentTopic.hasOwnProperty(this.questions[i].topicIndex))
+          currentTopic[this.questions[i].topicIndex] += curTopicMarks;
+        else currentTopic[this.questions[i].topicIndex] = curTopicMarks;
       }
+      report.result.questionWiseMarks = questionWiseMarks;
+      report.result.topicWiseMarks = topicWiseMarks;
       this.report = report;
-      this.questionWise = questionWise;
+      localStorage.setItem("report", JSON.stringify(report));
+    },
+    reAttempt() {
+      localStorage.removeItem("demoSession");
+      localStorage.removeItem("report");
+      location.reload();
     }
   },
   watch: {
@@ -610,7 +705,7 @@ export default {
       return this.response;
     },
     currentQuestion() {
-      return this.test.questions[this.questionIndex];
+      return this.questions[this.questionIndex];
     },
     currentAnswer() {
       return this.response[this.questionIndex];
@@ -624,7 +719,7 @@ export default {
       localStorage.setItem("demoSession", demoSession);
   },
   mounted() {
-    setInterval(this.updateTime, 1000);
+    if (!this.session.completed) setInterval(this.updateTime, 1000);
   }
 };
 </script>

@@ -20,6 +20,8 @@ urlpatterns = [
 
     path("institute/follow/<int:pk>/", FollowInstituteView.as_view()),
 
+    path("institutes/following/", FollowingInstitutesView.as_view()),
+
     path("institutes/", InstitutesListView.as_view({"get": "list"}), name="institutes-list"),
     
     path("subjects/", SubjectListView.as_view({"get": "list"}), name="subjects-list"),

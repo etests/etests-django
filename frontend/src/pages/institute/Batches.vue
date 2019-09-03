@@ -36,7 +36,7 @@ export default {
   },
   computed: {
     batches() {
-      return this.$store.state.batches.all.items;
+      return this.$store.state.batches.items;
     }
   },
   methods: {}

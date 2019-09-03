@@ -58,7 +58,13 @@
     </template>
 
     <template slot="info">
-      <v-menu offset-y transition="slide-y-transition" bottom max-height="300">
+      <v-menu
+        v-if="currentQuestion.type !== 3"
+        offset-y
+        transition="slide-y-transition"
+        bottom
+        max-height="300"
+      >
         <template v-slot:activator="{ on }">
           <v-btn color="success" round outline v-on="on">
             <v-icon>mdi-plus</v-icon>
@@ -70,23 +76,6 @@
             v-for="n in 100"
             :key="n"
             @click="currentQuestion.correctMarks = n"
-          >
-            <v-list-tile-title>{{ n }}</v-list-tile-title>
-          </v-list-tile>
-        </v-list>
-      </v-menu>
-      <v-menu offset-y transition="slide-y-transition" bottom max-height="300">
-        <template v-slot:activator="{ on }">
-          <v-btn color="error" round outline v-on="on">
-            <v-icon>mdi-minus</v-icon>
-            <span> {{ currentQuestion.incorrectMarks }} &nbsp; </span>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-tile
-            v-for="n in 20"
-            :key="n"
-            @click="currentQuestion.inCorrectMarks = n"
           >
             <v-list-tile-title>{{ n }}</v-list-tile-title>
           </v-list-tile>
@@ -116,6 +105,25 @@
           </v-list-tile>
         </v-list>
       </v-menu>
+
+      <v-menu offset-y transition="slide-y-transition" bottom max-height="300">
+        <template v-slot:activator="{ on }">
+          <v-btn color="error" round outline v-on="on">
+            <v-icon>mdi-minus</v-icon>
+            <span> {{ currentQuestion.incorrectMarks }} &nbsp; </span>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-tile
+            v-for="n in 20"
+            :key="n"
+            @click="currentQuestion.inCorrectMarks = n"
+          >
+            <v-list-tile-title>{{ n }}</v-list-tile-title>
+          </v-list-tile>
+        </v-list>
+      </v-menu>
+
       <v-menu offset-y transition="slide-y-transition" bottom>
         <template v-slot:activator="{ on }">
           <v-btn color="indigo" round outline v-on="on">
@@ -143,6 +151,7 @@
           :readonly="false"
           label="Topic"
           single-line
+          @change="changeTopic()"
         />
       </v-btn>
     </template>
@@ -155,7 +164,7 @@
       ></v-img>
       <span :class="$style.questionText">
         <v-textarea
-          rows="1"
+          rows="5"
           :prepend-inner-icon="`mdi-numeric-${questionIndex + 1}-circle`"
           placeholder="Question text"
           v-model="currentQuestion.text"
@@ -681,6 +690,13 @@ export default {
         this.answers.splice(start, len);
         console.log(this.currentSection);
       } else return false;
+    },
+    changeTopic() {
+      var subjectIndex = this.sections[this.currentQuestion.section]
+        .subjectIndex;
+      this.currentQuestion.topicIndex = this.topics[subjectIndex].indexOf(
+        this.currentQuestion.topic
+      );
     }
   },
   watch: {
@@ -734,6 +750,8 @@ export default {
 }
 
 .questionText{
+  width:100%;
+  margin-top:5px;
   font-size: 1.3rem;
   letter-spacing: 0.02em;
   color: #606164;

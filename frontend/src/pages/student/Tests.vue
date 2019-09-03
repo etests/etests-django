@@ -21,20 +21,64 @@
             :search="testSearch"
           >
             <template v-slot:items="props">
-              <td class="text-xs-center">{{ props.item.name }}</td>
-              <td class="text-xs-center">{{ props.item.activation_time }}</td>
-              <td class="text-xs-center">
-                <v-btn
-                  icon
-                  flat
-                  :color="action.color"
-                  v-for="(action, i) in actions"
-                  :key="`${props.item.id}-${i}`"
-                  @click="$router.push(`/${action.path}/${props.item.id}`)"
+              <tr @click="props.expanded = !props.expanded">
+                <td class="text-xs-center">{{ props.item.name }}</td>
+                <td class="text-xs-center">{{ props.item.activation_time }}</td>
+                <td class="text-xs-center">
+                  <v-btn icon flat color="success">
+                    <v-icon>mdi-play</v-icon>
+                  </v-btn>
+                </td>
+              </tr>
+            </template>
+            <template v-slot:expand="props">
+              <v-card>
+                <v-layout
+                  align-center
+                  v-for="(session, j) in props.item.sessions"
+                  :key="j"
                 >
-                  <v-icon>{{ action.icon }}</v-icon>
-                </v-btn>
-              </td>
+                  <v-flex xs4>
+                    <span class="info--text" v-if="session.practice">
+                      Practice
+                    </span>
+                    <span v-else class="success--text">Ranked</span>
+                  </v-flex>
+                  <v-flex xs4>{{ formatDate(session.checkin_time) }}</v-flex>
+                  <v-flex xs4>
+                    <v-btn
+                      icon
+                      flat
+                      color="info"
+                      v-if="!session.completed"
+                      @click="$router.push(`/test/${props.item.id}`)"
+                    >
+                      <v-icon>mdi-play-pause</v-icon>
+                    </v-btn>
+                    <v-btn
+                      icon
+                      flat
+                      color="success"
+                      v-if="session.completed"
+                      @click="$router.push(`/result/${session.id}`)"
+                    >
+                      <v-icon>mdi-file-chart</v-icon>
+                    </v-btn>
+                    <v-btn
+                      icon
+                      flat
+                      color="warning"
+                      v-if="session.completed"
+                      @click="$router.push(`/review/${session.id}`)"
+                    >
+                      <v-icon>mdi-file-find</v-icon>
+                    </v-btn>
+                    <v-btn v-if="session.practice" icon flat color="error">
+                      <v-icon>mdi-delete</v-icon>
+                    </v-btn>
+                  </v-flex>
+                </v-layout>
+              </v-card>
             </template>
           </v-data-table>
         </v-flex>
@@ -59,11 +103,6 @@ export default {
           value: "activation_time"
         },
         { align: "center", sortable: true, text: "Actions" }
-      ],
-      actions: [
-        { icon: "mdi-play", color: "success", path: "test" },
-        { icon: "mdi-file-chart", color: "info", path: "result" },
-        { icon: "mdi-file-find", color: "warning", path: "review" }
       ]
     };
   },
@@ -76,6 +115,24 @@ export default {
   computed: {
     tests() {
       return this.$store.state.tests.all.items;
+    }
+  },
+  methods: {
+    formatDate(dateString) {
+      var date = new Date(Date.parse(dateString));
+      return (
+        date.getDate() +
+        "/" +
+        (date.getMonth() + 1) +
+        "/" +
+        date.getFullYear() +
+        " " +
+        date.getHours() +
+        ":" +
+        date.getMinutes() +
+        ":" +
+        date.getSeconds()
+      );
     }
   }
 };

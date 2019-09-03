@@ -108,8 +108,7 @@ export default {
   },
   watch: {
     searchInstitute: function(newValue, oldValue) {
-      var institutes = this.institutes;
-      this.filteredInstitutes = institutes.filter(institute =>
+      this.filteredInstitutes = this.institutes.filter(institute =>
         institute.name.toLowerCase().includes(newValue)
       );
     },
@@ -145,8 +144,9 @@ export default {
     showFollowing(id) {
       if (
         this.loggedIn &&
-        this.user.profile &&
-        !this.user.profile.following.includes(id)
+        this.user.details &&
+        this.user.details.following &&
+        !this.user.details.following.includes(id)
       )
         return true;
       else return false;

@@ -1,108 +1,89 @@
 <template>
-  <v-data-table :headers="headers" :items="desserts" class="elevation-1">
-    <template v-slot:header.name="{ header }">
-      {{ header.text.toUpperCase() }}
-    </template>
-  </v-data-table>
+  <StandardLayout>
+    <Notification position="top center" />
+    <v-card :class="$style.profileCard">
+      <v-layout row wrap justify-center>
+        <v-flex xs12 lg6>
+          <v-img
+            class="white--text"
+            height="250px"
+            width="250px"
+            src="https://www.theuiaa.org/wp-content/uploads/2017/12/2018_banner.jpg"
+          />
+        </v-flex>
+        <v-flex xs12 lg6>
+          <v-card-text>
+            <v-text-field v-model="profile.name" label="Name"></v-text-field>
+            <v-text-field v-model="profile.phone" label="Phone"></v-text-field>
+            <v-text-field
+              v-model="profile.pincode"
+              label="Pincode"
+            ></v-text-field>
+            <v-text-field v-model="profile.city" label="City"></v-text-field>
+            <v-text-field v-model="profile.state" label="State"></v-text-field>
+          </v-card-text>
+          <v-card-actions>
+            <v-btn @click="save" color="primary" round>
+              <v-icon left dark>check</v-icon>
+              Save Changes
+            </v-btn>
+          </v-card-actions>
+        </v-flex>
+      </v-layout>
+    </v-card>
+  </StandardLayout>
 </template>
 
 <script>
+import StandardLayout from "@components/layouts/StandardLayout";
+
 export default {
-  data: () => ({
-    headers: [
-      {
-        text: "Dessert (100g serving)",
-        align: "left",
-        value: "name"
-      },
-      { text: "Calories", value: "calories" },
-      { text: "Fat (g)", value: "fat" },
-      { text: "Carbs (g)", value: "carbs" },
-      { text: "Protein (g)", value: "protein" },
-      { text: "Iron (%)", value: "iron" }
-    ],
-    desserts: [
-      {
-        name: "Frozen Yogurt",
-        calories: 159,
-        fat: 6.0,
-        carbs: 24,
-        protein: 4.0,
-        iron: "1%"
-      },
-      {
-        name: "Ice cream sandwich",
-        calories: 237,
-        fat: 9.0,
-        carbs: 37,
-        protein: 4.3,
-        iron: "1%"
-      },
-      {
-        name: "Eclair",
-        calories: 262,
-        fat: 16.0,
-        carbs: 23,
-        protein: 6.0,
-        iron: "7%"
-      },
-      {
-        name: "Cupcake",
-        calories: 305,
-        fat: 3.7,
-        carbs: 67,
-        protein: 4.3,
-        iron: "8%"
-      },
-      {
-        name: "Gingerbread",
-        calories: 356,
-        fat: 16.0,
-        carbs: 49,
-        protein: 3.9,
-        iron: "16%"
-      },
-      {
-        name: "Jelly bean",
-        calories: 375,
-        fat: 0.0,
-        carbs: 94,
-        protein: 0.0,
-        iron: "0%"
-      },
-      {
-        name: "Lollipop",
-        calories: 392,
-        fat: 0.2,
-        carbs: 98,
-        protein: 0,
-        iron: "2%"
-      },
-      {
-        name: "Honeycomb",
-        calories: 408,
-        fat: 3.2,
-        carbs: 87,
-        protein: 6.5,
-        iron: "45%"
-      },
-      {
-        name: "Donut",
-        calories: 452,
-        fat: 25.0,
-        carbs: 51,
-        protein: 4.9,
-        iron: "22%"
-      },
-      {
-        name: "KitKat",
-        calories: 518,
-        fat: 26.0,
-        carbs: 65,
-        protein: 7,
-        iron: "6%"
+  computed: {
+    user() {
+      return this.$store.state.authentication.user.profile;
+    }
+  },
+  components: {
+    StandardLayout
+  },
+  methods: {
+    save(e) {
+      var error = null;
+      if (!this.profile.name) error = "Enter your name.";
+      else if (this.profile.name.length > 100) error = "Your name is too long!";
+      else if (!this.profile.phone) error = "Enter your phone number.";
+      else if (!this.profile.pincode) error = "Enter your birth date";
+      else if (!this.profile.state) error = "Select your state.";
+      else if (!this.profile.city) error = "Select your city.";
+
+      if (error) {
+        this.$notify({
+          title: "Oops!",
+          type: "warn",
+          text: error
+        });
+      } else {
+        var data = {
+          name: this.profile.name,
+          phone: this.profile.phone,
+          pincode: this.profile.pincode,
+          city: this.profile.city,
+          state: this.profile.state
+        };
+
+        this.$store.dispatch("users/updateProfile", data);
       }
-    ]
-  })
+    }
+  }
 };
 </script>
+
+<style module lang="stylus">
+
+.profileCard{
+  margin: auto;
+  width: 600px;
+  max-width: 100%;
+  padding: 20px;
+}
+</style>

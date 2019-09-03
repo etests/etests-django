@@ -1,6 +1,8 @@
 <template>
   <v-flex xs12 :class="$style.section">
     <v-flex xs12 :class="$style.heading">{{ heading }}</v-flex>
+    <v-divider class="mb-5" />
+    <v-spacer />
     <v-flex xs12> </v-flex>
     <v-layout row wrap>
       <slot></slot>
@@ -27,7 +29,8 @@ export default {
 
 .section{
     font-family: 'Product Sans',Roboto,Arial,sans-serif;
-    margin-bottom: 50px;
+    margin: 20px 10px;
+    width: 100%;
     .heading{
       margin: 10px;
       text-align: left;
@@ -35,6 +38,9 @@ export default {
       font-size: 2.08rem;
       line-height: 1.25rem;
       color: #5f6368;
+      &:not(:first-child){
+        margin-top: 50px;
+      }
     }
 }
 </style>

@@ -12,6 +12,7 @@ import vueMq from "vue-mq";
 import "./registerServiceWorker";
 import Notifications from "vue-notification";
 import VueGoogleCharts from "vue-google-charts";
+
 Vue.use(VueGoogleCharts);
 
 Vue.use(Notifications, {

@@ -48,6 +48,15 @@ class BatchListView(generics.ListAPIView):
         else:
             return None
 
+class FollowingInstitutesView(generics.ListAPIView):
+    permission_classes = (IsStudentOwner,)
+    serializer_class = FollowingInstitutesSerializer
+    def get_queryset(self):
+        if self.request.user.is_student:
+            return Institute.objects.filter(following_students=self.request.user.student)
+        else:
+            return None
+
 class BatchListCreateView(generics.ListCreateAPIView):
     permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
     serializer_class = InstituteBatchSerializer
@@ -177,7 +186,11 @@ class TestSeriesRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView)
 
 class TestListView(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = TestListSerializer
+    def get_serializer_class(self):
+        if self.request.user.is_student:
+            return StudentTestListSerializer
+        else:
+            return TestListSerializer
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
@@ -196,6 +209,7 @@ class TestCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(institute=self.request.user.institute)
+        
         
 class TestRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
@@ -273,7 +287,7 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
                 test = Test.objects.get(id=instance.test.id)
                 evaluated = SessionEvaluation(test, session).evaluate()
                 instance.marks = evaluated[0]
-                instance.result = {"question_wise_marks":evaluated[1]}
+                instance.result = {"questionWiseMarks": evaluated[1], "topicWiseMarks": evaluated[2]}
 
         serializer = self.get_serializer(instance, data=self.request.data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -283,7 +297,13 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
 
 class ResultView(generics.RetrieveAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
-    serializer_class = ResultSerializer
+    def get_serializer_class(self):
+        session = self.get_object()
+        test = session.test
+        if test.practice or test.closed:
+            return ReviewSerializer
+        else:
+            return ResultSerializer
     def get_queryset(self):
         if self.request.user.is_student:
             return Session.objects.filter(student = self.request.user.student)

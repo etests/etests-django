@@ -4,7 +4,7 @@ import handleResponse from "./handleResponse";
 export const userService = {
   login,
   register,
-  update,
+  updateProfile,
   logout,
   getAll,
   refresh
@@ -21,12 +21,6 @@ function login(username, password) {
     .then(handleResponse)
     .then(data => {
       if (data.token) {
-        if (data.user) {
-          if (data.user["is_student"]) data.user.type = "student";
-          else if (data.user["is_institute"]) data.user.type = "institute";
-          else if (data.user["is_staff"]) data.user.type = "staff";
-        }
-        if (data.profile) data.user.profile = data.profile;
         localStorage.setItem("token", JSON.stringify(data.token));
         localStorage.setItem("user", JSON.stringify(data.user));
       }
@@ -62,14 +56,14 @@ function register(data) {
   );
 }
 
-function update(data) {
+function updateProfile(data) {
   const requestOptions = {
     method: "PATCH",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeader(),
     body: JSON.stringify(data)
   };
 
-  return fetch(`${process.env.API_URL}/user/`, requestOptions).then(
+  return fetch(`${process.env.API_URL}/profile/update/`, requestOptions).then(
     handleResponse
   );
 }

@@ -289,11 +289,11 @@ export default {
     },
     isStudent() {
       if (!this.loggedIn) return false;
-      else return this.user.is_student;
+      else return this.user.type === "student";
     },
     isInstitute() {
       if (!this.loggedIn) return false;
-      else return this.user.is_institute;
+      else return this.user.type === "institute";
     },
     topNavMenu() {
       return [

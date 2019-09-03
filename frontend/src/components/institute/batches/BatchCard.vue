@@ -64,7 +64,7 @@
           transition="dialog-bottom-transition"
         >
           <v-card>
-            <v-toolbar dark color="info">
+            <v-toolbar dark color="primary">
               <v-btn icon dark @click="viewDialog = false">
                 <v-icon>close</v-icon>
               </v-btn>
@@ -87,7 +87,9 @@
                   :items="batch.enrollments"
                 >
                   <template v-slot:items="props">
-                    <td class="text-xs-center">{{ props.item.roll_number }}</td>
+                    <td class="text-xs-center">
+                      {{ props.item.roll_number }}
+                    </td>
                     <td class="text-xs-center">{{ props.item.joining_key }}</td>
                     <td class="text-xs-center">
                       <span class="success--text" v-if="props.item.student">
@@ -199,8 +201,14 @@
                 </v-layout>
               </template>
               <template v-else>
-                Enter roll numbers of the students you want to add and we will
-                generate a password for each.
+                Enter roll numbers of the students or upload an excel file with
+                a list of roll numbers and we will generate a password for each.
+                <input type="file" @change="onFileChange" />
+                <xlsx-read :file="file">
+                  <template v-slot:default="{ loading }">
+                    <span v-if="loading">Loading...</span>
+                  </template>
+                </xlsx-read>
                 <textarea
                   v-model="rollNumbers"
                   :class="$style.listBox"
@@ -213,7 +221,7 @@
                 color="info"
                 flat
                 @click="
-                  generated = false;
+                  $store.commit('enrollments/clearGenerated');
                   addDialog = false;
                 "
               >
@@ -249,6 +257,7 @@
 
 <script>
 import ObjectCard from "@components/layouts/ObjectCard";
+import { XlsxRead, XLsxJson } from "vue-xlsx";
 import { mapState } from "vuex";
 
 export default {
@@ -268,6 +277,7 @@ export default {
   },
   data() {
     return {
+      file: null,
       editing: false,
       viewDialog: false,
       deleteDialog: false,
@@ -326,20 +336,31 @@ export default {
     })
   },
   components: {
-    ObjectCard
+    ObjectCard,
+    XlsxRead,
+    XLsxJson
   },
   methods: {
+    onFileChange(event) {
+      this.file = event.target.files ? event.target.files[0] : null;
+    },
+    sheetUpload(file) {},
+
     generate() {
       var data = {
         batch: this.batch.pk,
-        rollNumbers: this.rollNumbers.trim().split(" ")
+        rollNumbers: this.rollNumbers
+          .trim()
+          .split(" ")
+          .replace(/(\r\n|\n|\r)/gm, " ")
+          .replace(/\s+/g, " ")
       };
       this.$store.dispatch("enrollments/batchEnroll", data);
     },
     removeStudent(i) {
       this.$store.dispatch("enrollments/remove", i);
     },
-    updabatchatus(newValue, oldValue) {
+    updateStatus(newValue, oldValue) {
       this.loading =
         (newValue.removing && newValue.id === this.batch.id) ||
         (newValue.creating && this.new);
@@ -353,12 +374,12 @@ export default {
       const { dispatch } = this.$store;
       var data = this.meta.data;
       data.name = this.batch.name;
-      var unwatch = this.$watch("status", this.updabatchatus);
+      var unwatch = this.$watch("status", this.updateStatus);
       dispatch(this.meta.action, data).then((this.editing = false), unwatch);
     },
     remove() {
       const { dispatch } = this.$store;
-      var unwatch = this.$watch("status", this.updabatchatus);
+      var unwatch = this.$watch("status", this.updateStatus);
       dispatch("batches/remove", this.batch.pk).then(
         (this.deleteDialog = false),
         unwatch

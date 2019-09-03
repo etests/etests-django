@@ -4,14 +4,27 @@ export const institutes = {
   namespaced: true,
   state: {
     status: {},
+    following: [],
     all: {}
   },
   actions: {
+    getFollowing({ dispatch, commit }) {
+      commit("followRequest");
+      instituteService.getFollowing().then(
+        institutes => {
+          commit("getFollowingSuccess", institutes);
+        },
+        error => {
+          commit("getFollowingFailure", error);
+          dispatch("alert/error", error, { root: true });
+        }
+      );
+    },
     follow({ dispatch, commit }, id) {
       commit("followRequest", id);
       instituteService.follow(id).then(
         message => {
-          commit("followSuccess", { id, message });
+          commit("followSuccess", institutes);
         },
         error => {
           commit("followFailure", error);
@@ -42,13 +55,22 @@ export const institutes = {
       state.status = { error: error };
     },
     getAllRequest(state) {
-      state.all = { loading: true };
+      state.status = { loading: true };
     },
     getAllSuccess(state, institutes) {
       state.all = { items: institutes };
     },
     getAllFailure(state, error) {
-      state.all = { error };
+      state.status = { error };
+    },
+    getFollowingRequest(state) {
+      state.status = { loading: true };
+    },
+    getFollowingSuccess(state, institutes) {
+      state.following = institutes;
+    },
+    getFollowingFailure(state, error) {
+      state.status = { error };
     }
   }
 };

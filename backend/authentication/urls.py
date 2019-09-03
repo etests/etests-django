@@ -2,10 +2,7 @@ from django.views.generic import TemplateView
 from django.urls import path
 from rest_framework_jwt.views import refresh_jwt_token
 
-from .views import (
-    RegisterView, VerifyEmailView, LoginView, LogoutView, UserDetailsView, PasswordChangeView,
-    PasswordResetView, PasswordResetConfirmView
-)
+from .views import *
 
 urlpatterns = [
     path("register/", RegisterView.as_view(), name="register"),
@@ -16,6 +13,6 @@ urlpatterns = [
     path("login/", LoginView.as_view(), name="login"),
     path("refresh/", refresh_jwt_token),
     path("logout/", LogoutView.as_view(), name="logout"),
-    path("user/", UserDetailsView.as_view(), name="user_details"),
+    path("profile/update/", ProfileView.as_view(), name="profile"),
     path("password/change/", PasswordChangeView.as_view(), name="password_change"),
 ]

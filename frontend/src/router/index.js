@@ -50,7 +50,7 @@ const router = new Router({
         {
           path: "profile",
           name: "profile",
-          component: () => import("@/components/auth/RegisterStudent"),
+          component: () => import("@/pages/student/Profile"),
           meta: {
             title: "Profile"
           }
@@ -109,7 +109,7 @@ const router = new Router({
         {
           path: "profile",
           name: "institute-profile",
-          component: () => import("@/components/auth/RegisterInstitute"),
+          component: () => import("@/pages/student/Profile"),
           meta: {
             title: "Profile"
           }
@@ -236,8 +236,8 @@ router.beforeEach((to, from, next) => {
 
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (isLoggedIn) {
-      const isStudent = store.state.authentication.user.is_student;
-      const isInstitute = store.state.authentication.user.is_institute;
+      const isStudent = store.state.authentication.user.type === "student";
+      const isInstitute = store.state.authentication.user.type === "institute";
 
       if (to.matched.some(record => record.meta.requiresStudent)) {
         if (isStudent) return next();

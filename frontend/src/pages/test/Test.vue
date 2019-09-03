@@ -33,7 +33,7 @@
             </v-flex>
           </template>
           <v-flex xs12 v-if="error" :class="$style.message">
-            {{ this.status.error }}
+            {{ status.error }}
           </v-flex>
         </v-layout>
       </v-card>
@@ -42,7 +42,7 @@
       <template slot="controls">
         <v-btn color="primary" flat>
           <v-icon> mdi-clock </v-icon>
-          &nbsp; {{ this.time }}
+          &nbsp; {{ time }}
         </v-btn>
         <v-btn
           color="info"

@@ -168,24 +168,34 @@ class LogoutView(APIView):
 
         return response
 
-class UserDetailsView(RetrieveUpdateAPIView):
-    """
-    Reads and updates UserModel fields
-
-    Default accepted fields: name, email, phone, city, state
-    Default display fields: pk, name, email, phone, city, state
-    Read-only fields: pk
-
-    Returns UserModel fields.
-    """
-    serializer_class = UserDetailsSerializer
+class ProfileView(RetrieveUpdateAPIView):
+    serializer_class = ProfileSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_object(self):
         return self.request.user
 
     def get_queryset(self):
-        return get_user_model().objects.none()
+        return User.objects.all()
+    
+    def patch(self, *args, **kwargs):
+        instance = self.get_object()
+
+        birth_date = self.request.data.pop('birth_date', None)
+        pincode = self.request.data.pop('pincode', None)
+
+
+        if instance.is_student and birth_date:
+            instance.birth_date = birth_date
+
+        if instance.is_institute and pincode:
+            instance.pincode = pincode
+
+        serializer = self.get_serializer(instance, data=self.request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)  
+
+        return Response(serializer.data)
 
 class PasswordResetView(GenericAPIView):
     """

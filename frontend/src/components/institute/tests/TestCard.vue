@@ -113,7 +113,7 @@ export default {
     test: {
       required: false,
       default: () => {
-        return { name: "", description: "", new: true };
+        return { id: "", name: "", description: "", new: true };
       },
       type: Object
     },

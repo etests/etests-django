@@ -127,6 +127,7 @@ class Test(models.Model):
     slug = models.SlugField(unique = True, editable = False)
     active = models.BooleanField(default = False)
     practice = models.BooleanField(default = False)
+    closed = models.BooleanField(default = False)
     tags = models.ManyToManyField(Tag, blank = True)
     date_added = models.DateField(auto_now_add = True)
     activation_time = models.DateField(blank = True, null = True)

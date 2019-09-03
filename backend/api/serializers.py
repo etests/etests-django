@@ -26,17 +26,32 @@ class TestListSerializer(serializers.ModelSerializer):
 class TestCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model=Test
-        fields = ("name", "institute", "questions", "answers", "sections")
+        fields = ("id", "name", "institute", "questions", "answers", "sections")
 
 class TestSerializer(serializers.ModelSerializer):
     class Meta:
         model=Test
         fields = '__all__'
 
+
+class SessionListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Session
+        fields = ('id', 'practice', 'checkin_time', 'completed')
+
+class StudentTestListSerializer(serializers.ModelSerializer):
+    institute = serializers.SerializerMethodField()
+    sessions = SessionListSerializer(many=True, read_only=True)
+    class Meta:
+        model = Test
+        fields = ('id','name','institute', 'active', 'closed', 'practice', 'date_added', 'activation_time', 'time_alotted', "sessions")
+    def get_institute(self, obj):
+        return {"pk": obj.institute.pk, "name": obj.institute.user.name}
+
 class StudentTestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test
-        fields = ('id','name','institute','slug','active','practice','tags','date_added','activation_time','time_alotted','sections','questions')
+        fields = ('id','name','institute', 'active','practice','tags','date_added','activation_time','time_alotted','sections','questions')
 
 class TestRegisterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -54,7 +69,7 @@ class SessionSerializer(serializers.ModelSerializer):
     test = StudentTestSerializer(many=False, read_only=True)
     class Meta:
         model = Session
-        fields = ('id', 'response', 'test', 'duration', 'current', 'completed')
+        fields = ('id', 'practice', 'response', 'test', 'duration', 'current', 'completed')
 
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -109,19 +124,30 @@ class EnrollmentSerializer(serializers.ModelSerializer):
         model = Enrollment
         fields = ("pk", "institute", "batch", "roll_number", "joining_key")
 
-class BatchJoinSerializer(serializers.ModelSerializer):
+class BatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollment
-        fields = ("batch", "roll_number", "joining_key", "student")
+        fields = ("pk", "batch", "roll_number", "joining_key", "student")
 
 class InstituteBatchSerializer(serializers.ModelSerializer):
-    enrollments = BatchJoinSerializer(many=True, required=False)
+    enrollments = BatchSerializer(many=True, required=False)
     class Meta:
         model = Batch
         fields = ("pk", "name", "enrollments")
 
 class BatchListSerializer(serializers.ModelSerializer):
-    institute = InstituteDetailsSerializer()
     class Meta:
         model = Batch
         fields = ("pk", "name", "institute")
+
+class FollowingInstitutesSerializer(serializers.ModelSerializer):
+    batches = BatchListSerializer(many=True, read_only=True)
+    user = UserListSerializer()
+    enrollments = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Institute
+        fields = ("pk", "user", "batches", "enrollments")
+
+    def get_enrollments(self, obj):
+            return [enrollment.batch.pk for enrollment in Enrollment.objects.filter(student=self.context['request'].user.student, institute=obj)]

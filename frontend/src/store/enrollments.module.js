@@ -3,7 +3,7 @@ import { enrollmentService } from "@/api/enrollment.service";
 const initialState = {
   status: {},
   generated: null,
-  items: null
+  items: []
 };
 
 export const enrollments = {
@@ -13,8 +13,11 @@ export const enrollments = {
     batchEnroll({ dispatch, commit }, data) {
       commit("batchEnrollRequest");
       enrollmentService.batchEnroll(data).then(
-        enrollments => {
-          commit("batchEnrollSuccess", enrollments);
+        generated => {
+          commit("batchEnrollSuccess", {
+            batchId: data.batch,
+            enrollments: generated
+          });
         },
         error => {
           commit("batchEnrollFailure", error);
@@ -55,9 +58,15 @@ export const enrollments = {
     batchEnrollRequest(state) {
       state.status = { loading: true };
     },
-    batchEnrollSuccess(state, enrollments) {
+    batchEnrollSuccess(state, data) {
       state.status = { loaded: true };
-      state.generated = enrollments;
+      state.generated = data.enrollments;
+      state.items.concat(data);
+      this.dispatch("batches/newEnrollments", data);
+    },
+    clearGenerated(state) {
+      state.generated = null;
+      state.status = {};
     },
     batchEnrollFailure(state, error) {
       state.status = { error };
@@ -77,6 +86,8 @@ export const enrollments = {
     },
     removeSuccess(state, id) {
       state.status = { removed: true, id: id };
+      state.items = state.items.filter(item => item.pk !== id);
+      this.dispatch("batches/removeStudent", id);
     },
     removeFailure(state, error) {
       state.status = { error: error };

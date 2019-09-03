@@ -105,15 +105,50 @@ class StudentDetailsSerializer(serializers.ModelSerializer):
         model = Student
         fields = '__all__' 
 
-class UserDetailsSerializer(serializers.ModelSerializer):
-    """
-    User details with profile
-    """
+class ProfileSerializer(serializers.ModelSerializer):
+    birth_date = serializers.SerializerMethodField()
+    pincode = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        exclude = ("is_active", "password", "last_login" ,"user_permissions",)
+        fields = ('name', 'phone', 'city', 'state', 'birth_date', 'pincode')
+        
+    def get_birth_date(self, obj):
+        if obj.is_student:
+            return obj.student.birth_date
+        return None
+
+    def get_pincode(self, obj):
+        if obj.is_institute:
+            return obj.institute.pincode
+        return None
+
+class UserDetailsSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer(source='*')
+    details = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
+
+    class Meta:
+        model = User
+        fields = ("id", "name", "email", "type", "profile", "details")
         read_only_fields = ('email', )
+
+    def get_type(self, obj):
+        if obj.is_student:
+            return "student"
+        elif obj.is_institute:
+            return "institute"
+        elif obj.is_staff:
+            return "staff"
+        return ""
+
+    def get_details(self, obj):
+        if obj.is_student:
+            return StudentDetailsSerializer(obj.student, context=self.context).data
+        elif obj.is_institute:
+            return InstituteDetailsSerializer(obj.institute, context=self.context).data
+        else:
+            return None
 
 class JWTSerializer(serializers.Serializer):
     """
@@ -121,18 +156,9 @@ class JWTSerializer(serializers.Serializer):
     """
     token = serializers.CharField()
     user = serializers.SerializerMethodField()
-    profile = serializers.SerializerMethodField()
 
     def get_user(self, obj):
         return UserDetailsSerializer(obj['user'], context=self.context).data
-        
-    def get_profile(self, obj):
-        if obj['user'].is_student:
-            return StudentDetailsSerializer(obj['user'].student, context=self.context).data
-        elif obj['user'].is_institute:
-            return InstituteDetailsSerializer(obj['user'].institute, context=self.context).data
-        else:
-            return None
 
 class PasswordResetSerializer(serializers.Serializer):
     """
