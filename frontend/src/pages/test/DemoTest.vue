@@ -24,14 +24,18 @@
       </v-card>
     </v-dialog>
     <StandardLayout v-if="session && session.completed">
-      <v-flex xs12 class="my-3">
-        <v-btn round color="info" @click="reAttempt">Reattempt this test</v-btn>
-      </v-flex>
-      <Marks :questionWiseMarks="questionWiseMarks" :report="report" />
-      <Analysis v-if="report && report.result" :report="report" />
-      <v-card v-else :class="[$style.card, $style.message]">
-        Analysis of your test is not generated yet.
-      </v-card>
+      <v-layout column align-center>
+        <v-flex xs12 class="my-3">
+          <v-btn round color="info" @click="reAttempt">
+            Reattempt this test
+          </v-btn>
+        </v-flex>
+        <Marks :questionWiseMarks="questionWiseMarks" :report="report" />
+        <Analysis v-if="report && report.result" :report="report" />
+        <v-card v-else :class="[$style.card, $style.message]">
+          Analysis of your test is not generated yet.
+        </v-card>
+      </v-layout>
     </StandardLayout>
     <TestLayout v-else :sections="sections" :sectionIndex.sync="sectionIndex">
       <template slot="controls">
@@ -649,9 +653,22 @@ export default {
       localStorage.setItem("report", JSON.stringify(report));
     },
     reAttempt() {
-      localStorage.removeItem("demoSession");
+      this.session = {
+        response: [],
+        test: this.test,
+        duration: this.test.time_alotted,
+        current: { questionIndex: 0, sectionIndex: 0 },
+        completed: false
+      };
+      for (var i = 0; i < this.questions.length; i++) {
+        this.session.response.push({
+          answer: [],
+          status: 0,
+          timeElapsed: 0
+        });
+      }
+      localStorage.demoSession = JSON.stringify(this.session);
       localStorage.removeItem("report");
-      location.reload();
     }
   },
   watch: {
@@ -661,11 +678,13 @@ export default {
     session: {
       deep: true,
       handler(newSession, oldSession) {
-        if (newSession.duration <= 0 && !newSession.completed) {
-          this.submitTest();
-          this.session.completed = true;
+        if (!this.oldSession.completed) {
+          if (newSession.duration <= 0 && !newSession.completed) {
+            this.submitTest();
+            this.session.completed = true;
+          }
+          localStorage.demoSession = JSON.stringify(newSession);
         }
-        localStorage.demoSession = JSON.stringify(newSession);
       }
     }
   },
@@ -716,7 +735,7 @@ export default {
   },
   created() {
     if (!localStorage.getItem("demoSession"))
-      localStorage.setItem("demoSession", demoSession);
+      localStorage.setItem("demoSession", JSON.stringify(demoSession));
   },
   mounted() {
     if (!this.session.completed) setInterval(this.updateTime, 1000);

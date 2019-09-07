@@ -1,6 +1,5 @@
 <template>
   <StandardLayout>
-    {{ report }}
     <v-layout column align-center v-if="report">
       <SectionLayout heading="Subjectwise Marks">
         <v-flex xs12>

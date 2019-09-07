@@ -15,7 +15,13 @@
         >
           <h1 :class="$style.heading">Institutes</h1>
           <p :class="$style.description">{{ institute.description }}</p>
-          <v-btn round dark large color="primary">
+          <v-btn
+            round
+            dark
+            large
+            color="primary"
+            @click="$router.push('/demo/edit-test')"
+          >
             create demo test
           </v-btn>
         </v-sheet>
@@ -25,7 +31,13 @@
         <v-sheet color="transparent" :class="$style.demoSheet">
           <h1 :class="$style.heading">Students</h1>
           <p :class="$style.description">{{ student.description }}</p>
-          <v-btn round dark large color="primary">
+          <v-btn
+            round
+            dark
+            large
+            color="primary"
+            @click="$router.push('/demo/test')"
+          >
             attempt demo test
           </v-btn>
         </v-sheet>

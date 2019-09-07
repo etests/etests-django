@@ -50,4 +50,5 @@ urlpatterns = [
 
     path("transactions/", TransactionListView.as_view(), name="transaction-list"),
     path("credit-used/", CreditListView.as_view(), name="credits-list")
+    # path("rank/<int:test_id>",)
 ]

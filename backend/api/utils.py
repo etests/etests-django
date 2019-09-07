@@ -80,7 +80,7 @@ class SessionEvaluation:
                 else:
                     self.markIncorrect(i)
             elif self.questions[i]['type']==3: 
-                #For Matrix match for each part status 0 means unanswered 1 means incorrect 2 means correct
+                # For Matrix match for each part status 0 means unanswered 1 means incorrect 2 means correct
                 responses=self.session['response'][i]['answer']
                 answers = self.test.answers[i]['answer']
                 curMarks = [{"marks":0,"status":0} for i in range(len(responses))]
@@ -108,7 +108,28 @@ class SessionEvaluation:
             "sectionWise": self.sectionwiseMarks,
             "maxMarks": self.maxMarks
         },self.questionWiseMarks,self.topicWiseMarks]
+    
 
+def generateRanks(test_id):
+        sessions = Session.objects.filter(test__id = test_id, practice = False)
+        marks_list = [[session.marks.total, session.id] for session in sessions]
+        sectionwise_marks_list = [[[section_marks, session.id] for section_marks in session.marks.sectionWise] for session in sessions]
+        marks_list.sort().reverse()
+        sectionwise_marks_list.sort().reverse()
+        for session in sessions:
+            if session.ranks == {}:
+                session.ranks['overall'] = 0
+                session.ranks['sectionWise'] = []
+                for section in session.test.sections:
+                    session.ranks['sectionWise'].push(0)
+        for (i, marks) in enumerate(marks_list):
+            sessions[marks[-1]].ranks['overall'] = i+1
+
+        for (i, sectionwise_marks) in enumerate(sectionwise_marks_list):
+            for (j, marks) in enumerate(sectionwise_marks):
+                sessions[marks[-1]].ranks['sectionWise'][i] = j+1
+
+        Session.objects.bulk_update(sessions, ["ranks"])
 
 def get_unique_slug(model_instance, slugable_field_name, slug_field_name="slug"):
     """

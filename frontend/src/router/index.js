@@ -222,10 +222,16 @@ const router = new Router({
     },
     {
       path: "/demo/test",
-      name: "demoTest",
       component: () => import("@/pages/test/DemoTest"),
       meta: {
         title: "Demo Test"
+      }
+    },
+    {
+      path: "/demo/edit-test",
+      component: () => import("@/pages/test/DemoEditTest"),
+      meta: {
+        title: "Demo Edit Test"
       }
     }
   ]

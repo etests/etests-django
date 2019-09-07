@@ -10,14 +10,9 @@ export const demoSession = {
     { answer: [], status: 0, timeElapsed: 0 }
   ],
   test: {
-    id: 17,
+    id: 0,
     name: "Minor Test 1",
-    slug: "minor-test-1",
-    active: false,
     practice: true,
-    closed: false,
-    date_added: "2019-09-01",
-    activation_time: null,
     time_alotted: "03:00:00",
     sections: [
       {

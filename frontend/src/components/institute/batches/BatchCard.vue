@@ -201,9 +201,9 @@
                 </v-layout>
               </template>
               <template v-else>
-                Enter roll numbers of the students or upload an excel file with
-                a list of roll numbers and we will generate a password for each.
-                <input type="file" @change="onFileChange" />
+                Enter roll numbers of the students and we will generate a
+                password for each.
+                <!-- <input type="file" @change="onFileChange" />
                 <xlsx-read :file="file">
                   <template v-slot:default="{ loading }">
                     <span v-if="loading">Loading...</span>
@@ -212,7 +212,7 @@
                 <textarea
                   v-model="rollNumbers"
                   :class="$style.listBox"
-                ></textarea>
+                ></textarea> -->
               </template>
             </v-card-text>
             <v-card-actions>
@@ -257,7 +257,7 @@
 
 <script>
 import ObjectCard from "@components/layouts/ObjectCard";
-import { XlsxRead, XLsxJson } from "vue-xlsx";
+// import { XlsxRead, XLsxJson } from "vue-xlsx";
 import { mapState } from "vuex";
 
 export default {
@@ -336,9 +336,7 @@ export default {
     })
   },
   components: {
-    ObjectCard,
-    XlsxRead,
-    XLsxJson
+    ObjectCard
   },
   methods: {
     onFileChange(event) {

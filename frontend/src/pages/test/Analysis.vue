@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="$style.chartBox">
     <SectionLayout heading="Detailed Performance">
       <v-flex
         v-for="(performanceData, i) in topicwisePerformance"
@@ -189,6 +189,9 @@ export default {
 
 <style module lang="stylus">
 @require '~@stylus/theme/colors';
+.chartBox{
+  width: 100%;
+}
 .chart{
   width: 100%;
   height: 100%;
