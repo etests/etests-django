@@ -40,15 +40,19 @@ urlpatterns = [
 
     path("tests/<int:pk>/", TestRetrieveUpdateDestoryView.as_view(), name="test-update-delete"),
 
-    path("get-session/<int:test_id>/", SessionRetrieveUpdateView.as_view()),
+    path("get-session/<int:test_pk>/", SessionRetrieveUpdateView.as_view()),
 
     path("update-session/<int:pk>/", SessionRetrieveUpdateView.as_view()),
+
+    path("generate-ranks/<int:id>/", GenerateRanks.as_view()),
+    
+    path("ranklist/<int:id>/", RankListView.as_view()),
 
     path("result/<int:pk>/", ResultView.as_view()),
 
     path("review/<int:pk>/", Review.as_view()),
 
     path("transactions/", TransactionListView.as_view(), name="transaction-list"),
+    
     path("credit-used/", CreditListView.as_view(), name="credits-list")
-    # path("rank/<int:test_id>",)
 ]

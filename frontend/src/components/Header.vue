@@ -254,7 +254,9 @@ export default {
         {
           title: "Profile",
           icon: "mdi-account-outline",
-          link: { name: "profile" },
+          link: {
+            path: `/${this.$store.state.authentication.user.type}/profile`
+          },
           action: _ => {
             return false;
           },

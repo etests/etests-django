@@ -109,7 +109,7 @@ const router = new Router({
         {
           path: "profile",
           name: "institute-profile",
-          component: () => import("@/pages/student/Profile"),
+          component: () => import("@/pages/institute/Profile"),
           meta: {
             title: "Profile"
           }

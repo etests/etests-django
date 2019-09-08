@@ -128,7 +128,7 @@ export default {
       if (this.$store.state.institutes.all.items) {
         this.$store.state.institutes.all.items.forEach(function(item) {
           list.push({
-            id: item.pk,
+            id: item.id,
             name: item.user.name,
             src: "https://i.ytimg.com/vi/kUNxVtS5D7c/maxresdefault.jpg"
           });

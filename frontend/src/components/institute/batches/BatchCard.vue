@@ -106,7 +106,7 @@
                         color="error"
                         @click="
                           rollNumber = props.item.roll_number;
-                          enrollmentId = props.item.pk;
+                          enrollmentId = props.item.id;
                           deleteStudentDialog = true;
                         "
                         ><v-icon>mdi-delete</v-icon></v-btn
@@ -208,11 +208,11 @@
                   <template v-slot:default="{ loading }">
                     <span v-if="loading">Loading...</span>
                   </template>
-                </xlsx-read>
+                </xlsx-read>-->
                 <textarea
                   v-model="rollNumbers"
                   :class="$style.listBox"
-                ></textarea> -->
+                ></textarea>
               </template>
             </v-card-text>
             <v-card-actions>
@@ -346,7 +346,7 @@ export default {
 
     generate() {
       var data = {
-        batch: this.batch.pk,
+        batch: this.batch.id,
         rollNumbers: this.rollNumbers
           .trim()
           .split(" ")
@@ -378,7 +378,7 @@ export default {
     remove() {
       const { dispatch } = this.$store;
       var unwatch = this.$watch("status", this.updateStatus);
-      dispatch("batches/remove", this.batch.pk).then(
+      dispatch("batches/remove", this.batch.id).then(
         (this.deleteDialog = false),
         unwatch
       );

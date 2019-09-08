@@ -110,26 +110,43 @@ class SessionEvaluation:
         },self.questionWiseMarks,self.topicWiseMarks]
     
 
-def generateRanks(test_id):
-        sessions = Session.objects.filter(test__id = test_id, practice = False)
-        marks_list = [[session.marks.total, session.id] for session in sessions]
-        sectionwise_marks_list = [[[section_marks, session.id] for section_marks in session.marks.sectionWise] for session in sessions]
-        marks_list.sort().reverse()
-        sectionwise_marks_list.sort().reverse()
+def generateRanks(sessions):
+        marks_list = [[session.marks['total'], i] for (i,session) in enumerate(sessions)]
+        sectionwise_marks_list = [[[session.marks['sectionWise'][j], i] for (i,session) in enumerate(sessions)] for j in range(len(sessions[0].marks['sectionWise']))]
+        marks_list.sort()
+        marks_list.reverse()
+        sectionwise_marks_list.sort()
+        sectionwise_marks_list.reverse()
         for session in sessions:
             if session.ranks == {}:
                 session.ranks['overall'] = 0
                 session.ranks['sectionWise'] = []
-                for section in session.test.sections:
-                    session.ranks['sectionWise'].push(0)
+                for section in range(len(session.marks['sectionWise'])):
+                    session.ranks['sectionWise'].append(0)
+
+        total = 0
+        sectionWiseTotal = [0 for i in range(len(sessions[0].marks['sectionWise']))]
         for (i, marks) in enumerate(marks_list):
+            total += sessions[marks[-1]].marks['total']
             sessions[marks[-1]].ranks['overall'] = i+1
+            for j in range(len(sessions[i].marks['sectionWise'])):
+                sectionWiseTotal[j] += sessions[i].marks['sectionWise'][j]
 
         for (i, sectionwise_marks) in enumerate(sectionwise_marks_list):
-            for (j, marks) in enumerate(sectionwise_marks):
+            for (j, section_marks) in enumerate(sectionwise_marks):
                 sessions[marks[-1]].ranks['sectionWise'][i] = j+1
 
-        Session.objects.bulk_update(sessions, ["ranks"])
+        return {
+            "sessions": sessions,
+            "average": {
+                "overall": total/len(sessions),
+                "sectionWise": [sectionTotal/len(sessions) for sectionTotal in sectionWiseTotal]
+            },
+            "highest": {
+                "overall": marks_list[0],
+                "sectionWise": [section_marks[0][0] for section_marks in sectionwise_marks_list]
+            },
+        }
 
 def get_unique_slug(model_instance, slugable_field_name, slug_field_name="slug"):
     """

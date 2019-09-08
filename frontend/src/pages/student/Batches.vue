@@ -44,7 +44,7 @@
           <v-btn
             v-if="!joining && !joined"
             color="info"
-            @click="join(currentBatch.pk)"
+            @click="join(currentBatch.id)"
           >
             Join
           </v-btn>
@@ -54,7 +54,7 @@
     <v-layout row wrap v-if="status.following">
       <SectionLayout
         v-for="institute in following"
-        :key="institute.pk"
+        :key="institute.id"
         :heading="institute.user.name"
       >
         <template v-if="institute.batches.length">
@@ -77,7 +77,7 @@
               <v-btn
                 flat
                 color="info"
-                v-if="!institute.enrollments.includes(batch.pk)"
+                v-if="!institute.enrollments.includes(batch.id)"
                 @click="
                   currentBatch = batch;
                   joinDialog = true;

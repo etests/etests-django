@@ -4,6 +4,7 @@ from django.contrib.postgres.fields import ArrayField, JSONField
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from datetime import datetime, timedelta
+from django.utils import timezone
 from authentication.models import User, Student, Institute
 import random
 import string
@@ -117,23 +118,40 @@ class Test(models.Model):
     name = models.CharField(max_length = 20)
     institute = models.ForeignKey(Institute, blank = True, null = True, on_delete = models.CASCADE)
     slug = models.SlugField(unique = True, editable = False)
-    active = models.BooleanField(default = False)
     practice = models.BooleanField(default = False)
-    closed = models.BooleanField(default = False)
     tags = models.ManyToManyField(Tag, blank = True)
-    date_added = models.DateField(auto_now_add = True)
-    activation_time = models.DateField(blank = True, null = True)
+    date_added = models.DateTimeField(auto_now_add = True)
+    activation_time = models.DateTimeField(blank = True, null = True)
+    closing_time = models.DateTimeField(blank = True, null = True)
     time_alotted = models.DurationField(default = timedelta(hours = 3))
     sections = JSONField(blank = True, null = True)
     questions = JSONField(blank = True, null = True)
     answers = JSONField(blank = True, null = True)
     stats = JSONField(blank = True, null = True)
-    corrections = models.BooleanField(default = False)
+    corrected = models.BooleanField(default = False)
+    finished = models.BooleanField(default = False)
 
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = get_unique_slug(self, "name")
         super(Test, self).save(*args, **kwargs)
+
+    @property
+    def status(self, *args, **kwargs):
+        if self.practice: 
+            return 4
+        else:
+            if timezone.now() < self.activation_time:
+                return 0
+            elif self.activation_time <= timezone.now() and timezone.now() < self.closing_time:
+                return 1
+            elif self.closing_time <= timezone.now():
+                if not self.corrected and not self.finished:
+                    return 2
+                elif not self.finished:
+                    return 3
+                else:
+                    return 4
 
     def __str__(self):
         return self.name

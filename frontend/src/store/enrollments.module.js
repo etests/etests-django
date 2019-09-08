@@ -86,7 +86,7 @@ export const enrollments = {
     },
     removeSuccess(state, id) {
       state.status = { removed: true, id: id };
-      state.items = state.items.filter(item => item.pk !== id);
+      state.items = state.items.filter(item => item.id !== id);
       this.dispatch("batches/removeStudent", id);
     },
     removeFailure(state, error) {

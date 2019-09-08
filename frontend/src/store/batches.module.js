@@ -185,7 +185,7 @@ export const batches = {
       state.status = { error: error };
     },
     newEnrollmentsSuccess(state, data) {
-      var index = state.items.findIndex(item => item.pk === data.batchId);
+      var index = state.items.findIndex(item => item.id === data.batchId);
       console.log(index, data.batchId, state.items);
       if (index >= 0)
         data.enrollments.forEach(e => {
@@ -197,14 +197,14 @@ export const batches = {
     },
     removeSuccess(state, id) {
       state.status = { removed: true, id: id };
-      state.items = state.items.filter(batch => batch.pk !== id);
+      state.items = state.items.filter(batch => batch.id !== id);
     },
     removeFailure(state, error) {
       state.status = { error: error };
     },
     removeStudentSuccess(state, id) {
       state.items.forEach((item, i) => {
-        var index = item.enrollments.findIndex(e => e.pk === id);
+        var index = item.enrollments.findIndex(e => e.id === id);
         if (index >= 0) item.enrollments.splice(index, 1);
       });
     }

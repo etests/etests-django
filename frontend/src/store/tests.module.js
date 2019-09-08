@@ -3,7 +3,8 @@ import { testService } from "@/api/test.service";
 const initialState = {
   status: {},
   test: {},
-  all: { items: [] }
+  all: { items: [] },
+  rankLists: JSON.parse(localStorage.getItem("rankLists")) || []
 };
 
 export const tests = {
@@ -97,6 +98,38 @@ export const tests = {
           tests => commit("getAllSuccess", tests),
           error => commit("getAllFailure", error)
         );
+    },
+    generateRanks({ dispatch, commit }, id) {
+      commit("generateRanksRequest");
+
+      testService.generateRanks(id).then(
+        message => {
+          commit("generateRanksSuccess", message);
+          dispatch("alert/success", message, {
+            root: true
+          });
+        },
+        error => {
+          commit("generateRanksFailure", error);
+          dispatch("alert/error", error, { root: true });
+        }
+      );
+    },
+    getRankList({ dispatch, commit }, id) {
+      commit("getRankListRequest", id);
+
+      testService.getRankList(id).then(
+        ranks => {
+          commit("getRankListSuccess", { id, ranks });
+          dispatch("alert/success", "Ranklist fetched successfully!", {
+            root: true
+          });
+        },
+        error => {
+          commit("getRankListFailure", error);
+          dispatch("alert/error", error, { root: true });
+        }
+      );
     }
   },
   mutations: {
@@ -111,13 +144,23 @@ export const tests = {
       state.status = { error };
     },
     getAllRequest(state) {
-      state.all = { loading: true };
+      state.status = { loading: true };
     },
     getAllSuccess(state, tests) {
+      state.status = {};
       state.all = { items: tests };
     },
     getAllFailure(state, error) {
-      state.all = { error };
+      state.status = { error };
+    },
+    generateRanksRequest(state) {
+      state.status = { loading: true };
+    },
+    generateRanksSuccess(state, message) {
+      state.status = { loaded: true, message };
+    },
+    generateRanksFailure(state, error) {
+      state.status = { error };
     },
     createRequest(state, data) {
       state.status = { creating: true };
@@ -147,6 +190,21 @@ export const tests = {
     },
     removeFailure(state, error) {
       state.status = { error: error };
+    },
+    getRankListRequest(state) {
+      state.status = { loading: true };
+    },
+    getRankListSuccess(state, data) {
+      state.status = { loaded: true };
+      if (
+        state.rankLists.findIndex(rankList => rankList.id === data.id) === -1
+      ) {
+        state.rankLists.push(data);
+        localStorage.rankLists = JSON.stringify(state.rankLists);
+      }
+    },
+    getRankListFailure(state, error) {
+      state.status = { error };
     }
   }
 };

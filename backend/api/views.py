@@ -9,7 +9,7 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import APIException, MethodNotAllowed, PermissionDenied, NotFound, ParseError
 from rest_framework import permissions
-from .utils import SessionEvaluation
+from .utils import SessionEvaluation, generateRanks
 from .serializers import *
 from .models import *
 from authentication.models import Institute
@@ -95,7 +95,7 @@ class BatchJoinView(APIView):
         roll_number = request.data['rollNumber']
         joining_key = request.data['joiningKey']
         try:
-            batch = Batch.objects.get(pk=self.request.data['batch'])
+            batch = Batch.objects.get(id=self.request.data['batch'])
             enrollment = Enrollment.objects.get(batch=batch, roll_number=roll_number)
             if enrollment.joining_key == joining_key:
                 enrollment.student = request.user.student
@@ -107,9 +107,9 @@ class BatchJoinView(APIView):
 class FollowInstituteView(APIView):
     permission_classes = (IsStudentOwner,)
 
-    def post(self, request, pk):
+    def post(self, request, id):
         try:
-            institute = Institute.objects.get(pk=pk)
+            institute = Institute.objects.get(id=id)
             if institute in request.user.student.following.all():
                 return Response("Already following ;)")
             else:
@@ -300,7 +300,7 @@ class ResultView(generics.RetrieveAPIView):
     def get_serializer_class(self):
         session = self.get_object()
         test = session.test
-        if test.practice or test.closed:
+        if test.status == 4:
             return ReviewSerializer
         else:
             return ResultSerializer
@@ -334,9 +334,42 @@ class Review(generics.RetrieveAPIView):
             raise ParseError("You cannot review this test yet.")
 
 
+class GenerateRanks(APIView):
+    permission_classes = (IsInstituteOwner,)
+    def post(self, request, id):
+        try:
+            test = Test.objects.get(id=id)
+        except Exception as e:
+            print(e)
+            raise NotFound("No such Test!")
+        if test.practice:
+            raise PermissionDenied("Ranks cannot be generated for practice tests.")  
+        if test.status <=1:
+            raise PermissionDenied("Ranks can be generated only after test closes.")  
+        elif test.status in [2,3]:
+            sessions = Session.objects.filter(test = test, practice = False)
+            generated = generateRanks(sessions)
+            Session.objects.bulk_update(generated.pop("sessions", None), ["ranks"])
+            test.stats = generated
+            test.finished = True
+            test.save()
+            return Response("Ranks generated.", status=status.HTTP_201_CREATED)
+        else:
+            raise ParseError("Final ranks are already declared.")                  
+
+class RankListView(APIView):
+    permission_classes = (IsInstituteOwner,)
+
+    def get(self, request, id):
+        sessions = Session.objects.filter(test__id=id, practice=False)
+        serializer = RankListSerializer(sessions, many = True)
+        return Response(serializer.data)
+    
+
 class TransactionListView(generics.ListAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
     serializer_class = TransactionSerializer
+    
     def get_queryset(self):
         if self.request.user.is_institute:
             return Transaction.objects.filter(institute=self.request.user.institute)
@@ -367,7 +400,7 @@ class EnrollmentView(generics.ListCreateAPIView):
         enrollments = []
         headers = []
         data=[{
-                'institute': request.user.institute.pk,
+                'institute': request.user.institute.id,
                 'batch':  request.data['batch'],
                 'roll_number': roll_number 
             }

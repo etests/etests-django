@@ -1,5 +1,16 @@
 <template>
   <div :class="$style.chartBox">
+    <SectionLayout heading="Comparison" v-if="report.test.stats">
+      <v-flex xs12 lg8>
+        <GChart
+          :class="$style.chart"
+          type="ColumnChart"
+          :data="comparisonData"
+          :options="chartOptions.chart"
+          :resizeDebounce="500"
+        />
+      </v-flex>
+    </SectionLayout>
     <SectionLayout heading="Detailed Performance">
       <v-flex
         v-for="(performanceData, i) in topicwisePerformance"
@@ -91,6 +102,24 @@ export default {
     sections() {
       return this.report.test.sections;
     },
+    comparisonData() {
+      var data = [["Section", "You", "Average", "Highest"]];
+      this.report.test.sections.forEach((section, i) => {
+        data.push([
+          section.subject,
+          this.report.marks.sectionWise[i],
+          this.report.test.stats.average.sectionWise[i],
+          this.report.test.stats.highest.sectionWise[i]
+        ]);
+      });
+      data.push([
+        "Overall",
+        this.report.marks.total,
+        this.report.test.stats.average.overall,
+        this.report.test.stats.highest.overall
+      ]);
+      return data;
+    },
     topicWiseScoreBarData() {
       var data = new Array(this.report.test.sections.length);
       this.report.result.topicWiseMarks.forEach((section, i) => {
@@ -122,6 +151,7 @@ export default {
           else score = questionWiseMarks[j].marks;
           if (scored.hasOwnProperty(topicIndex)) scored[topicIndex] += score;
           else scored[topicIndex] = score;
+          console.log(score, scored[topicIndex], topicIndex);
         }
         for (var prop in scored) {
           data[i].push([

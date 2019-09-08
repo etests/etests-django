@@ -6,7 +6,9 @@ export const testService = {
   create,
   update,
   remove,
-  getAll
+  getAll,
+  generateRanks,
+  getRankList
 };
 
 function get(id) {
@@ -61,6 +63,27 @@ function getAll() {
     headers: authHeader()
   };
   return fetch(`${process.env.API_URL}/tests/`, requestOptions).then(
+    handleResponse
+  );
+}
+
+function generateRanks(id) {
+  const requestOptions = {
+    method: "POST",
+    headers: authHeader()
+  };
+  return fetch(
+    `${process.env.API_URL}/generate-ranks/${id}/`,
+    requestOptions
+  ).then(handleResponse);
+}
+
+function getRankList(id) {
+  const requestOptions = {
+    method: "GET",
+    headers: authHeader()
+  };
+  return fetch(`${process.env.API_URL}/ranklist/${id}/`, requestOptions).then(
     handleResponse
   );
 }

@@ -15,12 +15,12 @@
           <v-card-text>
             <v-text-field v-model="profile.name" label="Name"></v-text-field>
             <v-text-field v-model="profile.phone" label="Phone"></v-text-field>
+            <v-text-field v-model="profile.city" label="City"></v-text-field>
+            <v-text-field v-model="profile.state" label="State"></v-text-field>
             <v-text-field
               v-model="profile.pincode"
               label="Pincode"
             ></v-text-field>
-            <v-text-field v-model="profile.city" label="City"></v-text-field>
-            <v-text-field v-model="profile.state" label="State"></v-text-field>
           </v-card-text>
           <v-card-actions>
             <v-btn @click="save" color="primary" round>
@@ -39,7 +39,7 @@ import StandardLayout from "@components/layouts/StandardLayout";
 
 export default {
   computed: {
-    user() {
+    profile() {
       return this.$store.state.authentication.user.profile;
     }
   },

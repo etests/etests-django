@@ -3,7 +3,7 @@ import { userService } from "@/api/user.service";
 const user = JSON.parse(localStorage.getItem("user"));
 const initialState = user
   ? { status: { loggedIn: true }, user }
-  : { status: {}, user: null };
+  : { status: {}, user: { type: "student" } };
 
 export const authentication = {
   namespaced: true,
