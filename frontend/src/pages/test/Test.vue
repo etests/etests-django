@@ -107,9 +107,10 @@
         <v-chip color="grey darken-2" outline small>
           <strong> Q{{ questionIndex + 1 }} </strong>
         </v-chip>
-        <span :class="$style.questionText">
-          {{ currentQuestion.text }}
-        </span>
+        <p
+          :class="[$style.questionText, 'ck-content']"
+          v-html="currentQuestion.text"
+        ></p>
       </template>
 
       <v-layout slot="options">
@@ -259,7 +260,9 @@
         </v-btn>
       </template>
 
-      <template slot="test-name">{{ test.name }}</template>
+      <template slot="test-name"
+        >{{ test.name }}{{ session.practice ? " (Practice)" : "" }}</template
+      >
 
       <template slot="sections">
         <v-tabs
@@ -316,11 +319,16 @@
 <script>
 import TestLayout from "@components/test/TestLayout.vue";
 import StandardLayout from "@components/layouts/StandardLayout.vue";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { mapState } from "vuex";
 
 export default {
   data() {
     return {
+      questionEditor: ClassicEditor,
+      questionConfig: {
+        toolbar: ["|"]
+      },
       id: this.$route.params.id,
       loading:
         this.$store.state.sessions.status.loading ||
@@ -437,20 +445,22 @@ export default {
       if (this.session) {
         this.response[this.questionIndex].timeElapsed += 1;
 
-        var duration = this.session.duration;
-        duration = duration.split(":");
-        duration =
-          (parseInt(duration[0]) * 3600 +
-            parseInt(duration[1]) * 60 +
-            parseInt(duration[2]) -
-            1) *
+        var currentTime = new Date();
+        var checkinTime = new Date(Date.parse(this.session.checkin_time));
+        var durationSplit = this.session.test.time_alotted.split(":");
+        var duration =
+          (parseInt(durationSplit[0] * 60 * 60) +
+            parseInt(durationSplit[1] * 60) +
+            parseInt(durationSplit[2])) *
           1000;
 
-        var hours = Math.floor(duration / (1000 * 60 * 60));
-        duration -= hours * 60 * 60 * 1000;
-        var minutes = Math.floor(duration / (1000 * 60));
-        duration -= minutes * 60 * 1000;
-        var seconds = Math.floor(duration / 1000);
+        var clock = duration - (currentTime - checkinTime);
+
+        var hours = Math.floor(clock / (1000 * 60 * 60));
+        clock -= hours * 60 * 60 * 1000;
+        var minutes = Math.floor(clock / (1000 * 60));
+        clock -= minutes * 60 * 1000;
+        var seconds = Math.floor(clock / 1000);
 
         this.session.duration =
           hours +

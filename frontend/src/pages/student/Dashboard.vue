@@ -30,21 +30,21 @@ export default {
           image: require("@assets/images/student/dashboard/notifications.png"),
           link: { path: "notifications" }
         },
-        {
-          name: "Discuss",
-          image: require("@assets/images/student/dashboard/discuss.png"),
-          link: { name: "discuss" }
-        },
-        {
-          name: "Progress Report",
-          image: require("@assets/images/student/dashboard/analytics.png"),
-          link: { path: "report" }
-        },
-        {
-          name: "Schedule",
-          image: require("@assets/images/student/dashboard/schedule.png"),
-          link: { path: "schedule" }
-        },
+        // {
+        //   name: "Discuss",
+        //   image: require("@assets/images/student/dashboard/discuss.png"),
+        //   link: { name: "discuss" }
+        // },
+        // {
+        //   name: "Progress Report",
+        //   image: require("@assets/images/student/dashboard/analytics.png"),
+        //   link: { path: "report" }
+        // },
+        // {
+        //   name: "Schedule",
+        //   image: require("@assets/images/student/dashboard/schedule.png"),
+        //   link: { path: "schedule" }
+        // },
         {
           name: "Batches",
           image: require("@assets/images/student/dashboard/groups.png"),

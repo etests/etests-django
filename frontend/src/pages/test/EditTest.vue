@@ -157,7 +157,7 @@
     </template>
 
     <template slot="text-image">
-      <v-img
+      <!-- <v-img
         v-if="currentQuestion.image"
         :src="require(`@assets/logos/${currentQuestion.image}`)"
         class="mb-3"
@@ -169,11 +169,17 @@
           placeholder="Question text"
           v-model="currentQuestion.text"
         ></v-textarea>
-      </span>
+      </span> -->
+      <ckeditor
+        :editor="questionEditor"
+        :config="questionConfig"
+        v-model="currentQuestion.text"
+      ></ckeditor>
     </template>
 
     <v-layout slot="options">
       <v-radio-group
+        row
         v-model="currentAnswer.answer"
         @change="saveQuestion(questionIndex)"
         :mandatory="false"
@@ -181,8 +187,11 @@
       >
         <template v-for="(option, i) in currentQuestion.options">
           <v-text-field
+            solo
             v-model="currentQuestion.options[i]"
             :key="questionIndex + '-' + i"
+            class="mr-5"
+            style="width:100px"
           >
             <v-radio
               slot="prepend-inner"
@@ -194,26 +203,27 @@
         </template>
       </v-radio-group>
 
-      <v-layout v-else-if="currentQuestion.type == 1" py-4 my-1 row>
-        <v-flex xs12 md6 lg4>
-          <template v-for="(option, i) in currentQuestion.options">
-            <v-text-field
-              v-model="currentQuestion.options[i]"
-              :key="questionIndex + '-' + i"
-            >
-              <v-checkbox
-                slot="prepend-inner"
-                v-model="currentAnswer.answer"
-                multiple
-                height="0"
-                class="mt-0 mb-1"
-                :value="i"
-                :on-icon="`mdi-alpha-${letter('a', i, true)}-circle`"
-                :off-icon="`mdi-alpha-${letter('a', i, true)}-circle-outline`"
-                @change="saveQuestion(questionIndex)"
-              />
-            </v-text-field>
-          </template>
+      <v-layout v-else-if="currentQuestion.type == 1" py-4 my-1 row wrap>
+        <v-flex
+          xs2
+          v-for="(option, i) in currentQuestion.options"
+          :key="questionIndex + '-' + i"
+        >
+          <v-text-field
+            solo
+            v-model="currentQuestion.options[i]"
+            style="width: 150px;"
+          >
+            <v-checkbox
+              slot="prepend-inner"
+              v-model="currentAnswer.answer"
+              multiple
+              :value="i"
+              :on-icon="`mdi-alpha-${letter('a', i, true)}-circle`"
+              :off-icon="`mdi-alpha-${letter('a', i, true)}-circle-outline`"
+              @change="saveQuestion(questionIndex)"
+            />
+          </v-text-field>
         </v-flex>
       </v-layout>
       <v-layout v-else-if="currentQuestion.type == 2" my-4>
@@ -227,51 +237,6 @@
         </v-flex>
       </v-layout>
       <v-layout v-else-if="currentQuestion.type == 3" column>
-        <v-layout row wrap justify-center>
-          <v-flex xs6>
-            <v-layout column justify-start>
-              <v-flex
-                v-for="(option, i) in currentQuestion.options"
-                :key="`${questionIndex}-option-${i}`"
-              >
-                <v-layout row wrap justify-start>
-                  <v-flex xs8 :class="$style.option">
-                    <v-textarea
-                      rows="1"
-                      :prepend-inner-icon="
-                        `mdi-alpha-${letter('a', i, true)}-circle-outline`
-                      "
-                      v-model="currentQuestion.options[i]"
-                      clearable
-                    />
-                  </v-flex>
-                </v-layout>
-              </v-flex>
-            </v-layout>
-          </v-flex>
-          <v-flex xs6>
-            <v-layout column justify-end>
-              <v-flex
-                v-for="(answer, j) in currentQuestion.answers"
-                :key="`${questionIndex}-answer-${j}`"
-              >
-                <v-layout row wrap align-start>
-                  <v-flex xs8 :class="$style.option">
-                    <v-textarea
-                      rows="1"
-                      :prepend-inner-icon="
-                        `mdi-alpha-${letter('p', j, true)}-circle-outline`
-                      "
-                      v-model="currentQuestion.answers[j]"
-                      clearable
-                    />
-                  </v-flex>
-                </v-layout>
-              </v-flex>
-            </v-layout>
-          </v-flex>
-        </v-layout>
-
         <v-flex xs12 sm6 md3 mt-4>
           <v-layout row>
             <v-flex shrink mx-3> </v-flex>
@@ -493,10 +458,31 @@
 <script>
 import TestLayout from "@components/test/TestLayout.vue";
 import { subjectTopics } from "@js/subjects";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import CustomUploadAdapterPlugin from "@js/customuploadadapter";
 
 export default {
   data() {
     return {
+      questionEditor: ClassicEditor,
+      questionConfig: {
+        toolbar: [
+          "heading",
+          "|",
+          "bold",
+          "italic",
+          "bulletedList",
+          "numberedList",
+          "insertTable",
+          "imageUpload",
+          "undo",
+          "redo"
+        ],
+        image: {
+          toolbar: ["imageStyle:full", "imageStyle:side"]
+        },
+        extraPlugins: [CustomUploadAdapterPlugin]
+      },
       id: this.$route.params.id,
       questionTypes: [
         { value: 0, text: "Single Correct" },
@@ -523,12 +509,12 @@ export default {
         text: "",
         image: null,
         type: 0,
-        options: ["Option A", "Option B", "Option C", "Option D"],
+        options: ["A", "B", "C", "D"],
         status: 0,
         correctMarks: 4,
         incorrectMarks: 1,
         partialMarks: 0,
-        answers: ["Answer P", "Answer Q", "Answer R", "Answer S", "Answer T"]
+        answers: ["P", "Q", "R", "S", "T"]
       }
     };
   },

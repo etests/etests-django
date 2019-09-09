@@ -4,6 +4,26 @@ from authentication.models import *
 from .models import *
 from authentication.serializers import UserDetailsSerializer, StudentDetailsSerializer, InstituteDetailsSerializer
 
+class TestInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Test
+        fields = ('id','name', 'status', 'date_added', 'activation_time', 'time_alotted')
+
+class TestSeriesSerializer(serializers.ModelSerializer):
+    tests = TestInfoSerializer(many=True, read_only=True)
+    institute = serializers.SerializerMethodField()
+    exam = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TestSeries
+        fields = ("id", "name", "price", "visible", "exam", "tests", "institute")
+
+    def get_institute(self, obj):
+        return {"id": obj.institute.id, "name": obj.institute.user.name}
+    
+    def get_exam(self, obj):
+        return obj.exam.name
+
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -11,10 +31,18 @@ class UserListSerializer(serializers.ModelSerializer):
 
 class InstituteListSerializer(serializers.ModelSerializer):
     user = UserListSerializer()
+    test_series = TestSeriesSerializer(many=True)
 
     class Meta:
         model = Institute
-        fields = ("id", "user", "pincode")
+        fields = ("id", "user", "pincode", "test_series")
+
+class ExamListSerializer(serializers.ModelSerializer):
+    test_series = TestSeriesSerializer(many=True)
+
+    class Meta:
+        model = Exam
+        fields = ("name", "start_date", "test_series", "image")
 
 class TestListSerializer(serializers.ModelSerializer):
     institute = InstituteListSerializer()
@@ -26,12 +54,12 @@ class TestListSerializer(serializers.ModelSerializer):
 class TestCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model=Test
-        fields = ("id", "name", "institute", "questions", "answers", "sections")
+        fields = ("id", "name", "practice", "activation_time", "institute", "questions", "answers", "sections")
 
 class TestSerializer(serializers.ModelSerializer):
     class Meta:
         model=Test
-        fields = '__all__'
+        exclude = ("registered_students",)
 
 class SessionListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -59,18 +87,11 @@ class TestRegisterSerializer(serializers.ModelSerializer):
         model = Test
         fields = ('id','name','institute','slug','status','practice','tags','date_added','activation_time','time_alotted')
 
-class TestSeriesSerializer(serializers.ModelSerializer):
-    tests = TestSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = TestSeries
-        fields = ("id", "name", "price", "visible", "exam", "tests")
-
 class SessionSerializer(serializers.ModelSerializer):
     test = StudentTestSerializer(many=False, read_only=True)
     class Meta:
         model = Session
-        fields = ('id', 'practice', 'response', 'test', 'duration', 'current', 'completed')
+        fields = ('id', 'practice', 'response', 'test', 'checkin_time', 'duration', 'current', 'completed')
 
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
@@ -80,11 +101,6 @@ class SubjectSerializer(serializers.ModelSerializer):
 class TopicSerializer(serializers.ModelSerializer):
     class Meta:
         model = Topic
-        fields = '__all__'
-
-class ExamSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Exam
         fields = '__all__'
 
 class TagSerializer(serializers.ModelSerializer):
@@ -102,7 +118,7 @@ class ReviewSerializer(serializers.ModelSerializer):
     test = TestSerializer(many=False, read_only=True)
     class Meta:
         model = Session
-        fields = ('id', 'response', 'test', 'result', 'marks')
+        fields = ('id', 'response', 'test', 'result', 'marks', 'ranks')
 
 
 class RankListSerializer(serializers.ModelSerializer):
@@ -165,4 +181,4 @@ class FollowingInstitutesSerializer(serializers.ModelSerializer):
         fields = ("id", "user", "batches", "enrollments")
 
     def get_enrollments(self, obj):
-            return [enrollment.batch.id for enrollment in Enrollment.objects.filter(student=self.context['request'].user.student, institute=obj)]
+        return [enrollment.batch.id for enrollment in Enrollment.objects.filter(student=self.context['request'].user.student, institute=obj)]

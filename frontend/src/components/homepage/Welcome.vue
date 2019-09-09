@@ -46,7 +46,7 @@ export default {
           src: require("@assets/images/features/analysis.png")
         },
         {
-          title: "Sell your test series",
+          title: "Sell your practice tests",
           src: require("@assets/images/features/sell.png")
         }
       ]

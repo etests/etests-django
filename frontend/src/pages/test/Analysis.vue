@@ -151,7 +151,6 @@ export default {
           else score = questionWiseMarks[j].marks;
           if (scored.hasOwnProperty(topicIndex)) scored[topicIndex] += score;
           else scored[topicIndex] = score;
-          console.log(score, scored[topicIndex], topicIndex);
         }
         for (var prop in scored) {
           data[i].push([

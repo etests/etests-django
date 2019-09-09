@@ -106,8 +106,8 @@ class StudentDetailsSerializer(serializers.ModelSerializer):
         fields = '__all__' 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    birth_date = serializers.SerializerMethodField()
-    pincode = serializers.SerializerMethodField()
+    birth_date = serializers.SerializerMethodField(read_only=True)
+    pincode = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User

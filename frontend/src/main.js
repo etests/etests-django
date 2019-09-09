@@ -12,6 +12,9 @@ import vueMq from "vue-mq";
 import "./registerServiceWorker";
 import Notifications from "vue-notification";
 import VueGoogleCharts from "vue-google-charts";
+import CKEditor from "@ckeditor/ckeditor5-vue";
+
+Vue.use(CKEditor);
 
 Vue.use(VueGoogleCharts);
 

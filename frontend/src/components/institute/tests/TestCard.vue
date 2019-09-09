@@ -27,20 +27,71 @@
               :class="$style.editTitle"
               v-if="editing"
             />
-            <v-text-field
-              v-model="test.description"
-              :class="$style.editDescription"
-              v-if="editing"
-            />
+            <v-menu
+              lazy
+              :close-on-content-click="false"
+              v-model="dateMenu"
+              transition="scale-transition"
+              offset-y
+              full-width
+              :nudge-right="40"
+              max-width="290px"
+              min-width="290px"
+            >
+              <v-text-field
+                slot="activator"
+                label="Date"
+                v-model="date"
+                :class="$style.editDate"
+                v-if="editing"
+                prepend-inner-icon="mdi-calendar"
+                readonly
+              ></v-text-field>
+              <v-date-picker v-model="date" scrollable>
+                <template>
+                  <v-spacer></v-spacer>
+                  <v-btn flat color="primary" @click="dateMenu = false"
+                    >OK</v-btn
+                  >
+                </template>
+              </v-date-picker>
+            </v-menu>
+            <v-menu
+              lazy
+              :close-on-content-click="false"
+              v-model="timeMenu"
+              transition="scale-transition"
+              offset-y
+              full-width
+              :nudge-right="40"
+              max-width="290px"
+              min-width="290px"
+            >
+              <v-text-field
+                slot="activator"
+                label="Time"
+                v-model="time"
+                :class="$style.editDate"
+                v-if="editing"
+                prepend-inner-icon="mdi-clock-outline"
+                readonly
+              ></v-text-field>
+              <v-time-picker v-model="time" scrollable>
+                <template>
+                  <v-spacer></v-spacer>
+                  <v-btn flat color="primary" @click="timeMenu = false"
+                    >OK</v-btn
+                  >
+                </template>
+              </v-time-picker>
+            </v-menu>
           </template>
         </template>
         <template v-else>
           <v-card-title :class="$style.title">
             {{ test.name }}
           </v-card-title>
-          <v-card-text :class="$style.description">
-            {{ test.text }}
-          </v-card-text>
+          <v-card-text :class="$style.date"> </v-card-text>
         </template>
       </template>
     </div>
@@ -58,7 +109,7 @@
           icon
           flat
           color="info lighten-1"
-          @click="$router.push({ path: `test/${test.id}/edit` })"
+          @click="$router.push({ path: `/test/${test.id}/edit` })"
         >
           <v-icon class="px-1">mdi-square-edit-outline</v-icon>
         </v-btn>
@@ -113,7 +164,7 @@ export default {
     test: {
       required: false,
       default: () => {
-        return { id: "", name: "", description: "", new: true };
+        return { id: "", name: "", new: true };
       },
       type: Object
     },
@@ -133,6 +184,10 @@ export default {
       deleteDialog: false,
       loading: false,
       showActions: !this.new,
+      date: null,
+      time: null,
+      dateMenu: false,
+      timeMenu: false,
       meta: {
         type: "test",
         action: this.new ? "tests/create" : "tests/edit",
@@ -174,6 +229,7 @@ export default {
       data.questions = testTemplate.questions;
       data.answers = testTemplate.answers;
       data.sections = testTemplate.sections;
+      data.activation_time = this.date + " " + this.time;
       var unwatch = this.$watch("status", this.updateStatus);
       dispatch(this.meta.action, data).then((this.editing = false), unwatch);
     },
@@ -222,7 +278,7 @@ export default {
   color: #7e777e;
 }
 
-.editTitle, .editDescription{
+.editTitle, .editDate{
   padding: 12px 15px 0;
   margin: 0;
   input{
@@ -232,7 +288,7 @@ export default {
   }
 }
 
-.description, .editDescription{
+.date, .editDate{
   letter-spacing: .014em;
   text-align: left;
   font-size: 0.9rem;

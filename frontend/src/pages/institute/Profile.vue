@@ -52,7 +52,7 @@ export default {
       if (!this.profile.name) error = "Enter your name.";
       else if (this.profile.name.length > 100) error = "Your name is too long!";
       else if (!this.profile.phone) error = "Enter your phone number.";
-      else if (!this.profile.pincode) error = "Enter your birth date";
+      else if (!this.profile.pincode) error = "Enter your pincode.";
       else if (!this.profile.state) error = "Select your state.";
       else if (!this.profile.city) error = "Select your city.";
 

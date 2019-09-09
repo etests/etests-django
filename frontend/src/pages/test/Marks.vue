@@ -10,6 +10,7 @@
         <td>{{ props.item.name }}</td>
         <td>{{ props.item.score }}</td>
         <td>{{ props.item.maxMarks }}</td>
+        <td>{{ props.item.rank }}</td>
       </template>
     </v-data-table>
   </v-card>
@@ -36,6 +37,12 @@ export default {
         {
           text: "Maximum Marks",
           value: "maxMarks",
+          align: "center",
+          sortable: false
+        },
+        {
+          text: "Rank",
+          value: "rank",
           align: "center",
           sortable: false
         }
@@ -67,12 +74,16 @@ export default {
           b["name"] = this.sections[i]["subject"];
           b["maxMarks"] = this.marks.maxMarks[i];
           b["score"] = this.sectionWiseMarks[i];
+          b["rank"] = this.report.ranks
+            ? this.report.ranks.sectionWise[i]
+            : "-";
           a.push(b);
         }
         a.push({
           name: "Total Marks",
           maxMarks: this.marks.maxMarks[this.marks.length - 1],
-          score: this.marks.total
+          score: this.marks.total,
+          rank: this.report.ranks ? this.report.ranks.overall : "Not Applicable"
         });
       }
       return a;
@@ -88,7 +99,7 @@ export default {
   border-radius: 8px;
   border: 1px solid #eee;
   td{
-    width: 33%;
+    width: 25%;
   }
   margin-bottom: 12px;
 }

@@ -79,15 +79,17 @@
 
         <template v-else>
           <v-toolbar-items class="hidden-sm-and-down">
-            <v-btn
-              flat
-              color="#1a916f"
-              v-for="item in topNavMenu"
-              :key="item.title"
-              :to="item.link"
-            >
-              {{ item.title }}
-            </v-btn>
+            <template v-for="item in topNavMenu">
+              <v-btn
+                flat
+                color="primary"
+                :to="item.link"
+                :key="item.title"
+                v-if="(item.requiresLogin && loggedIn) || !item.requiresLogin"
+              >
+                {{ item.title }}
+              </v-btn>
+            </template>
           </v-toolbar-items>
 
           <v-spacer />
@@ -98,7 +100,7 @@
         <Login />
       </v-dialog>
 
-      <v-menu bottom left transition="slide-y-transition">
+      <v-menu bottom left transition="slide-y-transition" v-if="loggedIn">
         <template v-slot:activator="{ on }">
           <v-btn flat color="primary" icon v-on="on">
             <v-icon large>mdi-account-circle</v-icon>
@@ -125,6 +127,11 @@
           </span>
         </v-list>
       </v-menu>
+      <template v-else>
+        <v-btn flat color="primary" @click="showLoginDialog = true">
+          Login / Register
+        </v-btn>
+      </template>
 
       <template v-slot:extension>
         <slot name="tabs"></slot>
@@ -227,9 +234,9 @@ export default {
         { divider: true, requiresInstitute: true },
 
         {
-          title: "Discuss",
+          title: "FAQs",
           icon: "mdi-account-group-outline",
-          link: { name: "discuss" }
+          link: { name: "faq" }
         }
       ],
       dotMenu: [
@@ -300,28 +307,37 @@ export default {
     topNavMenu() {
       return [
         { title: "Home", icon: "mdi-home-outline", link: { name: "home" } },
-
         {
           title: "Institutes",
           icon: "mdi-domain",
           link: { name: "institutes" }
         },
         {
+          title: "Question Banks",
+          icon: "mdi-domain",
+          link: { path: "/question-banks" }
+        },
+        {
+          title: "Exams",
+          icon: "mdi-note-multiple-outline",
+          link: { path: "/exams" }
+        },
+        {
           title: "Tests",
           icon: "mdi-note-multiple-outline",
           link: { path: `/${this.user.type}/tests` },
-          requiresInstitute: true
+          requiresLogin: true
         },
         {
           title: "Dashboard",
           icon: "mdi-note-multiple-outline",
           link: { path: `/${this.user.type}/dashboard` },
-          requiresInstitute: true
+          requiresLogin: true
         },
         {
-          title: "Discuss",
+          title: "FAQ",
           icon: "mdi-account-group-outline",
-          link: { name: "discuss" }
+          link: { path: "/faq" }
         }
       ];
     }

@@ -18,7 +18,7 @@ class Exam(models.Model):
     position = models.IntegerField("position")
     name = models.CharField(max_length=200)
     slug = models.SlugField(unique=False, editable=False)
-    image = models.ImageField(upload_to='static/images/exams/', default='static/images/exams/exam.png', max_length=20*1024, blank=True, null=True)
+    image = models.CharField(default='exam.png', max_length=20*1024, blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
 
@@ -114,7 +114,7 @@ class TestSeries(models.Model):
 
 class Test(models.Model):
     id = models.AutoField(primary_key = True)
-    registered_student = models.ManyToManyField(Student, blank = True)
+    registered_students = models.ManyToManyField(Student, blank = True)
     name = models.CharField(max_length = 20)
     institute = models.ForeignKey(Institute, blank = True, null = True, on_delete = models.CASCADE)
     slug = models.SlugField(unique = True, editable = False)
@@ -161,7 +161,7 @@ class Session(models.Model):
     student = models.ForeignKey(Student, related_name='sessions', on_delete=models.CASCADE)
     test = models.ForeignKey(Test, related_name='sessions', null=True, on_delete=models.CASCADE)
     practice = models.BooleanField(default = False)
-    checkin_time = models.DateTimeField(auto_now_add = True)
+    checkin_time = models.DateTimeField(default = timezone.now)
     duration = models.DurationField(default = timedelta(hours = 3))
     completed = models.BooleanField(default=False)
     response = JSONField(blank = True, null = True)

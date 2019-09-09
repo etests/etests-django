@@ -72,11 +72,11 @@ export default {
           color: "success"
         },
         {
-          title: "Effective pricing",
+          title: "Partner With Us",
           src: require("@assets/images/features/money.png"),
           btn: {
             icon: "mdi-currency-usd",
-            title: "see our plans"
+            title: "Start Earning"
           },
           color: "orange"
         }

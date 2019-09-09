@@ -1,47 +1,5 @@
 <template>
   <StandardLayout>
-    <v-dialog v-model="followDialog" max-width="400">
-      <v-card :class="$style.dialog">
-        <v-card-title :class="$style.title">
-          Follow {{ selectedInstitute.name }}
-        </v-card-title>
-        <template v-if="status.following && status.id === selectedInstitute.id">
-          <v-card-text>
-            Please wait...
-          </v-card-text>
-        </template>
-        <template
-          v-else-if="status.followed && status.id === selectedInstitute.id"
-        >
-          <v-card-text>
-            {{ status.message }}
-          </v-card-text>
-        </template>
-        <template v-else>
-          <v-card-text>
-            After following this institute, you can follow a batch and then
-            attempt live tests.
-          </v-card-text>
-        </template>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="info" flat @click="followDialog = false">
-            Close
-          </v-btn>
-          <v-btn
-            v-if="
-              (!status.following && !status.followed) ||
-                !status.id ||
-                status.id !== selectedInstitute.id
-            "
-            color="info"
-            @click="follow(selectedInstitute.id)"
-          >
-            Follow
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
     <v-dialog
       v-if="selectedTestSeries"
       v-model="viewDialog"
@@ -82,33 +40,23 @@
       </v-card>
     </v-dialog>
     <v-dialog
-      v-if="selectedInstitute"
-      v-model="instituteDialog"
+      v-if="selectedExam"
+      v-model="examDialog"
       fullscreen
       hide-overlay
       transition="dialog-bottom-transition"
     >
       <v-card>
         <v-toolbar dark color="primary">
-          <v-btn icon dark @click="instituteDialog = false">
+          <v-btn icon dark @click="examDialog = false">
             <v-icon>close</v-icon>
           </v-btn>
-          <v-toolbar-title>{{ selectedInstitute.name }}</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <template v-if="loggedIn">
-            <v-btn
-              color="blue"
-              v-if="showFollowing(selectedInstitute.id)"
-              flat
-              @click="followDialog = true"
-            >
-              Follow
-            </v-btn>
-          </template>
+          <v-toolbar-title>{{ selectedExam.name }}</v-toolbar-title>
         </v-toolbar>
+
         <v-layout row wrap align-center pa-3>
           <ObjectCard
-            v-for="testSeries in selectedInstitute.test_series"
+            v-for="testSeries in selectedExam.test_series"
             :key="testSeries.id"
           >
             <div slot="content" :class="$style.content">
@@ -152,21 +100,25 @@
       </v-card>
     </v-dialog>
     <v-flex xs12>
-      <v-text-field placeholder="Search Institutes" v-model="searchInstitute" />
+      <v-text-field placeholder="Search Exams" v-model="searchExam" />
     </v-flex>
 
     <v-card
-      v-for="institute in filteredInstitutes"
-      :key="institute.id"
+      v-for="exam in filteredExams"
+      :key="exam.id"
       @click="
-        selectedInstitute = institute;
-        instituteDialog = true;
+        selectedExam = exam;
+        examDialog = true;
       "
       :class="$style.card"
     >
-      <v-img class="white--text" height="170px" :src="institute.src" />
+      <v-img
+        class="white--text"
+        height="170px"
+        :src="require(`@assets/images/exams/${exam.image}`)"
+      />
       <v-card-title class="subheading">
-        {{ institute.name }}
+        {{ exam.name }}
       </v-card-title>
     </v-card>
   </StandardLayout>
@@ -181,13 +133,13 @@ import utils from "@js/utils";
 export default {
   data() {
     return {
-      instituteDialog: false,
+      examDialog: false,
       viewDialog: false,
-      searchInstitute: "",
-      filteredInstitutes: [],
+      searchExam: "",
+      filteredExams: [],
       followDialog: false,
-      selectedInstitute: {},
-      selectedTestSeries: {}
+      selectedTestSeries: {},
+      selectedExam: {}
     };
   },
   components: {
@@ -195,58 +147,29 @@ export default {
     ObjectCard
   },
   created() {
-    this.$store.dispatch("institutes/getAll");
+    this.$store.dispatch("exams/getAll");
   },
   watch: {
-    searchInstitute: function(newValue, oldValue) {
-      this.filteredInstitutes = this.institutes.filter(institute =>
-        institute.name.toLowerCase().includes(newValue)
+    searchExam: function(newValue, oldValue) {
+      this.filteredExams = this.exams.filter(exam =>
+        exam.name.toLowerCase().includes(newValue)
       );
     },
-    institutes: function(newList, oldList) {
-      if (this.filteredInstitutes.length === 0)
-        this.filteredInstitutes = this.institutes;
+    exams: function(newList, oldList) {
+      if (this.filteredExams.length === 0) this.filteredExams = this.exams;
     }
   },
   computed: {
     ...mapState({
-      status: state => state.institutes.status,
-      loggedIn: state => state.authentication.status.loggedIn,
-      user: state => state.users.user
+      status: state => state.exams.status
     }),
-    institutes() {
-      var list = [];
-      if (this.$store.state.institutes.all.items) {
-        this.$store.state.institutes.all.items.forEach(function(item) {
-          list.push({
-            id: item.id,
-            ...item.user,
-            test_series: item.test_series,
-            src:
-              "https://d2mpqlmtgl1znu.cloudfront.net/AcuCustom/Sitename/DAM/011/news-buildings-jan18-dnaiot.jpg"
-          });
-        });
-      }
-      return list;
+    exams() {
+      return this.$store.state.exams.items;
     }
   },
   methods: {
     formatDate(dateString) {
       return utils.formatDate(dateString);
-    },
-    follow(id) {
-      this.$store.dispatch("institutes/follow", id);
-    },
-    showFollowing(id) {
-      if (
-        this.loggedIn &&
-        this.user &&
-        this.user.details &&
-        this.user.details.following &&
-        !this.user.details.following.includes(id)
-      )
-        return true;
-      else return false;
     }
   },
   mounted() {}
@@ -276,6 +199,7 @@ export default {
     margin: 10px;
     cursor: pointer;
 }
+
 
 
 .content{

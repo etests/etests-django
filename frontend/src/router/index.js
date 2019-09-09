@@ -155,14 +155,6 @@ const router = new Router({
           }
         },
         {
-          path: "test/:id/edit",
-          name: "edit-test",
-          component: () => import("@/pages/institute/EditTest"),
-          meta: {
-            title: "Edit Test"
-          }
-        },
-        {
           path: "test/preview",
           component: () => import("@/pages/institute/TestPreview"),
           meta: {
@@ -170,6 +162,14 @@ const router = new Router({
           }
         }
       ]
+    },
+    {
+      path: "/exams",
+      name: "exams",
+      component: () => import("@/pages/Exams"),
+      meta: {
+        title: "Exams"
+      }
     },
     {
       path: "/institutes",
@@ -180,11 +180,19 @@ const router = new Router({
       }
     },
     {
-      path: "/discuss",
-      name: "discuss",
-      component: () => import("@/pages/Discuss"),
+      path: "/question-banks",
+      name: "question-banks",
+      component: () => import("@/pages/QuestionBanks"),
       meta: {
-        title: "Discuss"
+        title: "Question Banks"
+      }
+    },
+    {
+      path: "/faq",
+      name: "faq",
+      component: () => import("@/pages/FAQ"),
+      meta: {
+        title: "FAQ"
       }
     },
     {
@@ -194,6 +202,16 @@ const router = new Router({
       props: true,
       meta: {
         title: "Login/Register"
+      }
+    },
+    {
+      path: "/test/:id/edit",
+      name: "edit-test",
+      component: () => import("@/pages/test/EditTest"),
+      meta: {
+        title: "Edit Test",
+        requiresAuth: true,
+        requiresInstitute: true
       }
     },
     {

@@ -23,6 +23,8 @@ urlpatterns = [
     path("institutes/following/", FollowingInstitutesView.as_view()),
 
     path("institutes/", InstitutesListView.as_view({"get": "list"}), name="institutes-list"),
+
+    path("exams/", ExamListView.as_view({"get": "list"}), name="exams-list"),
     
     path("subjects/", SubjectListView.as_view({"get": "list"}), name="subjects-list"),
 
@@ -40,7 +42,7 @@ urlpatterns = [
 
     path("tests/<int:pk>/", TestRetrieveUpdateDestoryView.as_view(), name="test-update-delete"),
 
-    path("get-session/<int:test_pk>/", SessionRetrieveUpdateView.as_view()),
+    path("get-session/<int:test_id>/", SessionRetrieveUpdateView.as_view()),
 
     path("update-session/<int:pk>/", SessionRetrieveUpdateView.as_view()),
 

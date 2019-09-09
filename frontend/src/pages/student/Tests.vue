@@ -23,7 +23,9 @@
             <template v-slot:items="props">
               <tr @click="props.expanded = !props.expanded">
                 <td class="text-xs-center">{{ props.item.name }}</td>
-                <td class="text-xs-center">{{ props.item.activation_time }}</td>
+                <td class="text-xs-center">
+                  {{ formatDate(props.item.activation_time) }}
+                </td>
                 <td class="text-xs-center">
                   <v-btn icon flat color="success">
                     <v-icon>mdi-play</v-icon>
@@ -32,7 +34,7 @@
               </tr>
             </template>
             <template v-slot:expand="props">
-              <v-card>
+              <v-sheet>
                 <v-layout
                   align-center
                   v-for="(session, j) in props.item.sessions"
@@ -44,7 +46,9 @@
                     </span>
                     <span v-else class="success--text">Ranked</span>
                   </v-flex>
-                  <v-flex xs4>{{ formatDate(session.checkin_time) }}</v-flex>
+                  <v-flex xs4>
+                    {{ formatDate(session.checkin_time) }}
+                  </v-flex>
                   <v-flex xs4>
                     <v-btn
                       icon
@@ -78,7 +82,7 @@
                     </v-btn>
                   </v-flex>
                 </v-layout>
-              </v-card>
+              </v-sheet>
             </template>
           </v-data-table>
         </v-flex>
@@ -89,6 +93,7 @@
 
 <script>
 import StandardLayout from "@components/layouts/StandardLayout";
+import utils from "@js/utils";
 
 export default {
   data() {
@@ -102,7 +107,7 @@ export default {
           text: "Date",
           value: "activation_time"
         },
-        { align: "center", sortable: true, text: "Actions" }
+        { align: "center", sortable: false, text: "Actions" }
       ]
     };
   },
@@ -119,20 +124,7 @@ export default {
   },
   methods: {
     formatDate(dateString) {
-      var date = new Date(Date.parse(dateString));
-      return (
-        date.getDate() +
-        "/" +
-        (date.getMonth() + 1) +
-        "/" +
-        date.getFullYear() +
-        " " +
-        date.getHours() +
-        ":" +
-        date.getMinutes() +
-        ":" +
-        date.getSeconds()
-      );
+      return utils.formatDate(dateString);
     }
   }
 };

@@ -133,6 +133,7 @@
 import StandardLayout from "@components/layouts/StandardLayout";
 import RankList from "./RankList";
 import { mapState } from "vuex";
+import utils from "@js/utils";
 
 export default {
   data() {
@@ -169,20 +170,7 @@ export default {
   },
   methods: {
     formatDate(dateString) {
-      var date = new Date(Date.parse(dateString));
-      return (
-        date.getDate() +
-        "/" +
-        (date.getMonth() + 1) +
-        "/" +
-        date.getFullYear() +
-        " " +
-        date.getHours() +
-        ":" +
-        date.getMinutes() +
-        ":" +
-        date.getSeconds()
-      );
+      return utils.formatDate(dateString);
     },
     generateRanks(id) {
       this.$store.dispatch("tests/generateRanks", id);

@@ -23,7 +23,7 @@ class IsInstituteOwner(permissions.BasePermission):
         return request.user.is_authenticated and request.user.is_institute
 
     def has_object_permission(self, request, view, obj):
-        return obj.institute == request.user.institute
+        return request.user.is_authenticated and request.user.is_institute and (not obj.institute or obj.institute == request.user.institute)
 
 class IsStudentOwner(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -130,7 +130,7 @@ class ExamListView(viewsets.ViewSet):
     permission_classes = (ReadOnly,)
     def list(self, request):
         queryset = Exam.objects.filter()
-        serializer = ExamSerializer(queryset, many=True)
+        serializer = ExamListSerializer(queryset, many=True)
         return Response(serializer.data)
         
 class SubjectListView(viewsets.ViewSet):
@@ -247,25 +247,30 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
             "questionIndex": 0,
             "sectionIndex": 0
         }    
-        session = Session.objects.create(student=self.request.user.student, test=test, response=response, result=[], current=current)
+        session = Session.objects.create(student=self.request.user.student, test=test, response=response, result=[], current=current, practice=(test.practice or test.status>1))
         return session
 
     def retrieve(self, *args, **kwargs):
         test_id = kwargs['test_id']
-        test=Test.objects.get(id=test_id)
+        try:
+            test=Test.objects.get(id=test_id)
+        except:
+            raise NotFound("This test does not exists.")
         try:
             session = Session.objects.get(test=test, student=self.request.user.student, completed=False)
         except:
             session = None
-        if(session):
+        if session:
             return Response(self.get_serializer(session).data)
         elif self.request.user.is_student:
-            if self.request.user.student in test.registered_student.all():
+            if self.request.user.student in test.registered_students.all():
                 sessions = Session.objects.filter(test=test, student=self.request.user.student)
-                if(len(sessions)==0 or test.practice):
+                if test.status == 0:
+                    raise ParseError("This test is not active yet.")
+                elif test.status == 1 and len(sessions) == 0 or test.status>1:
                     session = self.create_session(test)
-                else:
-                    raise ParseError("You have already attempted this test.")
+                elif test.status == 1 and len(sessions):
+                    raise ParseError("You have already attempted this test. You can attempt this test in practice mode after result declaration.")
             else:
                 raise ParseError("You are not registered for this test.")
         else:

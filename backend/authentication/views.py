@@ -178,24 +178,23 @@ class ProfileView(RetrieveUpdateAPIView):
     def get_queryset(self):
         return User.objects.all()
     
-    def patch(self, *args, **kwargs):
+    def perform_update(self, serializer):
         instance = self.get_object()
 
-        birth_date = self.request.data.pop('birth_date', None)
-        pincode = self.request.data.pop('pincode', None)
+        birth_date = self.request.data.get('birth_date', None)
+        pincode = self.request.data.get('pincode', None)
 
 
         if instance.is_student and birth_date:
-            instance.birth_date = birth_date
+            instance.student.birth_date = birth_date
+            instance.student.save()
 
         if instance.is_institute and pincode:
-            instance.pincode = pincode
+            instance.institute.pincode = pincode
+            instance.institute.save()
 
-        serializer = self.get_serializer(instance, data=self.request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)  
-
-        return Response(serializer.data)
+        serializer.save()
+    
 
 class PasswordResetView(GenericAPIView):
     """
