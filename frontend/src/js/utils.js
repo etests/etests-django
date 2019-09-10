@@ -3,20 +3,23 @@ const utils = {
 };
 
 function formatDate(dateString) {
-  var date = new Date(Date.parse(dateString));
-  return (
-    date.getDate() +
-    "/" +
-    (date.getMonth() + 1) +
-    "/" +
-    date.getFullYear() +
-    " " +
-    date.getHours() +
-    ":" +
-    date.getMinutes() +
-    ":" +
-    date.getSeconds()
-  );
+  if (!dateString || dateString === "") return "";
+  else {
+    var date = new Date(Date.parse(dateString));
+    return (
+      date.getDate() +
+      "/" +
+      (date.getMonth() + 1) +
+      "/" +
+      date.getFullYear() +
+      " " +
+      date.getHours() +
+      ":" +
+      date.getMinutes() +
+      ":" +
+      date.getSeconds()
+    );
+  }
 }
 
 export default utils;

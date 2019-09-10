@@ -141,9 +141,9 @@ class Test(models.Model):
         if self.practice: 
             return 4
         else:
-            if timezone.now() < self.activation_time:
+            if not self.activation_time or timezone.now() < self.activation_time:
                 return 0
-            elif self.activation_time <= timezone.now() and timezone.now() < self.closing_time:
+            elif not self.closing_time or self.activation_time <= timezone.now() and timezone.now() < self.closing_time:
                 return 1
             elif self.closing_time <= timezone.now():
                 if not self.corrected and not self.finished:

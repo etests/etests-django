@@ -117,7 +117,7 @@
           <v-list-tile
             v-for="n in 20"
             :key="n"
-            @click="currentQuestion.inCorrectMarks = n"
+            @click="currentQuestion.incorrectMarks = n"
           >
             <v-list-tile-title>{{ n }}</v-list-tile-title>
           </v-list-tile>

@@ -13,6 +13,20 @@ import "./registerServiceWorker";
 import Notifications from "vue-notification";
 import VueGoogleCharts from "vue-google-charts";
 import CKEditor from "@ckeditor/ckeditor5-vue";
+import VueProgressBar from "vue-progressbar";
+
+Vue.use(VueProgressBar, {
+  color: "#28CC9E",
+  failedColor: "#EE2855",
+  thickness: "3px",
+  transition: {
+    speed: "0.2s",
+    opacity: "0.6s",
+    termination: 1000
+  },
+  autoRevert: true,
+  location: "top"
+});
 
 Vue.use(CKEditor);
 

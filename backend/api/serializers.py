@@ -22,7 +22,10 @@ class TestSeriesSerializer(serializers.ModelSerializer):
         return {"id": obj.institute.id, "name": obj.institute.user.name}
     
     def get_exam(self, obj):
-        return obj.exam.name
+        try:
+            return obj.exam.name
+        except:
+            return ""
 
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
