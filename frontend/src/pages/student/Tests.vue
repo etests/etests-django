@@ -1,9 +1,9 @@
 <template>
   <StandardLayout>
     <v-flex xs12>
-      <v-card :class="[$style.testCard, 'title elevation-3']">
+      <v-card :class="[$style.card, 'title elevation-3']">
         <v-card-title>
-          Tests
+          Tests for your batch
         </v-card-title>
         <v-flex xs12>
           <v-text-field
@@ -131,7 +131,7 @@ export default {
 </script>
 
 <style module lang="stylus">
-.testCard{
+.card{
   padding: 10px 20px;
   width: 100%;
   border-radius: 8px;

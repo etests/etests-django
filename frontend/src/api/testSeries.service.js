@@ -4,6 +4,7 @@ import handleResponse from "./handleResponse";
 export const testSeriesService = {
   create,
   remove,
+  getMy,
   getAll
 };
 
@@ -30,12 +31,22 @@ function remove(id) {
   );
 }
 
-function getAll() {
+function getMy() {
   const requestOptions = {
     method: "GET",
     headers: authHeader()
   };
   return fetch(`${process.env.API_URL}/testseries/`, requestOptions).then(
+    handleResponse
+  );
+}
+
+function getAll() {
+  const requestOptions = {
+    method: "GET",
+    headers: authHeader()
+  };
+  return fetch(`${process.env.API_URL}/testseries/all/`, requestOptions).then(
     handleResponse
   );
 }

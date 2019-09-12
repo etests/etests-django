@@ -15,15 +15,15 @@ export default {
           image: require("@assets/images/student/dashboard/test.png"),
           link: { path: "tests" }
         },
+        // {
+        //   name: "Test Series",
+        //   image: require("@assets/images/student/dashboard/testseries.png"),
+        //   link: { name: "testseries" }
+        // },
         {
-          name: "Test Series",
+          name: "My Question Banks",
           image: require("@assets/images/student/dashboard/testseries.png"),
-          link: { name: "testseries" }
-        },
-        {
-          name: "Practice Tests",
-          image: require("@assets/images/student/dashboard/questionbank.png"),
-          link: { name: "practice-tests" }
+          link: { path: "question-banks" }
         },
         {
           name: "Notifications",

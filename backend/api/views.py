@@ -151,19 +151,25 @@ class TagListView(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = TagSerializer
     queryset = Tag.objects.all()
-        
-class TestSeriesListCreateView(generics.ListCreateAPIView):
-    permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
+
+class TestSeriesListView(generics.ListAPIView):
+    permission_classes = (ReadOnly,)
     serializer_class = TestSeriesSerializer
     def get_queryset(self):
+        return TestSeries.objects.all()
+        
+class TestSeriesListCreateView(generics.ListCreateAPIView):
+    permission_classes = (ReadOnly | IsInstituteOwner | permissions.IsAdminUser,)
+    serializer_class = TestSeriesSerializer
 
-        if self.request.user.is_authenticated:
-            if self.request.user.is_institute:
-                return TestSeries.objects.filter(institute=self.request.user.institute)
-            elif self.request.user.is_staff:
-                return TestSeries.objects.all()
-        else:
-            return None
+    def get_queryset(self):
+        if self.request.user.is_institute:
+            return TestSeries.objects.filter(institute=self.request.user.institute)
+        elif self.request.user.is_student:
+            return TestSeries.objects.filter(registered_students = self.request.user.student)
+        elif self.request.user.is_staff:
+            return TestSeries.objects.all()
+        return None
     
     def perform_create(self, serializer):
         serializer.save(institute=self.request.user.institute)
@@ -195,16 +201,16 @@ class TestListView(generics.ListAPIView):
     def get_queryset(self):
         if self.request.user.is_authenticated:
             if self.request.user.is_institute:
-                return Test.objects.filter(institute=self.request.user.institute)
+                return Test.objects.filter(practice=False, institute=self.request.user.institute)
             elif self.request.user.is_student:
-                return Test.objects.filter(institute__in=self.request.user.student.institutes.all())
+                return Test.objects.filter(registered_students=self.request.user.student)
             elif self.request.user.is_staff:
                 return Test.objects.all()
         else:
             return None
 
 class TestCreateView(generics.CreateAPIView):
-    permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (IsInstituteOwner,)
     serializer_class = TestCreateSerializer
 
     def perform_create(self, serializer):

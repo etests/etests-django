@@ -16,9 +16,9 @@ export default {
           link: { path: "tests" }
         },
         {
-          name: "Practice Tests",
+          name: "My Question Banks",
           image: require("@assets/images/institute/dashboard/questionbank.png"),
-          link: { path: "testseries" }
+          link: { path: "question-banks" }
         },
         // {
         //   name: "Results",

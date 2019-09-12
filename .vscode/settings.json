@@ -23,6 +23,6 @@
   "editor.formatOnSave": false,
   "eslint.alwaysShowStatus": true,
   "eslint.autoFixOnSave": true,
-  "python.pythonPath": "venv/bin/python",
+  "python.pythonPath": "/usr/bin/python3",
   "python.formatting.provider": "black"
 }

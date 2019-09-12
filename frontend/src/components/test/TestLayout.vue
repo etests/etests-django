@@ -27,7 +27,7 @@
               :class="[$style.question, 'px-4 py-2']"
               :height="windowHeight"
             >
-              <v-layout justify-center>
+              <v-layout justify-center mb-2>
                 <slot name="info"></slot>
               </v-layout>
 

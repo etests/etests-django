@@ -23,6 +23,14 @@ const router = new Router({
       }
     },
     {
+      path: "/payment",
+      name: "payment",
+      component: () => import("@/pages/Payment.vue"),
+      meta: {
+        title: "Payment"
+      }
+    },
+    {
       path: "/student",
       name: "student",
       component: () => import("@/components/layouts/EmptyLayout"),
@@ -38,6 +46,13 @@ const router = new Router({
           component: () => import("@/pages/student/Dashboard"),
           meta: {
             title: "Dashboard"
+          }
+        },
+        {
+          path: "question-banks",
+          component: () => import("@/pages/student/TestSeries"),
+          meta: {
+            title: "My Question Banks"
           }
         },
         {
@@ -147,11 +162,11 @@ const router = new Router({
           }
         },
         {
-          path: "tests-series",
-          name: "institute-test-series",
+          path: "question-banks",
+          name: "my-question-banks",
           component: () => import("@/pages/institute/TestSeries"),
           meta: {
-            title: "Tests Series"
+            title: "My Question Banks"
           }
         },
         {
@@ -181,7 +196,6 @@ const router = new Router({
     },
     {
       path: "/question-banks",
-      name: "question-banks",
       component: () => import("@/pages/QuestionBanks"),
       meta: {
         title: "Question Banks"

@@ -92,7 +92,7 @@ class TestSeries(models.Model):
     visible = models.BooleanField(default = False)
     exam = models.ForeignKey(Exam, related_name = 'test_series', blank = True, null = True, on_delete = models.SET_NULL)
     institute = models.ForeignKey(Institute, related_name = 'test_series', blank = True, null = True, on_delete = models.CASCADE)
-    registered_student = models.ManyToManyField(Student, blank = True)
+    registered_students = models.ManyToManyField(Student, blank = True)
     access_code = models.ForeignKey(AccessCode, related_name = 'test_series', blank = True, null = True, on_delete = models.SET_NULL)
     tags = models.ManyToManyField(Tag, related_name = 'test_series', blank = True)
     tests = models.ManyToManyField("Test", related_name = 'test_series', blank = True)
@@ -139,7 +139,10 @@ class Test(models.Model):
     @property
     def status(self, *args, **kwargs):
         if self.practice: 
-            return 4
+            if not self.activation_time or timezone.now() < self.activation_time:
+                return 0
+            else:
+                return 1
         else:
             if not self.activation_time or timezone.now() < self.activation_time:
                 return 0

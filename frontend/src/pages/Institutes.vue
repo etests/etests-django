@@ -59,11 +59,11 @@
         <v-layout row wrap align-center pa-3>
           <ObjectCard v-for="test in selectedTestSeries.tests" :key="test.id">
             <div slot="content" :class="$style.content">
-              <v-card-title :class="$style.title">
+              <div :class="$style.title">
                 {{ test.name }}
-              </v-card-title>
-              <v-divider class="mb-3 mx-3" />
-              <v-icon color="blue" class="ml-3" small>mdi-calendar</v-icon>
+              </div>
+              <v-divider class="my-3" />
+              <v-icon color="blue" small>mdi-calendar</v-icon>
               {{ formatDate(test.activation_time) }}
             </div>
             <div slot="actions">

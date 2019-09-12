@@ -8,7 +8,7 @@
       </v-flex>
     </v-layout>
     <v-divider class="grey lighten-2" />
-    <v-card min-height="40" class="text-xs-center">
+    <v-card min-height="40" class="text-xs-center elevation-0">
       <slot name="actions"> </slot>
     </v-card>
   </v-card>

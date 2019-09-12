@@ -359,11 +359,6 @@ export default {
   margin: 0 5px;
 }
 
-.dotMenu{
-
-}
-
-
 .DrawerItem{
   a{
     border-radius: 0 50px 50px 0;

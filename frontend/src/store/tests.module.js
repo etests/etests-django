@@ -39,9 +39,6 @@ export const tests = {
             dispatch("alert/success", "Test created successfully!", {
               root: true
             });
-            dispatch("testSeries/addTest", data, {
-              root: true
-            });
           });
         },
         error => {
@@ -78,7 +75,7 @@ export const tests = {
         _ => {
           commit("removeSuccess", id);
           setTimeout(() => {
-            dispatch("alert/success", "Test removed successfully!", {
+            dispatch("alert/success", "Test deleted successfully!", {
               root: true
             });
           });
@@ -166,7 +163,11 @@ export const tests = {
       state.status = { creating: true };
     },
     createSuccess(state, data) {
-      state.all.items.push(data);
+      if (data.test_series)
+        this.dispatch("testSeries/addTest", data, {
+          root: true
+        });
+      else state.all.items.push(data);
       state.status = { created: true, test: data };
     },
     createFailure(state, error) {
@@ -187,6 +188,9 @@ export const tests = {
     removeSuccess(state, id) {
       state.status = { removed: true, id: id };
       state.all.items = state.all.items.filter(test => test.id !== id);
+      this.dispatch("testSeries/removeTest", id, {
+        root: true
+      });
     },
     removeFailure(state, error) {
       state.status = { error: error };

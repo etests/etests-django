@@ -3,7 +3,8 @@ import { testSeriesService } from "@/api/testSeries.service";
 const initialState = {
   status: {},
   testSeries: {},
-  all: {}
+  all: { items: {} },
+  my: { items: [] }
 };
 
 export const testSeries = {
@@ -17,7 +18,7 @@ export const testSeries = {
         testSeries => {
           commit("getSuccess", testSeries);
           setTimeout(() => {
-            dispatch("alert/success", "Test series fetched successfully!", {
+            dispatch("alert/success", "Question bank fetched successfully!", {
               root: true
             });
           });
@@ -35,7 +36,7 @@ export const testSeries = {
         data => {
           commit("createSuccess", data);
           setTimeout(() => {
-            dispatch("alert/success", "Test series created successfully!", {
+            dispatch("alert/success", "Question bank created successfully!", {
               root: true
             });
           });
@@ -53,7 +54,7 @@ export const testSeries = {
         _ => {
           commit("removeSuccess", id);
           setTimeout(() => {
-            dispatch("alert/success", "Test series removed successfully!", {
+            dispatch("alert/success", "Question bank removed successfully!", {
               root: true
             });
           });
@@ -74,8 +75,21 @@ export const testSeries = {
           error => commit("getAllFailure", error)
         );
     },
+    getMy({ commit }) {
+      commit("getMyRequest");
+
+      testSeriesService
+        .getMy()
+        .then(
+          testSeries => commit("getMySuccess", testSeries),
+          error => commit("getMyFailure", error)
+        );
+    },
     addTest({ commit }, test) {
       commit("addTestSuccess", test);
+    },
+    removeTest({ commit }, id) {
+      commit("removeTestSuccess", id);
     }
   },
   mutations: {
@@ -98,6 +112,15 @@ export const testSeries = {
     getAllFailure(state, error) {
       state.all = { error };
     },
+    getMyRequest(state) {
+      state.my = { loading: true };
+    },
+    getMySuccess(state, testSeries) {
+      state.my = { items: testSeries };
+    },
+    getMyFailure(state, error) {
+      state.my = { error };
+    },
     createRequest(state, data) {
       state.status = { creating: true };
     },
@@ -118,12 +141,15 @@ export const testSeries = {
       state.status = { error: error };
     },
     addTestSuccess(state, test) {
-      var targetTestSeries = state.all.items.filter(
-        item => item.id === test.test_series
+      var targetTestSeries = state.my.items.filter(item =>
+        test.test_series.includes(item.id)
       );
-      if (targetTestSeries.length) {
-        targetTestSeries[0].tests.push(test);
-      }
+      targetTestSeries.forEach(testSeries => testSeries.tests.push(test));
+    },
+    removeTestSuccess(state, id) {
+      state.my.items.forEach(item => {
+        item.tests = item.tests.filter(test => test.id !== id);
+      });
     }
   }
 };

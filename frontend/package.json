@@ -20,6 +20,7 @@
     "axios": "^0.19.0",
     "chartist": "^0.11.3",
     "google-charts": "^2.0.0",
+    "instamojo-nodejs": "0.0.5",
     "material-design-icons-iconfont": "^4.0.5",
     "prettier": "^1.18.2",
     "register-service-worker": "^1.6.2",

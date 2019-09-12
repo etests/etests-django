@@ -54,10 +54,12 @@ class TestListSerializer(serializers.ModelSerializer):
         model=Test
         fields = ("id", "name", "status", "practice", "activation_time", "institute")
 
-class TestCreateSerializer(serializers.ModelSerializer):
+class TestCreateSerializer(serializers.ModelSerializer):        
+
     class Meta:
         model=Test
-        fields = ("id", "name", "practice", "activation_time", "institute", "questions", "answers", "sections")
+        fields = ("id", "name", "practice", "activation_time", "institute", "questions", "answers", "sections", "test_series")
+        extra_kwargs = {'test_series': {'required': False}}
 
 class TestSerializer(serializers.ModelSerializer):
     class Meta:

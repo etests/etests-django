@@ -17,11 +17,9 @@
         <v-layout row wrap align-center pa-3>
           <ObjectCard v-for="test in selectedTestSeries.tests" :key="test.id">
             <div slot="content" :class="$style.content">
-              <v-card-title :class="$style.title">
-                {{ test.name }}
-              </v-card-title>
-              <v-divider class="mb-3 mx-3" />
-              <v-icon color="blue" class="ml-3" small>mdi-calendar</v-icon>
+              <div :class="$style.title">{{ test.name }} <br /></div>
+              <v-divider class="my-3" />
+              <v-icon color="blue" small>mdi-calendar</v-icon>
               {{ formatDate(test.activation_time) }}
             </div>
             <div slot="actions">
@@ -51,7 +49,9 @@
           <v-btn icon dark @click="examDialog = false">
             <v-icon>close</v-icon>
           </v-btn>
-          <v-toolbar-title>{{ selectedExam.name }}</v-toolbar-title>
+          <v-toolbar-title
+            >{{ selectedExam.name }} Question Banks</v-toolbar-title
+          >
         </v-toolbar>
 
         <v-layout row wrap align-center pa-3>
@@ -60,10 +60,13 @@
             :key="testSeries.id"
           >
             <div slot="content" :class="$style.content">
-              <div :class="$style.title">{{ testSeries.name }} <br /></div>
+              <div :class="$style.title">
+                {{ testSeries.name }} <br />
+                <span class="body-1 mx-1">{{ testSeries.institute.name }}</span>
+              </div>
               <v-divider class="my-3" />
               <v-icon color="blue" small>mdi-file-outline</v-icon>
-              {{ testSeries.tests.length }} tests ({{ testSeries.exam }})
+              {{ testSeries.tests.length }} tests
             </div>
             <div slot="actions">
               <v-card-actions>

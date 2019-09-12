@@ -24,10 +24,10 @@
     </StandardLayout>
     <TestLayout v-else :sections="sections" :sectionIndex.sync="sectionIndex">
       <template slot="controls">
-        <v-btn color="primary" flat>
-          <v-icon> mdi-clock </v-icon>
-          &nbsp; {{ this.time }}
-        </v-btn>
+        <v-chip round outline color="primary">
+          <v-icon color="primary"> mdi-clock </v-icon>
+          &nbsp; {{ getMinutes(currentResponse.timeElapsed) }}
+        </v-chip>
       </template>
 
       <template slot="info">
@@ -43,16 +43,10 @@
       </template>
 
       <template slot="text-image">
-        <v-img
-          v-if="currentQuestion.image"
-          :src="require(`@assets/logos/${currentQuestion.image}`)"
-          class="mb-3"
-        ></v-img>
         <v-chip color="grey darken-2" outline small>
           <strong> Q{{ questionIndex + 1 }} </strong>
         </v-chip>
-        <span :class="$style.questionText">
-          {{ currentQuestion.text }}
+        <span :class="$style.questionText" v-html="currentQuestion.text">
         </span>
       </template>
 
@@ -232,7 +226,7 @@
             dark
             small
             :flat="i != questionIndex"
-            :class="statusColor(response[i].status)"
+            :class="statusColor(session.result.questionWiseMarks[i].status)"
             @click="changeQuestion(i)"
           >
             <span>{{ i + 1 }}</span>
@@ -294,11 +288,9 @@ export default {
         case 1:
           return "error";
         case 2:
-          return "info";
-        case 3:
           return "green";
-        case 4:
-          return "purple";
+        case 3:
+          return "info";
         default:
           return "grey";
       }
@@ -332,6 +324,9 @@ export default {
     },
     nextQuestion() {
       this.changeQuestion(this.questionIndex + 1);
+    },
+    getMinutes(time) {
+      return Math.floor(time / 60) + "m " + (time % 60) + "s";
     }
   },
   computed: {
@@ -369,6 +364,10 @@ export default {
       if (this.test && this.test.questions)
         return this.test.questions[this.questionIndex];
       else return [];
+    },
+    currentResponse() {
+      if (this.response) return this.response[this.questionIndex];
+      else return {};
     },
     currentAnswer() {
       if (this.session) return this.response[this.questionIndex];

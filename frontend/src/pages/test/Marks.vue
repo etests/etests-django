@@ -3,7 +3,7 @@
     <v-card-title>
       {{ testName.toUpperCase() }}
       <v-spacer />
-      {{ report.test.time_alotted }}
+      <router-link :to="`/review/${report.id}`">Review</router-link>
     </v-card-title>
     <v-data-table :headers="headers" :items="records" hide-actions>
       <template v-slot:items="props">

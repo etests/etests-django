@@ -72,7 +72,7 @@ export const authentication = {
     },
     logout(state) {
       state.status = {};
-      state.user = null;
+      state.user = { type: "student" };
     },
     registerRequest(state, user) {
       state.status = { registering: true };

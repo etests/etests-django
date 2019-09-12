@@ -157,19 +157,6 @@
     </template>
 
     <template slot="text-image">
-      <!-- <v-img
-        v-if="currentQuestion.image"
-        :src="require(`@assets/logos/${currentQuestion.image}`)"
-        class="mb-3"
-      ></v-img>
-      <span :class="$style.questionText">
-        <v-textarea
-          rows="5"
-          :prepend-inner-icon="`mdi-numeric-${questionIndex + 1}-circle`"
-          placeholder="Question text"
-          v-model="currentQuestion.text"
-        ></v-textarea>
-      </span> -->
       <ckeditor
         :editor="questionEditor"
         :config="questionConfig"
@@ -188,10 +175,11 @@
         <template v-for="(option, i) in currentQuestion.options">
           <v-text-field
             solo
+            flat
             v-model="currentQuestion.options[i]"
             :key="questionIndex + '-' + i"
-            class="mr-5"
-            style="width:100px"
+            class="my-4 mr-5"
+            style="width: 115px;"
           >
             <v-radio
               slot="prepend-inner"
@@ -211,8 +199,9 @@
         >
           <v-text-field
             solo
+            flat
             v-model="currentQuestion.options[i]"
-            style="width: 150px;"
+            style="width: 100px;"
           >
             <v-checkbox
               slot="prepend-inner"
@@ -488,9 +477,9 @@ export default {
         { value: 0, text: "Single Correct" },
         { value: 1, text: "Multiple Correct" },
         { value: 2, text: "Numerical" },
-        { value: 3, text: "Matrix Match" },
-        { value: 4, text: "One Word Answer" },
-        { value: 5, text: "Subjective" }
+        { value: 3, text: "Matrix Match" }
+        // { value: 4, text: "One Word Answer" },
+        // { value: 5, text: "Subjective" }
       ],
       windowHeight: window.innerHeight - 200,
       isSmallScreen: this.$vuetify.breakpoint.smAndDown,
@@ -506,8 +495,8 @@ export default {
       newSectionSubject: "",
       emptyQuestion: {
         section: 0,
-        text: "",
-        image: null,
+        text:
+          "<p>Enter question text and options or insert image here.</p><p>&nbsp;</p>",
         type: 0,
         options: ["A", "B", "C", "D"],
         status: 0,

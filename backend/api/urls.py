@@ -32,6 +32,8 @@ urlpatterns = [
 
     path("tags/", TagListView.as_view({"get": "list", "post": "create", "put": "update", "patch": "partial_update", "delete": "destroy"}), name="tags-list"),
 
+    path("testseries/all/", TestSeriesListView.as_view(), name="testseries-list"),
+
     path("testseries/", TestSeriesListCreateView.as_view(), name="testseries-list-create"),
 
     path("testseries/<int:pk>/", TestSeriesRetrieveUpdateDestoryView.as_view(), name="testseries-update-delete"),
@@ -56,5 +58,6 @@ urlpatterns = [
 
     path("transactions/", TransactionListView.as_view(), name="transaction-list"),
     
-    path("credit-used/", CreditListView.as_view(), name="credits-list")
+    path("credit-used/", CreditListView.as_view(), name="credits-list"),
+
 ]

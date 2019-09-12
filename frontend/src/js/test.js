@@ -11,16 +11,16 @@ export const testTemplate = {
   questions: [
     {
       section: 0,
-      text: "",
-      image: null,
+      text:
+        "<p>Enter question text and options or insert image here.</p><p>&nbsp;</p>",
       type: 0,
-      options: ["A", "B", "C", "D"],
       status: 0,
       correctMarks: 4,
       incorrectMarks: 1,
       partialMarks: 0,
       topic: "",
       topicIndex: 0,
+      options: ["A", "B", "C", "D"],
       answers: ["P", "Q", "R", "S", "T"]
     }
   ],

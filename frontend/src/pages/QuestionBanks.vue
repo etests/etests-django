@@ -39,53 +39,77 @@
         </v-layout>
       </v-card>
     </v-dialog>
-    <v-flex xs12>
-      <v-text-field
-        placeholder="Search Question Banks"
-        v-model="searchTestSeries"
-      />
-    </v-flex>
-    <ObjectCard v-for="testSeries in filteredTestSeries" :key="testSeries.id">
-      <div slot="content" :class="$style.content">
-        <div :class="$style.title">
-          {{ testSeries.name }} <br />
-          <span class="body-1 mx-1">{{ testSeries.institute.name }}</span>
-        </div>
-        <v-divider class="my-3" />
-        <v-icon color="blue" small>mdi-file-outline</v-icon>
-        {{ testSeries.tests.length }} tests ({{ testSeries.exam }})
-      </div>
-      <div slot="actions">
-        <v-card-actions>
-          <v-layout row fill-height py-2>
-            <v-flex xs4>
-              <v-btn large color="blue" flat>
-                &#8377; {{ testSeries.price }}
-              </v-btn>
-            </v-flex>
 
-            <v-flex xs4>
-              <v-btn round outline color="primary">
-                Buy
-              </v-btn>
-            </v-flex>
-            <v-flex xs4>
-              <v-btn
-                round
-                outline
-                color="primary"
-                @click="
-                  selectedTestSeries = testSeries;
-                  viewDialog = true;
-                "
-              >
-                View
-              </v-btn>
-            </v-flex>
-          </v-layout>
-        </v-card-actions>
-      </div>
-    </ObjectCard>
+    <v-flex xs12>
+      <v-card class="elevation-0">
+        <v-card-title class="title">
+          Question Banks
+          <v-spacer />
+          <div v-if="loggedIn">
+            <v-btn
+              color="primary"
+              round
+              outline
+              @click="$router.push(`/${user.type}/question-banks`)"
+            >
+              See purchased question banks
+            </v-btn>
+          </div>
+        </v-card-title>
+        <v-flex xs12 class="px-3">
+          <v-text-field
+            placeholder="Search Question Banks"
+            v-model="searchTestSeries"
+          />
+        </v-flex>
+        <v-flex xs12 class="px-3">
+          <ObjectCard
+            v-for="testSeries in filteredTestSeries"
+            :key="testSeries.id"
+          >
+            <div slot="content" :class="$style.content">
+              <div :class="$style.title">
+                {{ testSeries.name }} <br />
+                <span class="body-1 mx-1">{{ testSeries.institute.name }}</span>
+              </div>
+              <v-divider class="my-3" />
+              <v-icon color="blue" small>mdi-file-outline</v-icon>
+              {{ testSeries.tests.length }} tests ({{ testSeries.exam }})
+            </div>
+            <div slot="actions">
+              <v-card-actions>
+                <v-layout row fill-height py-2>
+                  <v-flex xs4>
+                    <v-btn large color="blue" flat>
+                      &#8377; {{ testSeries.price }}
+                    </v-btn>
+                  </v-flex>
+
+                  <v-flex xs4>
+                    <v-btn round outline color="primary" v-if="loggedIn">
+                      Buy
+                    </v-btn>
+                  </v-flex>
+                  <v-flex xs4>
+                    <v-btn
+                      round
+                      outline
+                      color="primary"
+                      @click="
+                        selectedTestSeries = testSeries;
+                        viewDialog = true;
+                      "
+                    >
+                      View
+                    </v-btn>
+                  </v-flex>
+                </v-layout>
+              </v-card-actions>
+            </div>
+          </ObjectCard>
+        </v-flex>
+      </v-card>
+    </v-flex>
   </StandardLayout>
 </template>
 
