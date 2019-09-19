@@ -10,9 +10,9 @@
 </template>
 
 <script>
-import StandardLayout from "@components/layouts/StandardLayout";
-import SectionLayout from "@components/layouts/SectionLayout";
-import BatchCard from "@components/institute/batches/BatchCard";
+import StandardLayout from "@/components/layouts/StandardLayout";
+import SectionLayout from "@/components/layouts/SectionLayout";
+import BatchCard from "@/components/institute/batches/BatchCard";
 
 export default {
   data() {

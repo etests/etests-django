@@ -445,10 +445,10 @@
 </template>
 
 <script>
-import TestLayout from "@components/test/TestLayout.vue";
-import { subjectTopics } from "@js/subjects";
+import TestLayout from "@/components/test/TestLayout.vue";
+import { subjectTopics } from "@/js/subjects";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import CustomUploadAdapterPlugin from "@js/customuploadadapter";
+import CustomUploadAdapterPlugin from "@/js/customuploadadapter";
 
 export default {
   data() {
@@ -719,7 +719,7 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 .questionInfo{
   border-bottom: 1px solid grey !important;
 }

@@ -150,7 +150,7 @@
 </template>
 
 <script>
-import StandardLayout from "@components/layouts/StandardLayout";
+import StandardLayout from "@/components/layouts/StandardLayout";
 
 export default {
   props: ["profile", "controls"],
@@ -166,7 +166,7 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 
 .dashboardCard{
     text-align: left;

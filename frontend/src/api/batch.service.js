@@ -17,9 +17,10 @@ function get(id) {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.API_URL}/batches/${id}/`, requestOptions).then(
-    handleResponse
-  );
+  return fetch(
+    `${process.env.VUE_APP_API_URL}/batches/${id}/`,
+    requestOptions
+  ).then(handleResponse);
 }
 
 function create(data) {
@@ -29,7 +30,7 @@ function create(data) {
     body: JSON.stringify(data)
   };
 
-  return fetch(`${process.env.API_URL}/batches/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/batches/`, requestOptions).then(
     handleResponse
   );
 }
@@ -42,7 +43,7 @@ function update(data) {
   };
 
   return fetch(
-    `${process.env.API_URL}/batches/${data.id}/`,
+    `${process.env.VUE_APP_API_URL}/batches/${data.id}/`,
     requestOptions
   ).then(handleResponse);
 }
@@ -53,10 +54,10 @@ function join(data) {
     headers: authHeader(),
     body: JSON.stringify(data)
   };
-
-  return fetch(`${process.env.API_URL}/batch/join/`, requestOptions).then(
-    handleResponse
-  );
+  return fetch(
+    `${process.env.VUE_APP_API_URL}/batch/join/`,
+    requestOptions
+  ).then(handleResponse);
 }
 
 function remove(id) {
@@ -65,9 +66,10 @@ function remove(id) {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.API_URL}/batches/${id}/`, requestOptions).then(
-    handleResponse
-  );
+  return fetch(
+    `${process.env.VUE_APP_API_URL}/batches/${id}/`,
+    requestOptions
+  ).then(handleResponse);
 }
 
 function list() {
@@ -75,9 +77,10 @@ function list() {
     method: "GET",
     headers: authHeader()
   };
-  return fetch(`${process.env.API_URL}/batches/simple/`, requestOptions).then(
-    handleResponse
-  );
+  return fetch(
+    `${process.env.VUE_APP_API_URL}/batches/simple/`,
+    requestOptions
+  ).then(handleResponse);
 }
 
 function detailedList() {
@@ -85,7 +88,7 @@ function detailedList() {
     method: "GET",
     headers: authHeader()
   };
-  return fetch(`${process.env.API_URL}/batches/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/batches/`, requestOptions).then(
     handleResponse
   );
 }

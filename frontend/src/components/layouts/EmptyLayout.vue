@@ -3,8 +3,8 @@
 </template>
 
 <script>
-import Header from "@components/Header.vue";
-import Footer from "@components/Footer.vue";
+import Header from "@/components/Header.vue";
+import Footer from "@/components/Footer.vue";
 
 export default {
   data() {
@@ -18,5 +18,5 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 </style>

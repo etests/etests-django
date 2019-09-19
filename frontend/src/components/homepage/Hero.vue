@@ -55,7 +55,7 @@ export default {
       features: [
         {
           title: "Adopted by many",
-          src: require("@assets/images/features/useful.png"),
+          src: require("@/assets/images/features/useful.png"),
           btn: {
             icon: "mdi-account-plus",
             title: "register now"
@@ -64,7 +64,7 @@ export default {
         },
         {
           title: "Useful analytics for self assesment",
-          src: require("@assets/images/features/analytics.png"),
+          src: require("@/assets/images/features/analytics.png"),
           btn: {
             icon: "mdi-youtube",
             title: "watch a demo"
@@ -73,7 +73,7 @@ export default {
         },
         {
           title: "Partner With Us",
-          src: require("@assets/images/features/money.png"),
+          src: require("@/assets/images/features/money.png"),
           btn: {
             icon: "mdi-currency-usd",
             title: "Start Earning"

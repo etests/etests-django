@@ -238,8 +238,8 @@
 </template>
 
 <script>
-import TestLayout from "@components/test/TestLayout.vue";
-import StandardLayout from "@components/layouts/StandardLayout.vue";
+import TestLayout from "@/components/test/TestLayout.vue";
+import StandardLayout from "@/components/layouts/StandardLayout.vue";
 import { mapState } from "vuex";
 
 export default {
@@ -392,7 +392,7 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 
 .submitDialog, .card{
   border: 1px solid #dadce0;

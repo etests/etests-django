@@ -69,10 +69,10 @@
 <script src="vue-google-charts/dist/vue-google-charts.browser.js"></script>
 
 <script>
-import StandardLayout from "@components/layouts/StandardLayout";
-import SectionLayout from "@components/layouts/SectionLayout";
+import StandardLayout from "@/components/layouts/StandardLayout";
+import SectionLayout from "@/components/layouts/SectionLayout";
 import { GChart } from "vue-google-charts";
-import { subjectTopics } from "@js/subjects";
+import { subjectTopics } from "@/js/subjects";
 
 export default {
   props: ["report"],
@@ -217,7 +217,7 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 .chartBox{
   width: 100%;
 }

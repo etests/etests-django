@@ -15,7 +15,7 @@ function create(data) {
     body: JSON.stringify(data)
   };
 
-  return fetch(`${process.env.API_URL}/testseries/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/testseries/`, requestOptions).then(
     handleResponse
   );
 }
@@ -26,7 +26,7 @@ function remove(id) {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.API_URL}/testseries/${id}/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/testseries/${id}/`, requestOptions).then(
     handleResponse
   );
 }
@@ -36,7 +36,7 @@ function getMy() {
     method: "GET",
     headers: authHeader()
   };
-  return fetch(`${process.env.API_URL}/testseries/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/testseries/`, requestOptions).then(
     handleResponse
   );
 }
@@ -46,7 +46,7 @@ function getAll() {
     method: "GET",
     headers: authHeader()
   };
-  return fetch(`${process.env.API_URL}/testseries/all/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/testseries/all/`, requestOptions).then(
     handleResponse
   );
 }

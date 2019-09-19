@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import StandardLayout from "@components/layouts/StandardLayout";
+import StandardLayout from "@/components/layouts/StandardLayout";
 
 export default {
   computed: {

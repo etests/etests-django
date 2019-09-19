@@ -92,8 +92,8 @@
 </template>
 
 <script>
-import StandardLayout from "@components/layouts/StandardLayout";
-import utils from "@js/utils";
+import StandardLayout from "@/components/layouts/StandardLayout";
+import utils from "@/js/utils";
 
 export default {
   data() {

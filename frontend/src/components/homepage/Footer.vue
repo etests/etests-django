@@ -6,7 +6,7 @@
           <v-layout align-center justify-center column>
             <v-flex xs12>
               <v-img
-                :src="require('@assets/images/footer/social.png')"
+                :src="require('@/assets/images/footer/social.png')"
                 width="90"
                 class="mx-auto"
                 :class="$style.sticker"
@@ -42,7 +42,7 @@
           <v-layout align-center justify-center column>
             <v-flex xs12>
               <v-img
-                :src="require('@assets/images/footer/contact.png')"
+                :src="require('@/assets/images/footer/contact.png')"
                 width="90"
                 class="mx-auto"
                 :class="$style.sticker"
@@ -68,7 +68,7 @@
           <v-layout align-center justify-center column>
             <v-flex xs12>
               <v-img
-                :src="require('@assets/images/footer/links.png')"
+                :src="require('@/assets/images/footer/links.png')"
                 width="90"
                 class="mx-auto"
                 :class="$style.sticker"
@@ -85,8 +85,8 @@
 </template>
 
 <script>
-import SectionLayout from "@components/homepage/SectionLayout.vue";
-import StepsLayout from "@components/homepage/StepsLayout.vue";
+import SectionLayout from "@/components/homepage/SectionLayout.vue";
+import StepsLayout from "@/components/homepage/StepsLayout.vue";
 
 export default {
   props: {

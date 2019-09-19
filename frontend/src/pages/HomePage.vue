@@ -10,16 +10,16 @@
 </template>
 
 <script>
-import HeroLayout from "@components/layouts/HeroLayout.vue";
-import SectionLayout from "@components/homepage/SectionLayout.vue";
+import HeroLayout from "@/components/layouts/HeroLayout.vue";
+import SectionLayout from "@/components/homepage/SectionLayout.vue";
 
-import Hero from "@components/homepage/Hero.vue";
-import Welcome from "@components/homepage/Welcome.vue";
-import QuickStart from "@components/homepage/QuickStart.vue";
-import Exams from "@components/homepage/Exams.vue";
-import Demo from "@components/homepage/Demo.vue";
-import Subscribe from "@components/homepage/Subscribe.vue";
-import Footer from "@components/homepage/Footer.vue";
+import Hero from "@/components/homepage/Hero.vue";
+import Welcome from "@/components/homepage/Welcome.vue";
+import QuickStart from "@/components/homepage/QuickStart.vue";
+import Exams from "@/components/homepage/Exams.vue";
+import Demo from "@/components/homepage/Demo.vue";
+import Subscribe from "@/components/homepage/Subscribe.vue";
+import Footer from "@/components/homepage/Footer.vue";
 
 export default {
   data() {
@@ -69,10 +69,6 @@ export default {
   mounted() {}
 };
 </script>
-
-<style module lang="stylus">
-@require '~@stylus/theme/colors';
-</style>
 
 <style scoped>
 .fullpage-wrapper {

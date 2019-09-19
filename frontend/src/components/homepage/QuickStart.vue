@@ -35,8 +35,8 @@
 </template>
 
 <script>
-import SectionLayout from "@components/homepage/SectionLayout.vue";
-import StepsLayout from "@components/homepage/StepsLayout.vue";
+import SectionLayout from "@/components/homepage/SectionLayout.vue";
+import StepsLayout from "@/components/homepage/StepsLayout.vue";
 
 export default {
   props: {

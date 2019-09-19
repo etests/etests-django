@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import SectionLayout from "@components/homepage/SectionLayout.vue";
+import SectionLayout from "@/components/homepage/SectionLayout.vue";
 
 export default {
   name: "Welcome",
@@ -38,19 +38,19 @@ export default {
       cards: [
         {
           title: "JEE MAIN",
-          src: require("@assets/images/exams/jeemain.png")
+          src: require("@/assets/images/exams/jeemain.png")
         },
         {
           title: "JEE ADVANCED",
-          src: require("@assets/images/exams/jeeadvanced.png")
+          src: require("@/assets/images/exams/jeeadvanced.png")
         },
         {
           title: "NEET",
-          src: require("@assets/images/exams/neet.png")
+          src: require("@/assets/images/exams/neet.png")
         },
         {
           title: "AIIMS",
-          src: require("@assets/images/exams/aiims.png")
+          src: require("@/assets/images/exams/aiims.png")
         }
       ]
     };

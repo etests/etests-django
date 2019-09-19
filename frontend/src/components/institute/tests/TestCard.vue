@@ -155,7 +155,7 @@
 </template>
 
 <script>
-import ObjectCard from "@components/layouts/ObjectCard";
+import ObjectCard from "@/components/layouts/ObjectCard";
 import { mapState } from "vuex";
 import { testTemplate } from "@/js/test";
 
@@ -247,7 +247,7 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 
 .deleteDialog{
   border: 1px solid #dadce0;

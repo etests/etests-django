@@ -40,7 +40,7 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 
 .displayCard{
   border: 1px solid #dadce0;

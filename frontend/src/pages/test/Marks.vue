@@ -93,7 +93,7 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/components';
+@require '~@/stylus/components';
 .marksTable{
   width: 100%;
   border-radius: 8px;

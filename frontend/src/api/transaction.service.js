@@ -11,7 +11,7 @@ function get() {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.API_URL}/transactions/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/transactions/`, requestOptions).then(
     handleResponse
   );
 }

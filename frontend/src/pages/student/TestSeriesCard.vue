@@ -43,7 +43,7 @@
 </template>
 
 <script>
-import ObjectCard from "@components/layouts/ObjectCard";
+import ObjectCard from "@/components/layouts/ObjectCard";
 import { mapState } from "vuex";
 
 export default {
@@ -82,7 +82,7 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 
 .content{
   padding: 20px;

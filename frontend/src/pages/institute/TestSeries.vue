@@ -192,12 +192,12 @@
 </template>
 
 <script>
-import StandardLayout from "@components/layouts/StandardLayout";
-import SectionLayout from "@components/layouts/SectionLayout";
+import StandardLayout from "@/components/layouts/StandardLayout";
+import SectionLayout from "@/components/layouts/SectionLayout";
 import TestSeriesCard from "./TestSeriesCard";
-import TestCard from "@components/institute/tests/TestCard";
-import DateField from "@components/fields/DateField";
-import TimeField from "@components/fields/TimeField";
+import TestCard from "@/components/institute/tests/TestCard";
+import DateField from "@/components/fields/DateField";
+import TimeField from "@/components/fields/TimeField";
 import { testTemplate } from "@/js/test";
 
 export default {

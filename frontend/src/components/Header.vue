@@ -57,7 +57,7 @@
 
       <router-link :to="{ name: 'home' }">
         <v-toolbar-title class="headline">
-          <img src="~@assets/logos/etests.png" :class="$style.logo" />
+          <img src="~@/assets/logos/etests.png" :class="$style.logo" />
           <span><strong>eTests</strong></span>
         </v-toolbar-title>
       </router-link>
@@ -351,7 +351,7 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 
 .logo{
   width: 30px;

@@ -15,7 +15,7 @@
 </template>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 
 .objectCard{
   width: 320px;

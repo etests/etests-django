@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import SectionLayout from "@components/homepage/SectionLayout.vue";
+import SectionLayout from "@/components/homepage/SectionLayout.vue";
 
 export default {
   name: "subscribe",

@@ -14,7 +14,7 @@ function batchEnroll(data) {
     body: JSON.stringify(data)
   };
 
-  return fetch(`${process.env.API_URL}/batch/enroll/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/batch/enroll/`, requestOptions).then(
     handleResponse
   );
 }
@@ -26,7 +26,7 @@ function remove(id) {
   };
 
   return fetch(
-    `${process.env.API_URL}/enrollments/${id}/`,
+    `${process.env.VUE_APP_API_URL}/enrollments/${id}/`,
     requestOptions
   ).then(handleResponse);
 }
@@ -37,7 +37,7 @@ function getAll() {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.API_URL}/enrollments/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/enrollments/`, requestOptions).then(
     handleResponse
   );
 }

@@ -25,7 +25,7 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 
 .section{
     font-family: 'Product Sans',Roboto,Arial,sans-serif;

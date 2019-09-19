@@ -90,7 +90,7 @@ class TestSeries(models.Model):
     date_added = models.DateField(auto_now_add = True)
     slug = models.SlugField(unique = True, editable = False)
     visible = models.BooleanField(default = False)
-    exam = models.ForeignKey(Exam, related_name = 'test_series', blank = True, null = True, on_delete = models.SET_NULL)
+    exams = models.ManyToManyField(Exam, related_name = 'test_series', blank = True)
     institute = models.ForeignKey(Institute, related_name = 'test_series', blank = True, null = True, on_delete = models.CASCADE)
     registered_students = models.ManyToManyField(Student, blank = True)
     access_code = models.ForeignKey(AccessCode, related_name = 'test_series', blank = True, null = True, on_delete = models.SET_NULL)

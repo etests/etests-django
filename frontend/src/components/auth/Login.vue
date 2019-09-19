@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import FlexibleCardLayout from "@components/layouts/FlexibleCardLayout.vue";
+import FlexibleCardLayout from "@/components/layouts/FlexibleCardLayout.vue";
 
 export default {
   data: function() {

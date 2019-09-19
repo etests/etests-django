@@ -101,7 +101,7 @@
       <template slot="text-image">
         <v-img
           v-if="currentQuestion.image"
-          :src="require(`@assets/logos/${currentQuestion.image}`)"
+          :src="require(`@/assets/logos/${currentQuestion.image}`)"
           class="mb-3"
         ></v-img>
         <v-chip color="grey darken-2" outline small>
@@ -317,8 +317,8 @@
 </template>
 
 <script>
-import TestLayout from "@components/test/TestLayout.vue";
-import StandardLayout from "@components/layouts/StandardLayout.vue";
+import TestLayout from "@/components/test/TestLayout.vue";
+import StandardLayout from "@/components/layouts/StandardLayout.vue";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { mapState } from "vuex";
 
@@ -574,7 +574,7 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 
 .submitDialog, .card{
   border: 1px solid #dadce0;

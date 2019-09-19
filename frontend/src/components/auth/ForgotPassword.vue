@@ -16,7 +16,7 @@
 <script>
 import { validationMixin } from "vuelidate";
 import { required, email } from "vuelidate/lib/validators";
-import FlexibleCardLayout from "@components/layouts/FlexibleCardLayout.vue";
+import FlexibleCardLayout from "@/components/layouts/FlexibleCardLayout.vue";
 
 export default {
   mixins: [validationMixin],

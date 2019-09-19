@@ -256,7 +256,7 @@
 </template>
 
 <script>
-import ObjectCard from "@components/layouts/ObjectCard";
+import ObjectCard from "@/components/layouts/ObjectCard";
 // import { XlsxRead, XLsxJson } from "vue-xlsx";
 import { mapState } from "vuex";
 

@@ -17,7 +17,7 @@ function get(id) {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.API_URL}/tests/${id}/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/tests/${id}/`, requestOptions).then(
     handleResponse
   );
 }
@@ -29,7 +29,7 @@ function create(data) {
     body: JSON.stringify(data)
   };
 
-  return fetch(`${process.env.API_URL}/create-test/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/create-test/`, requestOptions).then(
     handleResponse
   );
 }
@@ -41,7 +41,7 @@ function update(data) {
     body: JSON.stringify(data)
   };
 
-  return fetch(`${process.env.API_URL}/tests/${data.id}/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/tests/${data.id}/`, requestOptions).then(
     handleResponse
   );
 }
@@ -52,7 +52,7 @@ function remove(id) {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.API_URL}/tests/${id}/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/tests/${id}/`, requestOptions).then(
     handleResponse
   );
 }
@@ -62,7 +62,7 @@ function getAll() {
     method: "GET",
     headers: authHeader()
   };
-  return fetch(`${process.env.API_URL}/tests/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/tests/`, requestOptions).then(
     handleResponse
   );
 }
@@ -73,7 +73,7 @@ function generateRanks(id) {
     headers: authHeader()
   };
   return fetch(
-    `${process.env.API_URL}/generate-ranks/${id}/`,
+    `${process.env.VUE_APP_API_URL}/generate-ranks/${id}/`,
     requestOptions
   ).then(handleResponse);
 }
@@ -83,7 +83,7 @@ function getRankList(id) {
     method: "GET",
     headers: authHeader()
   };
-  return fetch(`${process.env.API_URL}/ranklist/${id}/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/ranklist/${id}/`, requestOptions).then(
     handleResponse
   );
 }

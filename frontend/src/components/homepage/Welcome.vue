@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import SectionLayout from "@components/homepage/SectionLayout.vue";
+import SectionLayout from "@/components/homepage/SectionLayout.vue";
 
 export default {
   name: "Welcome",
@@ -35,19 +35,19 @@ export default {
       cards: [
         {
           title: "Create online tests",
-          src: require("@assets/images/features/create.png")
+          src: require("@/assets/images/features/create.png")
         },
         {
           title: "Attempt online tests",
-          src: require("@assets/images/features/attempt.png")
+          src: require("@/assets/images/features/attempt.png")
         },
         {
           title: "Detailed analysis of tests",
-          src: require("@assets/images/features/analysis.png")
+          src: require("@/assets/images/features/analysis.png")
         },
         {
           title: "Sell your practice tests",
-          src: require("@assets/images/features/sell.png")
+          src: require("@/assets/images/features/sell.png")
         }
       ]
     };

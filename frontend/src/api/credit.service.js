@@ -11,7 +11,7 @@ function get(id) {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.API_URL}/credit-used/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/credit-used/`, requestOptions).then(
     handleResponse
   );
 }

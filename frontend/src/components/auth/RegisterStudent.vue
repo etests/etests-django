@@ -127,7 +127,7 @@
 
 <script>
 import { validationMixin } from "vuelidate";
-import FlexibleCardLayout from "@components/layouts/FlexibleCardLayout.vue";
+import FlexibleCardLayout from "@/components/layouts/FlexibleCardLayout.vue";
 
 import {
   required,

@@ -17,7 +17,10 @@
         <v-layout row wrap align-center pa-3>
           <ObjectCard v-for="test in selectedTestSeries.tests" :key="test.id">
             <div slot="content" :class="$style.content">
-              <div :class="$style.title">{{ test.name }} <br /></div>
+              <div :class="$style.title">
+                {{ test.name }}
+                <br />
+              </div>
               <v-divider class="my-3" />
               <v-icon color="blue" small>mdi-calendar</v-icon>
               {{ formatDate(test.activation_time) }}
@@ -26,9 +29,7 @@
               <v-card-actions>
                 <v-layout row fill-height py-2>
                   <v-flex xs4>
-                    <v-btn large color="primary" flat round>
-                      {{ test.time_alotted }}
-                    </v-btn>
+                    <v-btn large color="primary" flat round>{{ test.time_alotted }}</v-btn>
                   </v-flex>
                 </v-layout>
               </v-card-actions>
@@ -49,19 +50,15 @@
           <v-btn icon dark @click="examDialog = false">
             <v-icon>close</v-icon>
           </v-btn>
-          <v-toolbar-title
-            >{{ selectedExam.name }} Question Banks</v-toolbar-title
-          >
+          <v-toolbar-title>{{ selectedExam.name }} Question Banks</v-toolbar-title>
         </v-toolbar>
 
         <v-layout row wrap align-center pa-3>
-          <ObjectCard
-            v-for="testSeries in selectedExam.test_series"
-            :key="testSeries.id"
-          >
+          <ObjectCard v-for="testSeries in selectedExam.test_series" :key="testSeries.id">
             <div slot="content" :class="$style.content">
               <div :class="$style.title">
-                {{ testSeries.name }} <br />
+                {{ testSeries.name }}
+                <br />
                 <span class="body-1 mx-1">{{ testSeries.institute.name }}</span>
               </div>
               <v-divider class="my-3" />
@@ -72,15 +69,11 @@
               <v-card-actions>
                 <v-layout row fill-height py-2>
                   <v-flex xs4>
-                    <v-btn large color="blue" flat>
-                      &#8377; {{ testSeries.price }}
-                    </v-btn>
+                    <v-btn large color="blue" flat>&#8377; {{ testSeries.price }}</v-btn>
                   </v-flex>
 
                   <v-flex xs4>
-                    <v-btn round outline color="primary">
-                      Buy
-                    </v-btn>
+                    <v-btn round outline color="primary">Buy</v-btn>
                   </v-flex>
                   <v-flex xs4>
                     <v-btn
@@ -91,9 +84,7 @@
                         selectedTestSeries = testSeries;
                         viewDialog = true;
                       "
-                    >
-                      View
-                    </v-btn>
+                    >View</v-btn>
                   </v-flex>
                 </v-layout>
               </v-card-actions>
@@ -118,20 +109,18 @@
       <v-img
         class="white--text"
         height="170px"
-        :src="require(`@assets/images/exams/${exam.image}`)"
+        :src="require(`@/assets/images/exams/${exam.image}`)"
       />
-      <v-card-title class="subheading">
-        {{ exam.name }}
-      </v-card-title>
+      <v-card-title class="subheading">{{ exam.name }}</v-card-title>
     </v-card>
   </StandardLayout>
 </template>
 
 <script>
-import StandardLayout from "@components/layouts/StandardLayout";
-import ObjectCard from "@components/layouts/ObjectCard";
+import StandardLayout from "@/components/layouts/StandardLayout";
+import ObjectCard from "@/components/layouts/ObjectCard";
 import { mapState } from "vuex";
-import utils from "@js/utils";
+import utils from "@/js/utils";
 
 export default {
   data() {
@@ -180,42 +169,43 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 
-.dialog{
+.dialog {
   border: 1px solid #dadce0;
   border-radius: 5px;
-  font-family: 'Product Sans Light',Roboto,Arial,sans-serif;
+  font-family: 'Product Sans Light', Roboto, Arial, sans-serif;
   text-align: left;
-  .title{
+
+  .title {
     font-size: 1.375rem;
     line-height: 1.75rem;
     color: #5e5766;
   }
 }
 
-.card{
-    text-align: center;
-    border-radius: 8px;
-    height: 220px;
-    width: 270px;
-    margin: 10px;
-    cursor: pointer;
+.card {
+  text-align: center;
+  border-radius: 8px;
+  height: 220px;
+  width: 270px;
+  margin: 10px;
+  cursor: pointer;
 }
 
-
-
-.content{
+.content {
   padding: 20px;
   min-height: 160px;
   background-color: #fafafa;
   border-radius: 8px 8px 0 0;
   text-align: left;
-  &:hover{
-      background-color: #f5f5f5;
+
+  &:hover {
+    background-color: #f5f5f5;
   }
 }
-.title{
+
+.title {
   text-align: left;
   font-size: 1.375rem;
   line-height: 1.75rem;

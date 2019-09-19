@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import StandardLayout from "@components/layouts/StandardLayout";
-import SectionLayout from "@components/layouts/SectionLayout";
+import StandardLayout from "@/components/layouts/StandardLayout";
+import SectionLayout from "@/components/layouts/SectionLayout";
 import Analysis from "./Analysis";
 import Marks from "./Marks";
 
@@ -43,5 +43,5 @@ export default {
 };
 </script>
 <style module lang="stylus">
-@require '~@stylus/components';
+@require '~@/stylus/components';
 </style>

@@ -14,7 +14,7 @@ function get(id) {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.API_URL}/get-session/${id}/`, requestOptions)
+  return fetch(`${process.env.VUE_APP_API_URL}/get-session/${id}/`, requestOptions)
     .then(handleResponse)
     .then(data => {
       if (data) {
@@ -31,7 +31,7 @@ function update(data) {
     body: JSON.stringify(data)
   };
   return fetch(
-    `${process.env.API_URL}/update-session/${data.id}/`,
+    `${process.env.VUE_APP_API_URL}/update-session/${data.id}/`,
     requestOptions
   ).then(handleResponse);
 }
@@ -42,7 +42,7 @@ function remove(id) {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.API_URL}/update-session/${id}/`, requestOptions)
+  return fetch(`${process.env.VUE_APP_API_URL}/update-session/${id}/`, requestOptions)
     .then(handleResponse)
     .then(_ => {
       localStorage.removeItem("session");
@@ -54,7 +54,7 @@ function getAll() {
     method: "GET",
     headers: authHeader()
   };
-  return fetch(`${process.env.API_URL}/get-sessions/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/get-sessions/`, requestOptions).then(
     handleResponse
   );
 }

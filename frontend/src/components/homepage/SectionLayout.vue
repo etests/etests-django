@@ -29,7 +29,7 @@ export default {
 };
 </script>
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 .section{
   padding: 70px 10px 20px;
 

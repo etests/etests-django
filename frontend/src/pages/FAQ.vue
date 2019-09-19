@@ -2,22 +2,14 @@
   <StandardLayout>
     <v-flex xs12>
       <v-card class="elevation-2">
-        <v-card-title class="title">
-          FAQ
-        </v-card-title>
+        <v-card-title class="title">FAQ</v-card-title>
         <v-expansion-panel>
-          <v-expansion-panel-content
-            :class="$style.stepCard"
-            v-for="(step, i) in steps"
-            :key="i"
-          >
+          <v-expansion-panel-content :class="$style.stepCard" v-for="(step, i) in steps" :key="i">
             <template v-slot:header>
               <div :class="$style.step">{{ step.title }}</div>
             </template>
             <v-card>
-              <v-card-text :class="$style.description">
-                {{ step.description }}
-              </v-card-text>
+              <v-card-text :class="$style.description">{{ step.description }}</v-card-text>
             </v-card>
           </v-expansion-panel-content>
         </v-expansion-panel>
@@ -27,7 +19,7 @@
 </template>
 
 <script>
-import StandardLayout from "@components/layouts/StandardLayout";
+import StandardLayout from "@/components/layouts/StandardLayout";
 
 export default {
   data() {
@@ -58,25 +50,26 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 
-.stepCard{
-    border-radius: 8px !important;
-    font-family: 'Product Sans Light',Roboto,Arial,sans-serif;
+.stepCard {
+  border-radius: 8px !important;
+  font-family: 'Product Sans Light', Roboto, Arial, sans-serif;
 
-  .step{
-      font-size: 1.2rem;
-      margin: 8px auto;
+  .step {
+    font-size: 1.2rem;
+    margin: 8px auto;
   }
-  .title{
+
+  .title {
     font-size: 1.875rem;
     line-height: 1.75rem;
     color: #202124;
   }
 
-  .description{
+  .description {
     text-align: left;
-    letter-spacing: .014em;
+    letter-spacing: 0.014em;
     font-size: 1.08rem;
     line-height: 1.25rem;
     color: #5f6368;

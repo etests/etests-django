@@ -15,8 +15,8 @@
 </template>
 
 <script>
-import StandardLayout from "@components/layouts/StandardLayout";
-import TextCard from "@components/layouts/TextCard";
+import StandardLayout from "@/components/layouts/StandardLayout";
+import TextCard from "@/components/layouts/TextCard";
 
 export default {
   data() {
@@ -46,5 +46,5 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 </style>

@@ -1,6 +1,6 @@
 <template>
-  <div id="app" class="text-xs-center">
-    <v-app class="white">
+  <div id="app">
+    <v-app class="white text-xs-center">
       <Notification position="top center" />
       <vue-progress-bar></vue-progress-bar>
       <router-view />
@@ -14,11 +14,9 @@ import { mapState } from "vuex";
 export default {
   name: "app",
   computed: {
-    alert() {
-      return this.$store.state.alert;
-    },
     ...mapState({
-      alertType: state => state.alert.type
+      alertType: state => state.alert.type,
+      alert: state => state.alert
     })
   },
   watch: {
@@ -62,7 +60,3 @@ export default {
   }
 };
 </script>
-
-<style module lang="stylus">
-@require '~@stylus/theme/colors';
-</style>

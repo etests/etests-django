@@ -61,8 +61,8 @@
 </template>
 
 <script>
-import StandardLayout from "@components/layouts/StandardLayout";
-import SectionLayout from "@components/layouts/SectionLayout";
+import StandardLayout from "@/components/layouts/StandardLayout";
+import SectionLayout from "@/components/layouts/SectionLayout";
 
 export default {
   data() {

@@ -100,7 +100,7 @@
       <template slot="text-image">
         <v-img
           v-if="currentQuestion.image"
-          :src="require(`@assets/logos/${currentQuestion.image}`)"
+          :src="require(`@/assets/logos/${currentQuestion.image}`)"
           class="mb-3"
         ></v-img>
         <v-chip color="grey darken-2" outline small>
@@ -313,11 +313,11 @@
 </template>
 
 <script>
-import TestLayout from "@components/test/TestLayout.vue";
-import StandardLayout from "@components/layouts/StandardLayout.vue";
+import TestLayout from "@/components/test/TestLayout.vue";
+import StandardLayout from "@/components/layouts/StandardLayout.vue";
 import Marks from "./Marks";
 import Analysis from "./Analysis";
-import { demoSession } from "@js/demoTest";
+import { demoSession } from "@/js/demoTest";
 
 export default {
   data() {
@@ -678,7 +678,7 @@ export default {
     session: {
       deep: true,
       handler(newSession, oldSession) {
-        if (!this.oldSession.completed) {
+        if (!this.oldSession || !this.oldSession.completed) {
           if (newSession.duration <= 0 && !newSession.completed) {
             this.submitTest();
             this.session.completed = true;
@@ -744,7 +744,7 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 
 .submitDialog, .card{
   border: 1px solid #dadce0;

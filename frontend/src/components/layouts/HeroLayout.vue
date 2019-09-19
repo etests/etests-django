@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import Header from "@components/Header.vue";
+import Header from "@/components/Header.vue";
 
 export default {
   data() {
@@ -28,7 +28,7 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 
 body{
   margin: 0;

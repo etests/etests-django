@@ -9,8 +9,8 @@
 </template>
 
 <script>
-import StandardLayout from "@components/layouts/StandardLayout";
-import Login from "@components/Login";
+import StandardLayout from "@/components/layouts/StandardLayout";
+import Login from "@/components/Login";
 
 export default {
   props: {

@@ -11,13 +11,15 @@ export const userService = {
 };
 
 function login(username, password) {
+  var x = process.env.VUE_APP_API_URL;
+  console.log("faf", x);
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password })
   };
 
-  return fetch(`${process.env.API_URL}/login/`, requestOptions)
+  return fetch(`${process.env.VUE_APP_API_URL}/login/`, requestOptions)
     .then(handleResponse)
     .then(data => {
       if (data.token) {
@@ -37,7 +39,7 @@ function refresh() {
       token: JSON.parse(localStorage.getItem("token"))
     }
   };
-  return fetch(`${process.env.API_URL}/refresh/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/refresh/`, requestOptions).then(
     response => {
       return response;
     }
@@ -51,7 +53,7 @@ function register(data) {
     body: JSON.stringify(data)
   };
 
-  return fetch(`${process.env.API_URL}/register/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/register/`, requestOptions).then(
     handleResponse
   );
 }
@@ -63,9 +65,10 @@ function updateProfile(data) {
     body: JSON.stringify(data)
   };
 
-  return fetch(`${process.env.API_URL}/profile/update/`, requestOptions).then(
-    handleResponse
-  );
+  return fetch(
+    `${process.env.VUE_APP_API_URL}/profile/update/`,
+    requestOptions
+  ).then(handleResponse);
 }
 
 function logout() {
@@ -73,7 +76,7 @@ function logout() {
     method: "POST"
   };
 
-  return fetch(`${process.env.API_URL}/logout/`, requestOptions)
+  return fetch(`${process.env.VUE_APP_API_URL}/logout/`, requestOptions)
     .then(handleResponse)
     .then(function() {
       localStorage.removeItem("user");
@@ -87,7 +90,7 @@ function getAll() {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.API_URL}/users/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/users/`, requestOptions).then(
     handleResponse
   );
 }

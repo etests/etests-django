@@ -191,7 +191,7 @@
       <template slot="text-image">
         <v-img
           v-if="currentQuestion.image"
-          :src="require(`@assets/logos/${currentQuestion.image}`)"
+          :src="require(`@/assets/logos/${currentQuestion.image}`)"
           class="mb-3"
         ></v-img>
         <span :class="$style.questionText">
@@ -524,10 +524,10 @@
 </template>
 
 <script>
-import TestLayout from "@components/test/TestLayout.vue";
-import StandardLayout from "@components/layouts/StandardLayout.vue";
-import { subjectTopics } from "@js/subjects";
-import { demoTest } from "@js/demoEditTest";
+import TestLayout from "@/components/test/TestLayout.vue";
+import StandardLayout from "@/components/layouts/StandardLayout.vue";
+import { subjectTopics } from "@/js/subjects";
+import { demoTest } from "@/js/demoEditTest";
 
 export default {
   data() {
@@ -814,7 +814,7 @@ export default {
 </script>
 
 <style module lang="stylus">
-@require '~@stylus/theme/colors';
+@require '~@/stylus/theme/colors';
 .questionInfo{
   border-bottom: 1px solid grey !important;
 }

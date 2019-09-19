@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import DashboardLayout from "@components/layouts/DashboardLayout.vue";
+import DashboardLayout from "@/components/layouts/DashboardLayout.vue";
 
 export default {
   data() {
@@ -12,42 +12,42 @@ export default {
       controls: [
         {
           name: "Tests",
-          image: require("@assets/images/student/dashboard/test.png"),
+          image: require("@/assets/images/student/dashboard/test.png"),
           link: { path: "tests" }
         },
         // {
         //   name: "Test Series",
-        //   image: require("@assets/images/student/dashboard/testseries.png"),
+        //   image: require("@/assets/images/student/dashboard/testseries.png"),
         //   link: { name: "testseries" }
         // },
         {
           name: "My Question Banks",
-          image: require("@assets/images/student/dashboard/testseries.png"),
+          image: require("@/assets/images/student/dashboard/testseries.png"),
           link: { path: "question-banks" }
         },
         {
           name: "Notifications",
-          image: require("@assets/images/student/dashboard/notifications.png"),
+          image: require("@/assets/images/student/dashboard/notifications.png"),
           link: { path: "notifications" }
         },
         // {
         //   name: "Discuss",
-        //   image: require("@assets/images/student/dashboard/discuss.png"),
+        //   image: require("@/assets/images/student/dashboard/discuss.png"),
         //   link: { name: "discuss" }
         // },
         // {
         //   name: "Progress Report",
-        //   image: require("@assets/images/student/dashboard/analytics.png"),
+        //   image: require("@/assets/images/student/dashboard/analytics.png"),
         //   link: { path: "report" }
         // },
         // {
         //   name: "Schedule",
-        //   image: require("@assets/images/student/dashboard/schedule.png"),
+        //   image: require("@/assets/images/student/dashboard/schedule.png"),
         //   link: { path: "schedule" }
         // },
         {
           name: "Batches",
-          image: require("@assets/images/student/dashboard/groups.png"),
+          image: require("@/assets/images/student/dashboard/groups.png"),
           link: { path: "batches" }
         }
       ]

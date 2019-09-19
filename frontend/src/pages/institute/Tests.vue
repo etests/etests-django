@@ -296,12 +296,12 @@
 </template>
 
 <script>
-import StandardLayout from "@components/layouts/StandardLayout";
+import StandardLayout from "@/components/layouts/StandardLayout";
 import RankList from "./RankList";
-import DateField from "@components/fields/DateField";
-import TimeField from "@components/fields/TimeField";
+import DateField from "@/components/fields/DateField";
+import TimeField from "@/components/fields/TimeField";
 import { mapState } from "vuex";
-import utils from "@js/utils";
+import utils from "@/js/utils";
 import { testTemplate } from "@/js/test";
 
 export default {

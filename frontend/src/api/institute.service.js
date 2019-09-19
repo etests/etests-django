@@ -13,7 +13,7 @@ function getFollowing() {
     headers: authHeader()
   };
   return fetch(
-    `${process.env.API_URL}/institutes/following/`,
+    `${process.env.VUE_APP_API_URL}/institutes/following/`,
     requestOptions
   ).then(handleResponse);
 }
@@ -24,7 +24,7 @@ function follow(id) {
     headers: authHeader()
   };
   return fetch(
-    `${process.env.API_URL}/institute/follow/${id}/`,
+    `${process.env.VUE_APP_API_URL}/institute/follow/${id}/`,
     requestOptions
   ).then(handleResponse);
 }
@@ -35,7 +35,7 @@ function getAll() {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.API_URL}/institutes/`, requestOptions).then(
+  return fetch(`${process.env.VUE_APP_API_URL}/institutes/`, requestOptions).then(
     handleResponse
   );
 }
