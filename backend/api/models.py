@@ -106,7 +106,7 @@ class TestSeries(models.Model):
         verbose_name_plural = 'Test Series'
     
     def exams(self):
-        return {test.exam.id for test in self.tests.all()}
+        return {test.exam.id for test in self.tests.all() if test.exam}
 
     def __str__(self):
         return self.name

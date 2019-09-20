@@ -59,7 +59,7 @@
             </v-btn>
           </v-flex>
         </v-layout>
-        <v-flex xs12 class="px-3">
+        <v-layout row wrap align-center px-1>
           <ObjectCard
             v-for="testSeries in filteredTestSeries"
             :key="testSeries.id"
@@ -106,7 +106,7 @@
               </v-card-actions>
             </div>
           </ObjectCard>
-        </v-flex>
+        </v-layout>
       </v-card>
     </v-flex>
   </StandardLayout>
