@@ -29,7 +29,9 @@
               <v-card-actions>
                 <v-layout row fill-height py-2>
                   <v-flex xs4>
-                    <v-btn large color="primary" flat round>{{ test.time_alotted }}</v-btn>
+                    <v-btn large color="primary" flat round>{{
+                      test.time_alotted
+                    }}</v-btn>
                   </v-flex>
                 </v-layout>
               </v-card-actions>
@@ -50,11 +52,16 @@
           <v-btn icon dark @click="examDialog = false">
             <v-icon>close</v-icon>
           </v-btn>
-          <v-toolbar-title>{{ selectedExam.name }} Question Banks</v-toolbar-title>
+          <v-toolbar-title
+            >{{ selectedExam.name }} Question Banks</v-toolbar-title
+          >
         </v-toolbar>
 
         <v-layout row wrap align-center pa-3>
-          <ObjectCard v-for="testSeries in selectedExam.test_series" :key="testSeries.id">
+          <ObjectCard
+            v-for="testSeries in selectedExam.test_series"
+            :key="testSeries.id"
+          >
             <div slot="content" :class="$style.content">
               <div :class="$style.title">
                 {{ testSeries.name }}
@@ -69,7 +76,9 @@
               <v-card-actions>
                 <v-layout row fill-height py-2>
                   <v-flex xs4>
-                    <v-btn large color="blue" flat>&#8377; {{ testSeries.price }}</v-btn>
+                    <v-btn large color="blue" flat
+                      >&#8377; {{ testSeries.price }}</v-btn
+                    >
                   </v-flex>
 
                   <v-flex xs4>
@@ -84,7 +93,8 @@
                         selectedTestSeries = testSeries;
                         viewDialog = true;
                       "
-                    >View</v-btn>
+                      >View</v-btn
+                    >
                   </v-flex>
                 </v-layout>
               </v-card-actions>

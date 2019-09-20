@@ -20,25 +20,30 @@
             mdi-plus-circle
           </v-icon>
           <template v-else>
-            <v-text-field
-              autofocus
-              placeholder="Name"
-              v-model="testSeries.name"
-              :class="$style.editTitle"
-              v-if="editing"
-            />
-            <v-text-field
-              v-model="testSeries.description"
-              :class="$style.editDescription"
-              v-if="editing"
-            />
+            <div class="px-3 py-1 text-xs-left">
+              <input
+                type="text"
+                autofocus
+                placeholder="Question Bank Name"
+                v-model="testSeries.name"
+                :class="$style.textBox"
+                v-if="editing"
+              />
+              <input
+                type="text"
+                v-model="testSeries.price"
+                placeholder="Price"
+                :class="$style.textBox"
+                v-if="editing"
+              />
+            </div>
           </template>
         </template>
         <template v-else>
-          <v-card-title :class="$style.title">
+          <v-card-title class="title grey--text">
             {{ testSeries.name }}
           </v-card-title>
-          <v-card-text :class="$style.description">
+          <v-card-text>
             {{ testSeries.text }}
           </v-card-text>
         </template>
@@ -72,7 +77,7 @@
 
             <v-dialog v-model="deleteDialog" max-width="400">
               <v-card :class="$style.deleteDialog">
-                <v-card-title :class="$style.title">
+                <v-card-title class="$style.title">
                   Are you sure you want to delete {{ testSeries.name }}
                 </v-card-title>
                 <v-card-text>
@@ -124,14 +129,13 @@
 
 <script>
 import ObjectCard from "@/components/layouts/ObjectCard";
-import { mapState } from "vuex";
 
 export default {
   props: {
     testSeries: {
       required: false,
       default: () => {
-        return { name: "", description: "", new: true };
+        return { name: "", price: "", new: true };
       },
       type: Object
     },
@@ -151,19 +155,9 @@ export default {
       meta: {
         type: "question bank",
         action: this.new ? "testSeries/create" : "testSeries/edit",
-        new: this.new,
-        data: {
-          name: "",
-          price: 0,
-          questions: [{}]
-        }
+        new: this.new
       }
     };
-  },
-  computed: {
-    ...mapState({
-      status: state => state.testSeries.status
-    })
   },
   components: {
     ObjectCard
@@ -181,8 +175,10 @@ export default {
     },
     save(e) {
       const { dispatch } = this.$store;
-      var data = this.meta.data;
-      data.name = this.testSeries.name;
+      var data = {
+        name: this.testSeries.name,
+        price: parseInt(this.testSeries.price)
+      };
       var unwatch = this.$watch("status", this.updateStatus);
       dispatch(this.meta.action, data).then((this.editing = false), unwatch);
     },
@@ -205,7 +201,7 @@ export default {
 .deleteDialog{
   border: 1px solid #dadce0;
   border-radius: 5px;
-  font-family: 'Product Sans Light',Roboto,Arial,sans-serif;
+  font-family: 'Product Sans Light'
   text-align: left;
   .title{
     font-size: 1.375rem;
@@ -222,30 +218,17 @@ export default {
   &:hover{
       background-color: #f5f5f5;
   }
-  }
-
-.title, .editTitle{
-  text-align: left;
-  font-size: 1.375rem;
-  line-height: 1.75rem;
-  color: #7e777e;
 }
 
-.editTitle, .editDescription{
-  padding: 12px 15px 0;
-  margin: 0;
-  input{
-    color: #7e777e !important;
-    letter-spacing: 0.06rem;
-    border-color: #eee !important;
-  }
-}
-
-.description, .editDescription{
-  letter-spacing: .014em;
-  text-align: left;
-  font-size: 0.9rem;
-  line-height: 1.25rem;
-  color: #5f6368;
+.textBox{
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: white;
+  width: 100%;
+  font: "Segoe UI Light";
+  font-size: 15px;
+  margin: auto;
+  margin-top: 20px;
+  padding: 8px;
 }
 </style>

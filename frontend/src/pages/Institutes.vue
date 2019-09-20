@@ -2,11 +2,15 @@
   <StandardLayout>
     <v-dialog v-model="followDialog" max-width="400">
       <v-card :class="$style.dialog">
-        <v-card-title :class="$style.title">Follow {{ selectedInstitute.name }}</v-card-title>
+        <v-card-title :class="$style.title">
+          Follow {{ selectedInstitute.name }}
+        </v-card-title>
         <template v-if="status.following && status.id === selectedInstitute.id">
           <v-card-text>Please wait...</v-card-text>
         </template>
-        <template v-else-if="status.followed && status.id === selectedInstitute.id">
+        <template
+          v-else-if="status.followed && status.id === selectedInstitute.id"
+        >
           <v-card-text>{{ status.message }}</v-card-text>
         </template>
         <template v-else>
@@ -26,7 +30,9 @@
             "
             color="info"
             @click="follow(selectedInstitute.id)"
-          >Follow</v-btn>
+          >
+            Follow
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -56,7 +62,9 @@
               <v-card-actions>
                 <v-layout row fill-height py-2>
                   <v-flex xs4>
-                    <v-btn large color="primary" flat round>{{ test.time_alotted }}</v-btn>
+                    <v-btn large color="primary" flat round>{{
+                      test.time_alotted
+                    }}</v-btn>
                   </v-flex>
                 </v-layout>
               </v-card-actions>
@@ -81,15 +89,21 @@
           <v-spacer></v-spacer>
           <template v-if="loggedIn">
             <v-btn
-              color="blue"
-              v-if="showFollowing(selectedInstitute.id)"
+              class="white primary--text"
+              round
+              dark
               flat
+              v-if="showFollowing(selectedInstitute.id)"
               @click="followDialog = true"
-            >Follow</v-btn>
+              >Follow</v-btn
+            >
           </template>
         </v-toolbar>
         <v-layout row wrap align-center pa-3>
-          <ObjectCard v-for="testSeries in selectedInstitute.test_series" :key="testSeries.id">
+          <ObjectCard
+            v-for="testSeries in selectedInstitute.test_series"
+            :key="testSeries.id"
+          >
             <div slot="content" :class="$style.content">
               <div :class="$style.title">
                 {{ testSeries.name }}
@@ -97,13 +111,17 @@
               </div>
               <v-divider class="my-3" />
               <v-icon color="blue" small>mdi-file-outline</v-icon>
-              {{ testSeries.tests.length }} tests ({{ testSeries.exam }})
+              {{ testSeries.tests.length }} tests ({{
+                testSeries.exams.join(", ")
+              }})
             </div>
             <div slot="actions">
               <v-card-actions>
                 <v-layout row fill-height py-2>
                   <v-flex xs4>
-                    <v-btn large color="blue" flat>&#8377; {{ testSeries.price }}</v-btn>
+                    <v-btn large color="blue" flat
+                      >&#8377; {{ testSeries.price }}</v-btn
+                    >
                   </v-flex>
 
                   <v-flex xs4>
@@ -118,7 +136,8 @@
                         selectedTestSeries = testSeries;
                         viewDialog = true;
                       "
-                    >View</v-btn>
+                      >View</v-btn
+                    >
                   </v-flex>
                 </v-layout>
               </v-card-actions>
@@ -134,14 +153,34 @@
     <v-card
       v-for="institute in filteredInstitutes"
       :key="institute.id"
-      @click="
-        selectedInstitute = institute;
-        instituteDialog = true;
-      "
       :class="$style.card"
     >
-      <v-img class="white--text" height="170px" :src="institute.src" />
-      <v-card-title class="subheading">{{ institute.name }}</v-card-title>
+      <v-img
+        :class="$style.img"
+        height="170px"
+        :src="institute.src"
+        @click="
+          selectedInstitute = institute;
+          instituteDialog = true;
+        "
+      />
+      <span class="subheading mr-5">{{ institute.name }}</span>
+      <v-btn
+        class="white primary--text"
+        round
+        dark
+        flat
+        v-if="showFollowing(institute.id)"
+        @click="
+          selectedInstitute = institute;
+          followDialog = true;
+        "
+      >
+        Follow
+      </v-btn>
+      <v-btn v-else class="white primary--text" dark flat disabled>
+        Follow
+      </v-btn>
     </v-card>
   </StandardLayout>
 </template>
@@ -249,7 +288,9 @@ export default {
   height: 220px;
   width: 270px;
   margin: 10px;
-  cursor: pointer;
+  .img{
+    cursor: pointer;
+  }
 }
 
 .content {

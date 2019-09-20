@@ -86,7 +86,6 @@
 
 <script>
 import SectionLayout from "@/components/homepage/SectionLayout.vue";
-import StepsLayout from "@/components/homepage/StepsLayout.vue";
 
 export default {
   props: {
@@ -101,8 +100,7 @@ export default {
     };
   },
   components: {
-    SectionLayout,
-    StepsLayout
+    SectionLayout
   }
 };
 </script>

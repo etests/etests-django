@@ -26,7 +26,9 @@
               <v-card-actions>
                 <v-layout row fill-height py-2>
                   <v-flex xs4>
-                    <v-btn large color="primary" flat round>{{ test.time_alotted }}</v-btn>
+                    <v-btn large color="primary" flat round>{{
+                      test.time_alotted
+                    }}</v-btn>
                   </v-flex>
                 </v-layout>
               </v-card-actions>
@@ -38,23 +40,30 @@
 
     <v-flex xs12>
       <v-card class="elevation-0">
-        <v-card-title class="title">
-          Question Banks
-          <v-spacer />
-          <div v-if="loggedIn">
+        <v-layout row wrap>
+          <v-flex xs12 md8 lg10 class="pl-3">
+            <v-text-field
+              placeholder="Search Question Banks"
+              v-model="searchTestSeries"
+            />
+            <v-spacer />
+          </v-flex>
+          <v-flex sm12 md4 lg2 v-if="loggedIn">
             <v-btn
               color="primary"
               round
               outline
               @click="$router.push(`/${user.type}/question-banks`)"
-            >See purchased question banks</v-btn>
-          </div>
-        </v-card-title>
+            >
+              my question banks
+            </v-btn>
+          </v-flex>
+        </v-layout>
         <v-flex xs12 class="px-3">
-          <v-text-field placeholder="Search Question Banks" v-model="searchTestSeries" />
-        </v-flex>
-        <v-flex xs12 class="px-3">
-          <ObjectCard v-for="testSeries in filteredTestSeries" :key="testSeries.id">
+          <ObjectCard
+            v-for="testSeries in filteredTestSeries"
+            :key="testSeries.id"
+          >
             <div slot="content" :class="$style.content">
               <div :class="$style.title">
                 {{ testSeries.name }}
@@ -63,17 +72,23 @@
               </div>
               <v-divider class="my-3" />
               <v-icon color="blue" small>mdi-file-outline</v-icon>
-              {{ testSeries.tests.length }} tests ({{ testSeries.exam }})
+              {{ testSeries.tests.length }} tests ({{
+                testSeries.exams.join(", ")
+              }})
             </div>
             <div slot="actions">
               <v-card-actions>
                 <v-layout row fill-height py-2>
                   <v-flex xs4>
-                    <v-btn large color="blue" flat>&#8377; {{ testSeries.price }}</v-btn>
+                    <v-btn large color="blue" flat
+                      >&#8377; {{ testSeries.price }}</v-btn
+                    >
                   </v-flex>
 
                   <v-flex xs4>
-                    <v-btn round outline color="primary" v-if="loggedIn">Buy</v-btn>
+                    <v-btn round outline color="primary" v-if="loggedIn"
+                      >Buy</v-btn
+                    >
                   </v-flex>
                   <v-flex xs4>
                     <v-btn
@@ -84,7 +99,8 @@
                         selectedTestSeries = testSeries;
                         viewDialog = true;
                       "
-                    >View</v-btn>
+                      >View</v-btn
+                    >
                   </v-flex>
                 </v-layout>
               </v-card-actions>

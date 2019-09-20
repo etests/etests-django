@@ -52,46 +52,58 @@
       </v-card>
     </v-dialog>
     <v-layout row wrap v-if="status.following">
-      <SectionLayout
-        v-for="institute in following"
-        :key="institute.id"
-        :heading="institute.user.name"
-      >
-        <template v-if="institute.batches.length">
-          <v-card
-            :class="$style.batchCard"
-            v-for="(batch, i) in institute.batches"
-            :key="i"
-          >
-            <v-img
-              class="white--text"
-              height="170px"
-              src="https://www.theuiaa.org/wp-content/uploads/2017/12/2018_banner.jpg"
+      <template v-if="following.length">
+        <SectionLayout
+          v-for="institute in following"
+          :key="institute.id"
+          :heading="institute.user.name"
+        >
+          <template v-if="institute.batches.length">
+            <v-card
+              :class="$style.batchCard"
+              v-for="(batch, i) in institute.batches"
+              :key="i"
             >
-              <v-card-title class="align-end fill-height">
-                {{ batch.name }}
-              </v-card-title>
-            </v-img>
-
-            <v-card-actions>
-              <v-btn
-                flat
-                color="info"
-                v-if="!institute.enrollments.includes(batch.id)"
-                @click="
-                  currentBatch = batch;
-                  joinDialog = true;
-                "
+              <v-img
+                class="white--text"
+                height="170px"
+                src="https://www.theuiaa.org/wp-content/uploads/2017/12/2018_banner.jpg"
               >
-                Join
-              </v-btn>
-              <v-btn v-else color="info" flat>
-                Open
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </template>
-      </SectionLayout>
+                <v-card-title class="align-end fill-height">
+                  {{ batch.name }}
+                </v-card-title>
+              </v-img>
+
+              <v-card-actions>
+                <v-btn
+                  flat
+                  color="info"
+                  v-if="!institute.enrollments.includes(batch.id)"
+                  @click="
+                    currentBatch = batch;
+                    joinDialog = true;
+                  "
+                >
+                  Join
+                </v-btn>
+                <v-btn v-else color="info" flat>
+                  Open
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </template>
+          <template v-else>
+            <span class="px-3">This institute has no batches.</span>
+          </template>
+        </SectionLayout>
+      </template>
+      <template v-else>
+        No institute followed. Go to
+        <router-link to="/institutes"
+          >&nbsp;institutes sections&nbsp;</router-link
+        >
+        and follow an institute to join a bacth.
+      </template>
     </v-layout>
   </StandardLayout>
 </template>

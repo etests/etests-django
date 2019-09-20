@@ -243,6 +243,7 @@ export default {
     instituteErrors() {
       const errors = [];
       if (!this.$v.institute.$dirty) return errors;
+      else return null;
     },
     emailErrors() {
       const errors = [];

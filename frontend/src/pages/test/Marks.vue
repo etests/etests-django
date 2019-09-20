@@ -52,6 +52,7 @@ export default {
   computed: {
     testName() {
       if (this.report) return this.report.test.name;
+      else return "";
     },
     marks() {
       if (this.report) return this.report.marks;
@@ -59,12 +60,15 @@ export default {
     },
     noOfSections() {
       if (this.report) return this.report.marks.maxMarks.length - 1;
+      else return 0;
     },
     sections() {
       if (this.report) return this.report.test.sections;
+      else return {};
     },
     sectionWiseMarks() {
       if (this.report) return this.report.marks.sectionWise;
+      else return {};
     },
     records() {
       var a = [];

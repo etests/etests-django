@@ -1,7 +1,11 @@
 <template>
   <SectionLayout>
-    <template slot="heading">Free Demo</template>
-    <template slot="subheading">experience all the premium features for free</template>
+    <template slot="heading"
+      >Free Demo</template
+    >
+    <template slot="subheading"
+      >experience all the premium features for free</template
+    >
     <v-layout row :wrap="isSmallScreen" justify-center slot="content">
       <v-flex xs12 md6>
         <v-sheet
@@ -17,7 +21,8 @@
             large
             color="primary"
             @click="$router.push('/demo/edit-test')"
-          >create demo test</v-btn>
+            >create demo test</v-btn
+          >
         </v-sheet>
       </v-flex>
       <v-divider class="mx-3" inset vertical v-if="!isSmallScreen" />
@@ -31,7 +36,8 @@
             large
             color="primary"
             @click="$router.push('/demo/test')"
-          >attempt demo test</v-btn>
+            >attempt demo test</v-btn
+          >
         </v-sheet>
       </v-flex>
     </v-layout>

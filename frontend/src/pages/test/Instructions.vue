@@ -4,7 +4,7 @@
       Instructions
     </v-card-title>
     <v-card-text>
-        <v-btn @click="$router.push(`/test/${id}`)">Proceed</v-btn>
+      <v-btn @click="$router.push(`/test/${id}`)">Proceed</v-btn>
     </v-card-text>
   </v-card>
 </template>
@@ -14,11 +14,18 @@ export default {
   data() {
     return {
       id: this.$route.params.id
-    }
+    };
   },
-}
+  created() {
+    if (!this.$store.state.sessions.status.exists) {
+      this.$watch("status", function(newStatus, oldStatus) {
+        this.loading = newStatus.loading;
+        this.error = newStatus.error;
+      });
+      this.$store.dispatch(`sessions/get`, this.id);
+    }
+  }
+};
 </script>
 
-<style module lang="stylus">
-
-</style>
+<style module lang="stylus"></style>

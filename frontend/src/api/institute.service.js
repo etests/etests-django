@@ -35,7 +35,8 @@ function getAll() {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.VUE_APP_API_URL}/institutes/`, requestOptions).then(
-    handleResponse
-  );
+  return fetch(
+    `${process.env.VUE_APP_API_URL}/institutes/`,
+    requestOptions
+  ).then(handleResponse);
 }

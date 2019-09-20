@@ -128,9 +128,11 @@
         </v-list>
       </v-menu>
       <template v-else>
-        <v-btn flat color="primary" @click="showLoginDialog = true">
-          Login / Register
-        </v-btn>
+        <v-toolbar-items>
+          <v-btn flat color="primary" @click="showLoginDialog = true">
+            Login / Register
+          </v-btn>
+        </v-toolbar-items>
       </template>
 
       <template v-slot:extension>

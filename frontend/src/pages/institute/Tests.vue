@@ -79,10 +79,9 @@
               </li>
               <li>
                 <a href="https://forms.gle/qvqtmpXo38xqWpq29" target="_blank">
-                  Upload
+                  Fill this Google form
                 </a>
-                a pdf or word file and we will add the questions with following
-                details: <br />
+                with the following details and we will add the questions: <br />
                 Institute Id: {{ user.id }} <br />
                 Test Id: {{ status.test.id }}
               </li>
@@ -90,12 +89,10 @@
           </v-card-text>
         </template>
         <template v-else>
-          <v-card-text>
-            Enter the following details
-          </v-card-text>
           <v-container grid-list-md>
             <v-layout column wrap>
               <v-flex xs12>
+                Enter the following details
                 <v-text-field v-model="newTest.name" label="Name" />
                 <DateField
                   v-model="newTest.activationDate"
@@ -112,14 +109,24 @@
                   type="time"
                   label="Duration"
                 />
-              </v-flex>
-              <v-flex xs12>
-                Select bacthes eligible for this test:
-                <v-checkbox
+                <v-select
+                  v-model="newTest.exam"
+                  :items="
+                    exams.map(exam => {
+                      return { text: exam.name, value: exam.id };
+                    })
+                  "
+                  label="Exam pattern"
+                />
+                <v-select
+                  multiple
                   v-model="newTest.batches"
-                  v-for="batch in batches"
-                  :key="batch.id"
-                  :label="batch.name"
+                  :items="
+                    batches.map(batch => {
+                      return { text: batch.name, value: batch.id };
+                    })
+                  "
+                  label="Eligible batches"
                 />
               </v-flex>
             </v-layout>
@@ -338,13 +345,14 @@ export default {
       dateMenu: false,
       timeMenu: false,
       newTest: {
-        name: "",
-        activationDate: "",
-        activationTime: "",
-        closingDate: "",
-        closingTime: "",
+        name: "Loo",
+        activationDate: "2013-01-01",
+        activationTime: "6:30",
+        closingDate: "2020-01-01",
+        closingTime: "6:30",
         duration: "03:00",
-        batches: []
+        batches: [],
+        exam: 0
       }
     };
   },
@@ -357,6 +365,7 @@ export default {
   created() {
     this.$store.dispatch("tests/getAll");
     this.$store.dispatch("batches/list");
+    this.$store.dispatch("exams/getAll");
   },
   computed: {
     ...mapState({
@@ -364,7 +373,8 @@ export default {
       status: state => state.tests.status,
       tests: state => state.tests.all.items,
       rankLists: state => state.tests.rankLists,
-      batches: state => state.batches.items
+      batches: state => state.batches.items,
+      exams: state => state.exams.items
     })
   },
   methods: {
@@ -391,7 +401,8 @@ export default {
         questions: testTemplate.questions,
         answers: testTemplate.answers,
         sections: testTemplate.sections,
-        batches: this.newTest.batches
+        batches: this.newTest.batches,
+        exam: this.newTest.exam
       };
       this.$store.dispatch("tests/create", data);
     },

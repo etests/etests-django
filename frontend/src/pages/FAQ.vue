@@ -4,12 +4,18 @@
       <v-card class="elevation-2">
         <v-card-title class="title">FAQ</v-card-title>
         <v-expansion-panel>
-          <v-expansion-panel-content :class="$style.stepCard" v-for="(step, i) in steps" :key="i">
+          <v-expansion-panel-content
+            :class="$style.stepCard"
+            v-for="(step, i) in steps"
+            :key="i"
+          >
             <template v-slot:header>
               <div :class="$style.step">{{ step.title }}</div>
             </template>
             <v-card>
-              <v-card-text :class="$style.description">{{ step.description }}</v-card-text>
+              <v-card-text :class="$style.description">{{
+                step.description
+              }}</v-card-text>
             </v-card>
           </v-expansion-panel-content>
         </v-expansion-panel>

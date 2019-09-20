@@ -43,10 +43,9 @@
               </li>
               <li>
                 <a href="https://forms.gle/qvqtmpXo38xqWpq29" target="_blank">
-                  Upload
+                  Fill this Google form
                 </a>
-                a pdf or word file and we will add the questions with following
-                details: <br />
+                with the following details and we will add the questions: <br />
                 Institute Id: {{ user.id }} <br />
                 Test Id: {{ status.test.id }}
               </li>
@@ -54,12 +53,10 @@
           </v-card-text>
         </template>
         <template v-else>
-          <v-card-text>
-            Enter the following details
-          </v-card-text>
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex xs12>
+                Enter the following details
                 <v-text-field v-model="newTest.name" label="Name" />
                 <DateField
                   v-model="newTest.activationDate"
@@ -73,6 +70,15 @@
                   v-model="newTest.duration"
                   type="time"
                   label="Duration"
+                />
+                <v-select
+                  v-model="newTest.exams"
+                  :items="
+                    exams.map(exam => {
+                      return { text: exam.name, value: exam.id };
+                    })
+                  "
+                  label="Exam"
                 />
               </v-flex>
             </v-layout>
@@ -175,6 +181,7 @@
       </v-card>
     </v-dialog>
     <SectionLayout heading="My Question Banks">
+      <TestSeriesCard new />
       <template v-if="myTestSeries">
         <TestSeriesCard
           v-for="(testSeries, i) in myTestSeries"
@@ -186,7 +193,6 @@
           "
         />
       </template>
-      <TestSeriesCard new />
     </SectionLayout>
   </StandardLayout>
 </template>
@@ -195,10 +201,10 @@
 import StandardLayout from "@/components/layouts/StandardLayout";
 import SectionLayout from "@/components/layouts/SectionLayout";
 import TestSeriesCard from "./TestSeriesCard";
-import TestCard from "@/components/institute/tests/TestCard";
 import DateField from "@/components/fields/DateField";
 import TimeField from "@/components/fields/TimeField";
 import { testTemplate } from "@/js/test";
+import { mapState } from "vuex";
 
 export default {
   data() {
@@ -216,23 +222,22 @@ export default {
         name: "",
         activationDate: "",
         activationTime: "",
-        duration: "03:00"
+        duration: "03:00",
+        exams: []
       }
     };
   },
   created() {
     this.$store.dispatch("testSeries/getMy");
+    this.$store.dispatch("exams/getAll");
   },
   computed: {
-    user() {
-      return this.$store.state.authentication.user;
-    },
-    status() {
-      return this.$store.state.tests.status;
-    },
-    myTestSeries() {
-      return this.$store.state.testSeries.my.items;
-    }
+    ...mapState({
+      user: state => state.authentication.user,
+      status: state => state.tests.status,
+      myTestSeries: state => state.testSeries.my.items,
+      exams: state => state.exams.items
+    })
   },
   methods: {
     createTest() {
@@ -258,7 +263,6 @@ export default {
     StandardLayout,
     SectionLayout,
     TestSeriesCard,
-    TestCard,
     DateField,
     TimeField
   }

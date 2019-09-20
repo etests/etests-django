@@ -61,10 +61,8 @@
         />
       </template>
       <template v-else>
-        <span class="subheading ml-1">
-          You have not purchased any question banks. To know more see
-          <router-link to="/faq">FAQ</router-link>
-          <br />
+        <div class="ml-2 subheading text-xs-left">
+          You have not purchased any question banks.
           <v-btn
             small
             color="primary"
@@ -74,7 +72,10 @@
           >
             Explore question banks
           </v-btn>
-        </span>
+          <br />
+          To know more see
+          <router-link to="/faq">FAQ</router-link>
+        </div>
       </template>
     </SectionLayout>
   </StandardLayout>

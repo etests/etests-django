@@ -14,7 +14,7 @@
           Login to eTests
         </v-card-title>
         <v-card-text>
-          <form :class="$style.form">
+          <form :class="$style.form" @keyup.enter="login">
             <v-text-field v-model="username" label="Email or phone" required />
             <v-text-field
               :append-icon="showPassword ? 'visibility' : 'visibility_off'"
@@ -30,14 +30,14 @@
         </v-card-text>
         <v-card-actions>
           <v-layout justify-center>
-            <v-btn round color="info" @click="login">Login</v-btn>
+            <v-btn round color="primary" @click="login">Login</v-btn>
           </v-layout>
         </v-card-actions>
       </v-tab-item>
 
       <v-tab-item>
         <v-card-text>
-          <form :class="$style.form">
+          <form :class="$style.form" @keyup.enter="register">
             <v-text-field v-model="name" label="Name" required />
             <v-select
               v-model="userType"
@@ -62,7 +62,7 @@
         </v-card-text>
         <v-card-actions>
           <v-layout justify-center>
-            <v-btn round color="info" @click="register">Register</v-btn>
+            <v-btn round color="primary" @click="register">Register</v-btn>
           </v-layout>
         </v-card-actions>
       </v-tab-item>

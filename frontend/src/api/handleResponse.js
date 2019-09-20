@@ -13,7 +13,7 @@ export default function handleResponse(response) {
     if (!response.ok) {
       if (isObject(data))
         for (var prop in data) {
-          if (!data.hasOwnProperty(prop)) continue;
+          if (!Object.prototype.hasOwnProperty.call(data, prop)) continue;
           if (isArray(data[prop]))
             for (var i in data[prop]) messages.push(data[prop][i]);
           else messages.push(data[prop]);

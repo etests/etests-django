@@ -214,7 +214,17 @@ class TestCreateView(generics.CreateAPIView):
     serializer_class = TestCreateSerializer
 
     def perform_create(self, serializer):
-        serializer.save(institute=self.request.user.institute)
+        batches = self.request.data.pop('batches')
+        student_ids = []
+        if batches:
+            for batch_id in batches:
+                try:
+                    batch = Batch.objects.get(id = batch_id)
+                    if batch.institute == self.request.user.institute:
+                        student_ids += [student.id for student in batch.students()]
+                except Exception as e:
+                    pass
+        serializer.save(institute=self.request.user.institute, registered_students=student_ids)
         
         
 class TestRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):

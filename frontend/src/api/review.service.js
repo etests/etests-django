@@ -11,7 +11,8 @@ function get(id) {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.VUE_APP_API_URL}/review/${id}/`, requestOptions).then(
-    handleResponse
-  );
+  return fetch(
+    `${process.env.VUE_APP_API_URL}/review/${id}/`,
+    requestOptions
+  ).then(handleResponse);
 }

@@ -14,9 +14,10 @@ function batchEnroll(data) {
     body: JSON.stringify(data)
   };
 
-  return fetch(`${process.env.VUE_APP_API_URL}/batch/enroll/`, requestOptions).then(
-    handleResponse
-  );
+  return fetch(
+    `${process.env.VUE_APP_API_URL}/batch/enroll/`,
+    requestOptions
+  ).then(handleResponse);
 }
 
 function remove(id) {
@@ -37,7 +38,8 @@ function getAll() {
     headers: authHeader()
   };
 
-  return fetch(`${process.env.VUE_APP_API_URL}/enrollments/`, requestOptions).then(
-    handleResponse
-  );
+  return fetch(
+    `${process.env.VUE_APP_API_URL}/enrollments/`,
+    requestOptions
+  ).then(handleResponse);
 }

@@ -7,41 +7,42 @@
         </v-card-title>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="info" flat @click="submitDialog = false">
+          <v-btn color="red" flat @click="submitDialog = false">
             Cancel
           </v-btn>
-          <v-btn
-            dark
-            color="indigo"
-            @click="
-              submitTest();
-              submitDialog = false;
-            "
-          >
+          <v-btn dark color="primary" @click="submitTest">
             Submit
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <StandardLayout v-if="session && session.completed">
-      <v-layout column align-center>
-        <v-flex xs12 class="my-3">
-          <v-btn round color="info" @click="reAttempt">
-            Reattempt this test
-          </v-btn>
-        </v-flex>
-        <Marks :questionWiseMarks="questionWiseMarks" :report="report" />
-        <Analysis v-if="report && report.result" :report="report" />
-        <v-card v-else :class="[$style.card, $style.message]">
-          Analysis of your test is not generated yet.
-        </v-card>
-      </v-layout>
+    <StandardLayout v-if="loading || error">
+      <v-card :class="$style.card">
+        <v-layout column py-5 align-center>
+          <template v-if="loading">
+            <v-flex xs12 :class="$style.message">
+              Starting Test...
+            </v-flex>
+            <v-flex xs12>
+              <v-progress-circular
+                :size="70"
+                :width="5"
+                color="grey darken-1"
+                indeterminate
+              />
+            </v-flex>
+          </template>
+          <v-flex xs12 v-if="error" :class="$style.message">
+            {{ status.error }}
+          </v-flex>
+        </v-layout>
+      </v-card>
     </StandardLayout>
     <TestLayout v-else :sections="sections" :sectionIndex.sync="sectionIndex">
       <template slot="controls">
         <v-btn color="primary" flat>
           <v-icon> mdi-clock </v-icon>
-          &nbsp; {{ this.time }}
+          &nbsp; {{ time }}
         </v-btn>
         <v-btn
           color="info"
@@ -106,9 +107,10 @@
         <v-chip color="grey darken-2" outline small>
           <strong> Q{{ questionIndex + 1 }} </strong>
         </v-chip>
-        <span :class="$style.questionText">
-          {{ currentQuestion.text }}
-        </span>
+        <p
+          :class="[$style.questionText, 'ck-content']"
+          v-html="currentQuestion.text"
+        ></p>
       </template>
 
       <v-layout slot="options">
@@ -258,7 +260,9 @@
         </v-btn>
       </template>
 
-      <template slot="test-name">{{ test.name }}</template>
+      <template slot="test-name"
+        >{{ test.name }}{{ session.practice ? " (Practice)" : "" }}</template
+      >
 
       <template slot="sections">
         <v-tabs
@@ -315,33 +319,21 @@
 <script>
 import TestLayout from "@/components/test/TestLayout.vue";
 import StandardLayout from "@/components/layouts/StandardLayout.vue";
-import Marks from "./Marks";
-import Analysis from "./Analysis";
-import { demoSession } from "@/js/demoTest";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import { mapState } from "vuex";
 
 export default {
+  props: ["session"],
   data() {
     return {
-      headers: [
-        {
-          text: "Subjects",
-          align: "center",
-          sortable: false,
-          value: "name"
-        },
-        {
-          text: "Marks Scored",
-          value: "score",
-          align: "center",
-          sortable: true
-        },
-        {
-          text: "Maximum Marks",
-          value: "total_marks",
-          align: "center",
-          sortable: false
-        }
-      ],
+      questionEditor: ClassicEditor,
+      questionConfig: {
+        toolbar: ["|"]
+      },
+      id: this.$route.params.id,
+      loading:
+        this.$store.state.sessions.status.loading ||
+        !this.$store.state.sessions.status.exists,
       error: false,
       questionTypes: [
         { value: 0, text: "Single Correct" },
@@ -351,22 +343,13 @@ export default {
         { value: 4, text: "One Word Answer" },
         { value: 5, text: "Subjective" }
       ],
-      report: localStorage.getItem("report")
-        ? JSON.parse(localStorage.getItem("report"))
-        : {},
-      questionWiseMarks: [],
       isSmallScreen: this.$vuetify.breakpoint.smAndDown,
-      submitDialog: false,
-      session: localStorage.getItem("demoSession")
-        ? JSON.parse(localStorage.getItem("demoSession"))
-        : demoSession
+      submitDialog: false
     };
   },
   components: {
     StandardLayout,
-    TestLayout,
-    Marks,
-    Analysis
+    TestLayout
   },
   methods: {
     getRandom(min, max) {
@@ -456,24 +439,29 @@ export default {
           this.response[i].status = 1;
       }
     },
+    updateSession() {
+      this.$store.dispatch("sessions/update", this.session);
+    },
     updateTime() {
       if (this.session) {
         this.response[this.questionIndex].timeElapsed += 1;
 
-        var duration = this.session.duration;
-        duration = duration.split(":");
-        duration =
-          (parseInt(duration[0]) * 3600 +
-            parseInt(duration[1]) * 60 +
-            parseInt(duration[2]) -
-            1) *
+        var currentTime = new Date();
+        var checkinTime = new Date(Date.parse(this.session.checkin_time));
+        var durationSplit = this.session.test.time_alotted.split(":");
+        var duration =
+          (parseInt(durationSplit[0] * 60 * 60) +
+            parseInt(durationSplit[1] * 60) +
+            parseInt(durationSplit[2])) *
           1000;
 
-        var hours = Math.floor(duration / (1000 * 60 * 60));
-        duration -= hours * 60 * 60 * 1000;
-        var minutes = Math.floor(duration / (1000 * 60));
-        duration -= minutes * 60 * 1000;
-        var seconds = Math.floor(duration / 1000);
+        var clock = duration - (currentTime - checkinTime);
+
+        var hours = Math.floor(clock / (1000 * 60 * 60));
+        clock -= hours * 60 * 60 * 1000;
+        var minutes = Math.floor(clock / (1000 * 60));
+        clock -= minutes * 60 * 1000;
+        var seconds = Math.floor(clock / 1000);
 
         this.session.duration =
           hours +
@@ -485,195 +473,8 @@ export default {
     },
     submitTest() {
       if (!this.session.completed) this.session.completed = true;
-      this.calculateResult();
-    },
-    calculateResult() {
-      var responses = this.session.response;
-      var answers = this.test.answers;
-      var noOfSections = this.sections.length;
-      var maxMarks = [];
-      var sectionWise = [];
-      var currentQuestion = {};
-      var questionWiseMarks = [];
-      var topicWiseMarks = [];
-      var i = 0;
-      for (i = 0; i < noOfSections; i++) {
-        maxMarks.push(0);
-        sectionWise.push(0);
-      }
-      maxMarks.push(0);
-      var marks = { total: 0, maxMarks, sectionWise };
-      for (i = 0; i < this.questions.length; i++) {
-        questionWiseMarks.push({ marks: 0, status: 0 });
-      }
-      for (i = 0; i < this.sections.length; i++) {
-        topicWiseMarks.push({});
-      }
-      var report = {
-        test: {},
-        response: [],
-        result: {},
-        marks
-      };
-      report.test = this.test;
-      for (i = 0; i < this.questions.length; i++) {
-        currentQuestion = this.questions[i];
-        marks.maxMarks[noOfSections] += currentQuestion.correctMarks;
-        marks.maxMarks[currentQuestion.section] += currentQuestion.correctMarks;
-        if (
-          this.session.test.questions[i].type === 0 &&
-          responses[i].answer.length !== 0
-        ) {
-          if (responses[i].answer === answers[i].answer) {
-            questionWiseMarks[i].marks = currentQuestion.correctMarks;
-            questionWiseMarks[i].status = 2;
-            report.marks.total += currentQuestion.correctMarks;
-            report.marks.sectionWise[currentQuestion.section] +=
-              currentQuestion.correctMarks;
-          } else if (responses[i].answer !== answers[i].answer) {
-            questionWiseMarks[i].marks = -currentQuestion.incorrectMarks;
-            questionWiseMarks[i].status = 1;
-            report.marks.total -= currentQuestion.incorrectMarks;
-            report.marks.sectionWise[currentQuestion.section] -=
-              currentQuestion.incorrectMarks;
-          }
-        } else if (
-          this.questions[i].type === 1 &&
-          responses[i].answer.length !== 0
-        ) {
-          var arrayOfChildrenNames = responses[i].answer;
-          var arrayOfFamilyMemberNames = answers[i].answer;
-          var isarrayOfNamesSubsetOfFamily = arrayOfChildrenNames.every(
-            function(val) {
-              return arrayOfFamilyMemberNames.indexOf(val) >= 0;
-            }
-          );
-          if (
-            isarrayOfNamesSubsetOfFamily &&
-            arrayOfChildrenNames.length < arrayOfFamilyMemberNames.length &&
-            currentQuestion.partialMarks !== 0
-          ) {
-            report.marks.total +=
-              arrayOfChildrenNames.length * currentQuestion.partialMarks;
-            questionWiseMarks[i].marks =
-              currentQuestion.partialMarks * arrayOfChildrenNames.length;
-            questionWiseMarks[i].status = 3;
-            report.marks.sectionWise[currentQuestion.section] +=
-              currentQuestion.partialMarks * arrayOfChildrenNames.length;
-          } else if (isarrayOfNamesSubsetOfFamily) {
-            questionWiseMarks[i].marks = currentQuestion.correctMarks;
-            questionWiseMarks[i].status = 2;
-            report.marks.total += currentQuestion.correctMarks;
-            report.marks.sectionWise[currentQuestion.section] +=
-              currentQuestion.correctMarks;
-          } else {
-            questionWiseMarks[i].marks = -currentQuestion.incorrectMarks;
-            questionWiseMarks[i].status = 1;
-            report.marks.total -= currentQuestion.incorrectMarks;
-            report.marks.sectionWise[currentQuestion.section] -=
-              currentQuestion.incorrectMarks;
-          }
-        } else if (
-          this.questions[i].type === 2 &&
-          responses[i].answer.length !== 0
-        ) {
-          if (
-            parseFloat(responses[i].answer) / parseFloat(answers[i].answer) >=
-            0.99 <=
-            1.01
-          ) {
-            questionWiseMarks[i].marks = currentQuestion.correctMarks;
-            questionWiseMarks[i].status = 2;
-            report.marks.total += currentQuestion.correctMarks;
-            report.marks.sectionWise[currentQuestion.section] +=
-              currentQuestion.correctMarks;
-          } else {
-            questionWiseMarks[i].marks = -currentQuestion.incorrectMarks;
-            questionWiseMarks[i].status = 1;
-            report.marks.total -= currentQuestion.incorrectMarks;
-            report.marks.sectionWise[currentQuestion.section] -=
-              currentQuestion.incorrectMarks;
-          }
-        } else if (
-          this.questions[i].type === 3 &&
-          responses[i].answer.length !== 0
-        ) {
-          // For Matrix match for each part status 0 means unanswered 1 means incorrect 2 means correct
-          var responsesMatrix = responses[i].answer;
-          var answersMatrix = answers[i].answer;
-          var curMarks = [];
-          for (var j = 0; j < responsesMatrix.length; j++) {
-            curMarks.push({ marks: 0, status: 0 });
-          }
-          for (j = 0; j < responsesMatrix.length; j++) {
-            if (responsesMatrix[j].length !== 0) {
-              responsesMatrix[j].sort();
-              answersMatrix[j].sort();
-              console.log(responsesMatrix[j], answersMatrix[j]);
-              console.log(responsesMatrix[j] === answersMatrix[j]);
-
-              if (
-                JSON.stringify(responsesMatrix[j]) ===
-                JSON.stringify(answersMatrix[j])
-              ) {
-                curMarks[j]["marks"] = currentQuestion.partialMarks;
-                curMarks[j]["status"] = 2;
-              } else {
-                curMarks[j]["marks"] = currentQuestion.incorrectMarks * -1;
-                console.log("Matrix incorrect");
-                curMarks[j]["status"] = 1;
-              }
-            }
-          }
-          var totalMatrixMarks = 0;
-          var matrixMarks = [];
-          var matrixStatus = [];
-          for (j = 0; j < curMarks.length; j++) {
-            totalMatrixMarks += curMarks[j]["marks"];
-            matrixMarks.push(curMarks[j]["marks"]);
-            matrixStatus.push(curMarks[j]["status"]);
-          }
-          questionWiseMarks[i].marks = matrixMarks;
-          questionWiseMarks[i].status = matrixStatus;
-          report.marks.total += totalMatrixMarks;
-          report.marks.sectionWise[currentQuestion.section] += totalMatrixMarks;
-        }
-        var currentTopic = topicWiseMarks[this.questions[i].section];
-        var curTopicMarks = 0;
-        if (Array.isArray(questionWiseMarks[i].marks))
-          curTopicMarks = questionWiseMarks[i].marks.reduce((a, b) => a + b, 0);
-        else curTopicMarks = questionWiseMarks[i].marks;
-        if (
-          Object.prototype.hasOwnProperty.call(
-            currentTopic,
-            this.questions[i].topicIndex
-          )
-        )
-          currentTopic[this.questions[i].topicIndex] += curTopicMarks;
-        else currentTopic[this.questions[i].topicIndex] = curTopicMarks;
-      }
-      report.result.questionWiseMarks = questionWiseMarks;
-      report.result.topicWiseMarks = topicWiseMarks;
-      this.report = report;
-      localStorage.setItem("report", JSON.stringify(report));
-    },
-    reAttempt() {
-      this.session = {
-        response: [],
-        test: this.test,
-        duration: this.test.time_alotted,
-        current: { questionIndex: 0, sectionIndex: 0 },
-        completed: false
-      };
-      for (var i = 0; i < this.questions.length; i++) {
-        this.session.response.push({
-          answer: [],
-          status: 0,
-          timeElapsed: 0
-        });
-      }
-      localStorage.demoSession = JSON.stringify(this.session);
-      localStorage.removeItem("report");
+      this.updateSession();
+      this.$router.push({ name: "result", params: { id: this.session.id } });
     }
   },
   watch: {
@@ -683,26 +484,30 @@ export default {
     session: {
       deep: true,
       handler(newSession, oldSession) {
-        if (!this.oldSession || !this.oldSession.completed) {
-          if (newSession.duration <= 0 && !newSession.completed) {
-            this.submitTest();
-            this.session.completed = true;
-          }
-          localStorage.demoSession = JSON.stringify(newSession);
+        if (newSession.duration <= 0 && !newSession.completed) {
+          this.submitTest();
+          this.session.completed = true;
         }
+        localStorage.session = JSON.stringify(newSession);
       }
     }
   },
   computed: {
+    ...mapState({
+      status: state => state.sessions.status
+    }),
     test() {
-      return this.session.test;
+      if (this.session) return this.session.test;
+      else return {};
     },
     time() {
-      return this.session.duration;
+      if (this.session) return this.session.duration;
+      else return null;
     },
     sectionIndex: {
       get: function() {
-        return this.session.current.sectionIndex;
+        if (this.session) return this.session.current.sectionIndex;
+        else return 0;
       },
       set: function(value) {
         this.session.current.sectionIndex = value;
@@ -710,40 +515,50 @@ export default {
     },
     questionIndex: {
       get: function() {
-        return this.session.current.questionIndex;
+        if (this.session) return this.session.current.questionIndex;
+        else return 0;
       },
       set: function(value) {
         this.session.current.questionIndex = value;
       }
     },
     sections() {
-      return this.test.sections;
+      if (this.test) return this.test.sections;
+      else return [];
     },
     questions() {
-      return this.test.questions;
+      if (this.test) return this.test.questions;
+      else return [];
     },
     response() {
-      return this.session.response;
+      if (this.session) return this.session.response;
+      else return [];
     },
     answers() {
-      return this.response;
+      if (this.response) return this.response;
+      else return [];
     },
     currentQuestion() {
-      return this.questions[this.questionIndex];
+      if (this.test && this.test.questions)
+        return this.test.questions[this.questionIndex];
+      else return [];
     },
     currentAnswer() {
-      return this.response[this.questionIndex];
+      if (this.session) return this.response[this.questionIndex];
+      else return [];
     },
     currentSection() {
-      return this.test.sections[this.sectionIndex];
+      if (this.session) return this.test.sections[this.sectionIndex];
+      else return [];
     }
   },
-  created() {
-    if (!localStorage.getItem("demoSession"))
-      localStorage.setItem("demoSession", JSON.stringify(demoSession));
-  },
   mounted() {
-    if (!this.session.completed) setInterval(this.updateTime, 1000);
+    if (!this.session.practice)
+      setInterval(
+        this.updateSession,
+        parseInt(this.getRandom(18, 30) * 60 * 1000)
+      );
+    setInterval(this.updateTime, 1000);
   }
 };
 </script>

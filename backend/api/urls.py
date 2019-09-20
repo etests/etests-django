@@ -18,7 +18,7 @@ urlpatterns = [
 
     path("enrollments/<int:pk>/", EnrollmentRetrieveUpdateDestoryView.as_view()),
 
-    path("institute/follow/<int:pk>/", FollowInstituteView.as_view()),
+    path("institute/follow/<int:id>/", FollowInstituteView.as_view()),
 
     path("institutes/following/", FollowingInstitutesView.as_view()),
 
@@ -40,7 +40,7 @@ urlpatterns = [
 
     path("tests/", TestListView.as_view(), name="test-list"),
 
-    path("create-test/", TestCreateView.as_view()),
+    path("test/create/", TestCreateView.as_view(), name="test-create"),
 
     path("tests/<int:pk>/", TestRetrieveUpdateDestoryView.as_view(), name="test-update-delete"),
 

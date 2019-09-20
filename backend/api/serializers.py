@@ -12,20 +12,17 @@ class TestInfoSerializer(serializers.ModelSerializer):
 class TestSeriesSerializer(serializers.ModelSerializer):
     tests = TestInfoSerializer(many=True, read_only=True)
     institute = serializers.SerializerMethodField()
-    exam = serializers.SerializerMethodField()
+    exams = serializers.SerializerMethodField()
 
     class Meta:
         model = TestSeries
-        fields = ("id", "name", "price", "visible", "exam", "tests", "institute")
+        fields = ("id", "name", "price", "visible", "exams", "tests", "institute")
 
     def get_institute(self, obj):
         return {"id": obj.institute.id, "name": obj.institute.user.name}
     
-    def get_exam(self, obj):
-        try:
-            return obj.exam.name
-        except:
-            return ""
+    def get_exams(self, obj):
+        return [Exam.objects.get(id=exam_id).name for exam_id in obj.exams()]
 
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -45,7 +42,7 @@ class ExamListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Exam
-        fields = ("name", "start_date", "test_series", "image")
+        fields = ("id", "name", "start_date", "test_series", "image")
 
 class TestListSerializer(serializers.ModelSerializer):
     institute = InstituteListSerializer()
@@ -58,7 +55,7 @@ class TestCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Test
-        fields = ("id", "name", "practice", "activation_time", "institute", "questions", "answers", "sections", "test_series")
+        fields = ("id", "name", "practice", "activation_time", "institute", "questions", "answers", "sections", "test_series", "exam")
         extra_kwargs = {'test_series': {'required': False}}
 
 class TestSerializer(serializers.ModelSerializer):
@@ -186,4 +183,4 @@ class FollowingInstitutesSerializer(serializers.ModelSerializer):
         fields = ("id", "user", "batches", "enrollments")
 
     def get_enrollments(self, obj):
-        return [enrollment.batch.id for enrollment in Enrollment.objects.filter(student=self.context['request'].user.student, institute=obj)]
+        return [enrollment.batch.id for enrollment in Enrollment.objects.filter(student=self.context['request'].user.student, institute=obj) if enrollment.batch]

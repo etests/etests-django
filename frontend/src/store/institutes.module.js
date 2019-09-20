@@ -24,7 +24,7 @@ export const institutes = {
       commit("followRequest", id);
       instituteService.follow(id).then(
         message => {
-          commit("followSuccess", institutes);
+          commit("followSuccess", { id, message });
         },
         error => {
           commit("followFailure", error);
@@ -58,6 +58,7 @@ export const institutes = {
       state.status = { loading: true };
     },
     getAllSuccess(state, institutes) {
+      state.status = {};
       state.all = { items: institutes };
     },
     getAllFailure(state, error) {

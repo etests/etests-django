@@ -14,7 +14,7 @@ export const testTemplate = {
       text:
         "<p>Enter question text and options or insert image here.</p><p>&nbsp;</p>",
       type: 0,
-      status: 0,
+      status: 1,
       correctMarks: 4,
       incorrectMarks: 1,
       partialMarks: 0,
