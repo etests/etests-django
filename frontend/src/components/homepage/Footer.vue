@@ -26,12 +26,14 @@
             <v-flex xs12>
               <v-btn
                 v-for="icon in icons"
-                :key="icon"
+                :key="icon.icon"
                 color="primary"
                 icon
                 large
+                :href="icon.link"
+                target="blank"
               >
-                <v-icon size="20px">{{ icon }}</v-icon>
+                <v-icon size="20px">{{ icon.icon }}</v-icon>
               </v-btn>
             </v-flex>
           </v-layout>
@@ -96,7 +98,18 @@ export default {
   },
   data() {
     return {
-      icons: ["mdi-facebook", "mdi-twitter", "mdi-linkedin", "mdi-instagram"]
+      icons: [
+        {
+          icon: "mdi-facebook",
+          link: "https://www.facebook.com/etests.india/"
+        },
+        { icon: "mdi-twitter", link: "https://twitter.com/eTestsIndia" },
+        {
+          icon: "mdi-linkedin",
+          link: "https://www.linkedin.com/company/etestservice"
+        },
+        { icon: "mdi-instagram", link: "" }
+      ]
     };
   },
   components: {

@@ -28,13 +28,39 @@
                 </td>
                 <td class="text-xs-center">
                   <v-btn icon flat color="success">
-                    <v-icon>mdi-play</v-icon>
+                    <v-icon>mdi-chevron-down</v-icon>
                   </v-btn>
                 </td>
               </tr>
             </template>
             <template v-slot:expand="props">
               <v-sheet>
+                <v-layout
+                  align-center
+                >
+                  <v-flex xs4>
+                  </v-flex>
+                  <v-flex xs4>
+                  </v-flex>
+                  <v-flex xs4>
+                    <v-btn round outline color="success" 
+                    v-if="!props.item.sessions.length && props.item.status==1" 
+                    @click="$router.push(`/test/${props.item.id}`)"
+                    >
+                      Start this test
+                    </v-btn>
+                    <v-btn round outline disabled
+                    v-else-if="props.item.sessions.length && props.item.status==1"
+                    >
+                      Attempted
+                    </v-btn>
+                    <v-btn round outline color="info" v-else
+                    @click="$router.push(`/test/${props.item.id}`)"
+                    >
+                      Practice Attempt
+                    </v-btn>
+                  </v-flex>
+                </v-layout>
                 <v-layout
                   align-center
                   v-for="(session, j) in props.item.sessions"

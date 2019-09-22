@@ -1,15 +1,19 @@
 <template>
-  <v-card class="elevation-2">
-    <v-card-title>
-      Instructions
-    </v-card-title>
-    <v-card-text>
-      <v-btn @click="$router.push(`/test/${id}`)">Proceed</v-btn>
-    </v-card-text>
-  </v-card>
+  <StandardLayout>
+    <v-card class="elevation-2">
+      <v-card-title>
+        Instructions
+      </v-card-title>
+      <v-card-text>
+        <v-btn @click="$router.push(`/test/${id}`)">Proceed</v-btn>
+      </v-card-text>
+    </v-card>
+  </StandardLayout>
 </template>
 
 <script>
+import StandardLayout from "@/components/layouts/StandardLayout.vue";
+
 export default {
   data() {
     return {
@@ -24,6 +28,9 @@ export default {
       });
       this.$store.dispatch(`sessions/get`, this.id);
     }
+  },
+  components: {
+    StandardLayout
   }
 };
 </script>

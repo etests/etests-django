@@ -1,6 +1,7 @@
 import json
 from django.apps import apps
 from django.shortcuts import get_object_or_404
+from django.core.files.storage import FileSystemStorage
 from rest_framework import viewsets, generics, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -8,11 +9,14 @@ from rest_framework.views import APIView
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import APIException, MethodNotAllowed, PermissionDenied, NotFound, ParseError
+from rest_framework.parsers import MultiPartParser
 from rest_framework import permissions
 from .utils import SessionEvaluation, generateRanks
 from .serializers import *
 from .models import *
+from .forms import *
 from authentication.models import Institute
+from django.contrib.auth.decorators import login_required
 
 class ReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -214,7 +218,19 @@ class TestCreateView(generics.CreateAPIView):
     serializer_class = TestCreateSerializer
 
     def perform_create(self, serializer):
-        batches = self.request.data.pop('batches')
+        test_series_ids = self.request.data.pop('test_series', None)
+        exam_id = self.request.data.get('exam', None)
+        if exam_id:
+            try:
+                exam = Exam.objects.get(id=exam_id)
+                for test_series_id in test_series_ids:
+                    try:
+                        TestSeries.objects.get(id=test_series_id).exams.add(exam)
+                    except:
+                        pass
+            except Exception as e:
+                pass
+        batches = self.request.data.pop('batches', None)
         student_ids = []
         if batches:
             for batch_id in batches:
@@ -436,6 +452,18 @@ class EnrollmentView(generics.ListCreateAPIView):
         return Response(serializer.data,
                         status=status.HTTP_201_CREATED,
                         headers=headers)
+
+class PaymentView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    def post(self, request):
+        form = PaymentForm(request.POST, request.FILES)
+        if form.is_valid():
+            payment = form.save(commit=False)
+            payment.user = request.user
+            payment.save()
+            return Response("Successful", status=status.HTTP_201_CREATED)
+        else:
+            raise ParseError("Invalid") 
 
 class EnrollmentRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (ReadOnly | IsInstituteOwner | permissions.IsAdminUser,)

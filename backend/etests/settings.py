@@ -129,7 +129,6 @@ CORS_ORIGIN_WHITELIST = (
 
 try:
     from local_settings import *
-
 except ImportError:
     import django_heroku
     import dj_database_url

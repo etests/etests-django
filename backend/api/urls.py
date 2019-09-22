@@ -1,6 +1,7 @@
 from django.views.generic import TemplateView
 from django.conf.urls import url
 from django.urls import include, path
+from django.views.decorators.csrf import csrf_exempt
 from .views import *
 
 urlpatterns = [
@@ -57,7 +58,9 @@ urlpatterns = [
     path("review/<int:pk>/", Review.as_view()),
 
     path("transactions/", TransactionListView.as_view(), name="transaction-list"),
-    
+
+    path("payment/", csrf_exempt(PaymentView.as_view()), name="payment"),
+
     path("credit-used/", CreditListView.as_view(), name="credits-list"),
 
 ]

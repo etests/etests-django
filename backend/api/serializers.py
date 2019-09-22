@@ -20,9 +20,9 @@ class TestSeriesSerializer(serializers.ModelSerializer):
 
     def get_institute(self, obj):
         return {"id": obj.institute.id, "name": obj.institute.user.name}
-    
+
     def get_exams(self, obj):
-        return [Exam.objects.get(id=exam_id).name for exam_id in obj.exams()]
+        return [exam.name for exam in obj.exams.all()]
 
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -57,6 +57,12 @@ class TestCreateSerializer(serializers.ModelSerializer):
         model=Test
         fields = ("id", "name", "practice", "activation_time", "institute", "questions", "answers", "sections", "test_series", "exam")
         extra_kwargs = {'test_series': {'required': False}}
+
+class PaymentSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model=Payment
+        fields =("transaction_id","receipt","user","amount","test_series")
 
 class TestSerializer(serializers.ModelSerializer):
     class Meta:

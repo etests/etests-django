@@ -12,42 +12,42 @@ export default {
       controls: [
         {
           name: "Tests",
-          image: require("@/assets/images/institute/dashboard/test.png"),
+          image: require("@/assets/images/dashboard/test.png"),
           link: { path: "tests" }
         },
         {
           name: "My Question Banks",
-          image: require("@/assets/images/institute/dashboard/questionbank.png"),
+          image: require("@/assets/images/dashboard/questionbank.png"),
           link: { path: "question-banks" }
         },
         // {
         //   name: "Results",
-        //   image: require("@/assets/images/institute/dashboard/results.png"),
+        //   image: require("@/assets/images/dashboard/results.png"),
         //   link: { path: "results" }
         // },
         // {
         //   name: "Transactions",
-        //   image: require("@/assets/images/institute/dashboard/transactions.png"),
+        //   image: require("@/assets/images/dashboard/transactions.png"),
         //   link: { path: "transactions" }
         // },
         {
           name: "Notifications",
-          image: require("@/assets/images/institute/dashboard/notifications.png"),
+          image: require("@/assets/images/dashboard/notifications.png"),
           link: { path: "notifications" }
         },
         // {
         //   name: "Discuss",
-        //   image: require("@/assets/images/institute/dashboard/discuss.png"),
+        //   image: require("@/assets/images/dashboard/discuss.png"),
         //   link: { path: "discuss" }
         // },
         // {
         //   name: "Analytics",
-        //   image: require("@/assets/images/institute/dashboard/analytics.png"),
+        //   image: require("@/assets/images/dashboard/analytics.png"),
         //   link: { path: "analytis" }
         // },
         {
           name: "Batches",
-          image: require("@/assets/images/institute/dashboard/groups.png"),
+          image: require("@/assets/images/dashboard/groups.png"),
           link: { path: "batches" }
         }
       ]

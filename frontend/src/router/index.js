@@ -231,6 +231,14 @@ const router = new Router({
     {
       path: "/test/:id",
       name: "test",
+      component: () => import("@/pages/test/Instructions"),
+      meta: {
+        title: "Instructions"
+      }
+    },
+    {
+      path: "/test/:id/start",
+      name: "test",
       component: () => import("@/pages/test/Test"),
       meta: {
         title: "Test"

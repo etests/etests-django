@@ -26,13 +26,9 @@
               class="input-group--focused"
               @click:append="showPassword = !showPassword"
             />
+            <v-btn round color="primary" @click="login">Login</v-btn>
           </form>
         </v-card-text>
-        <v-card-actions>
-          <v-layout justify-center>
-            <v-btn round color="primary" @click="login">Login</v-btn>
-          </v-layout>
-        </v-card-actions>
       </v-tab-item>
 
       <v-tab-item>
@@ -47,6 +43,7 @@
               required
             ></v-select>
             <v-text-field v-model="email" label="Email" required />
+            <v-text-field v-model="phone" label="Phone" required />
             <v-text-field
               :append-icon="showPassword ? 'visibility' : 'visibility_off'"
               :type="showPassword ? 'text' : 'password'"
@@ -58,13 +55,9 @@
               @click:append="showPassword = !showPassword"
               required
             />
+            <v-btn round color="primary" @click="register">Register</v-btn>
           </form>
         </v-card-text>
-        <v-card-actions>
-          <v-layout justify-center>
-            <v-btn round color="primary" @click="register">Register</v-btn>
-          </v-layout>
-        </v-card-actions>
       </v-tab-item>
     </v-tabs>
   </v-card>
@@ -80,6 +73,7 @@ export default {
       password: "",
       name: "",
       email: "",
+      phone: "",
       registerPassword: "",
       userType: "",
       showPassword: false
@@ -109,6 +103,14 @@ export default {
         email.split("@")[1].split(".")[1]
       );
     },
+    isValidPhone(phone){
+      return (
+        !isNaN(phone) &&
+        phone.length>=10 &&
+        phone.length<=13 &&
+        parseInt(phone[0]) >= 6
+      )
+    },
     login(e) {
       var error = null;
       if (!this.username) error = "Enter your email or phone.";
@@ -134,6 +136,7 @@ export default {
       else if (!this.userType) error = "Enter registration type.";
       else if (!this.email) error = "Enter your email id.";
       else if (!this.isValidEmail(this.email)) error = "Email id is invalid!";
+      else if (!this.isValidPhone(this.phone)) error = "Phone number is invalid."
       else if (!this.registerPassword) error = "Enter a password.";
       else if (this.registerPassword.length < 8)
         error = "Password is too short!";
@@ -148,6 +151,7 @@ export default {
         var data = {
           name: this.name,
           email: this.email,
+          phone: this.phone,
           password: this.registerPassword,
           is_student: false,
           is_institute: false
@@ -167,7 +171,8 @@ export default {
 .dialog{
   border-radius: 12px;
   font-family: 'Product Sans Light', Roboto;
-  height: 450px;
+  height: 500px;
+  min-height: 400px;
 
   .tabs{
     border-radius: 0;
@@ -187,6 +192,7 @@ export default {
     width: 80%;
     min-width: 250px;
     max-width: 95%;
+    min-height: 300px;
     border-radius: 8px;
     font-family: 'Product Sans Light', Roboto;
   }

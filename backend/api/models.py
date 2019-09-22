@@ -25,10 +25,6 @@ class Exam(models.Model):
     class Meta:
         ordering = ["position"]
 
-    @property
-    def test_series(self):
-        return [test_series for test_series in TestSeries.objects.all() if self.id in test_series.exams()]
-
     def __str__(self):
         return self.name
 
@@ -95,6 +91,7 @@ class TestSeries(models.Model):
     date_added = models.DateField(auto_now_add = True)
     slug = models.SlugField(unique = True, editable = False)
     visible = models.BooleanField(default = False)
+    exams = models.ManyToManyField(Exam, related_name = 'test_series', blank = True)
     institute = models.ForeignKey(Institute, related_name = 'test_series', blank = True, null = True, on_delete = models.CASCADE)
     registered_students = models.ManyToManyField(Student, blank = True)
     access_code = models.ForeignKey(AccessCode, related_name = 'test_series', blank = True, null = True, on_delete = models.SET_NULL)
@@ -104,9 +101,6 @@ class TestSeries(models.Model):
     class Meta:
         verbose_name = 'Test Series'
         verbose_name_plural = 'Test Series'
-    
-    def exams(self):
-        return {test.exam.id for test in self.tests.all() if test.exam}
 
     def __str__(self):
         return self.name
@@ -210,6 +204,18 @@ class Buyer(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
+    def __str__(self):
+        return self.user.name
+
+class Payment(models.Model):
+    id = models.AutoField(primary_key = True)
+    transaction_id = models.CharField(max_length = 200)
+    receipt = models.FileField(upload_to = 'static/images/receipts/',default = 'static/images/receipts/Invoice,pdf', null = True)
+    date_added = models.DateField(auto_now_add = True)
+    user = models.ForeignKey(User, related_name = "payments", blank = True, null = True, on_delete = models.SET_NULL)
+    amount = models.IntegerField(default = 0)
+    verified = models.BooleanField(default = False)
+    test_series = models.ForeignKey(TestSeries, blank=True, null=True, on_delete=models.SET_NULL)
     def __str__(self):
         return self.user.name
 

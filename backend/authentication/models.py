@@ -13,7 +13,7 @@ class MyUserManager(BaseUserManager):
         if not email:
             raise ValueError("Email is required")
         email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
+        user = self.model(email = email, **extra_fields)
         user.set_password(password)
         user.save()
         return user
@@ -31,16 +31,16 @@ class MyUserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    name = models.CharField(max_length=100)
-    email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=15, unique=True, blank=True, null=True)
-    state = models.CharField(max_length=100)
-    city = models.CharField(max_length=100)
-    date_joined = models.DateField(auto_now_add=True)
-    is_staff = models.BooleanField(_("staff status"), default=False)
-    is_active = models.BooleanField(_('active'), default=True)
-    is_student = models.BooleanField(default=False)
-    is_institute = models.BooleanField(default=False)
+    name = models.CharField(max_length = 100)
+    email = models.EmailField(unique = True)
+    phone = models.CharField(max_length = 15, unique = True, blank = True, null = True)
+    state = models.CharField(max_length = 100)
+    city = models.CharField(max_length = 100)
+    date_joined = models.DateField(auto_now_add = True)
+    is_staff = models.BooleanField(_("staff status"), default = False)
+    is_active = models.BooleanField(_('active'), default = True)
+    is_student = models.BooleanField(default = False)
+    is_institute = models.BooleanField(default = False)
 
     USERNAME_FIELD = 'email'
     EMAIL_FIELD = 'email'
@@ -51,9 +51,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.name
 
 class Institute(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    pincode = models.CharField(max_length=10)
-    current_credits = models.IntegerField(default=0)
+    user = models.OneToOneField(User, on_delete = models.CASCADE)
+    pincode = models.CharField(max_length = 10, null = True)
+    current_credits = models.IntegerField(default = 0)
 
     def __str__(self):
         return self.user.name
@@ -64,23 +64,23 @@ class Institute(models.Model):
         super(Institute, self).save(*args, **kwargs)
 
 class Batch(models.Model):
-    joining_key = models.CharField(max_length=8, default=randomKey)
-    name = models.CharField(max_length=100)
-    institute = models.ForeignKey(Institute, related_name="batches", on_delete=models.CASCADE)
+    joining_key = models.CharField(max_length = 8, default = randomKey)
+    name = models.CharField(max_length = 100)
+    institute = models.ForeignKey(Institute, related_name = "batches", on_delete = models.CASCADE)
 
     def students(self):
-        return Student.objects.filter(institutes=self.institute)
+        return Student.objects.filter(institutes = self.institute)
 
     def __str__(self):
         return self.name
 
 class Enrollment(models.Model):
-    institute = models.ForeignKey(Institute, on_delete=models.CASCADE)
-    batch = models.ForeignKey(Batch, blank=True, null=True, related_name="enrollments", on_delete=models.CASCADE)
-    roll_number = models.CharField(max_length=25)
-    joining_key = models.CharField(max_length=8, default=randomKey)
-    student = models.ForeignKey("Student", related_name="enrollment", null=True, on_delete=models.SET_NULL)
-    date_joined = models.DateField(null=True)
+    institute = models.ForeignKey(Institute, on_delete = models.CASCADE)
+    batch = models.ForeignKey(Batch, blank = True, null = True, related_name = "enrollments", on_delete = models.CASCADE)
+    roll_number = models.CharField(max_length = 25)
+    joining_key = models.CharField(max_length = 8, default = randomKey)
+    student = models.ForeignKey("Student", related_name = "enrollment", null = True, on_delete = models.SET_NULL)
+    date_joined = models.DateField(null = True)
 
     class Meta:
         unique_together = ('batch', 'roll_number')
@@ -103,11 +103,11 @@ class Enrollment(models.Model):
 
 class Student(models.Model):
     GENDERS = (("M", "Male"), ("F", "Female"), ("O", "Others"))
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    gender = models.CharField(max_length=1, choices=GENDERS)
-    following = models.ManyToManyField(Institute, related_name="following_students", blank=True)
-    institutes = models.ManyToManyField(Institute, related_name="students", through=Enrollment, blank=True)
-    birth_date = models.DateField()
+    user = models.OneToOneField(User, on_delete = models.CASCADE)
+    gender = models.CharField(max_length = 1, choices = GENDERS)
+    following = models.ManyToManyField(Institute, related_name = "following_students", blank = True)
+    institutes = models.ManyToManyField(Institute, related_name = "students", through = Enrollment, blank = True)
+    birth_date = models.DateField(null = True)
 
     def __str__(self):
         return self.user.name

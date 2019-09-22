@@ -1,105 +1,32 @@
 <template>
   <StandardLayout>
     <v-dialog
-      v-if="selectedTestSeries"
-      v-model="viewDialog"
-      fullscreen
-      hide-overlay
-      transition="dialog-bottom-transition"
-    >
-      <v-card>
-        <v-toolbar dark color="primary">
-          <v-btn icon dark @click="viewDialog = false">
-            <v-icon>close</v-icon>
-          </v-btn>
-          <v-toolbar-title>{{ selectedTestSeries.name }}</v-toolbar-title>
-        </v-toolbar>
-        <v-layout row wrap align-center pa-3>
-          <ObjectCard v-for="test in selectedTestSeries.tests" :key="test.id">
-            <div slot="content" :class="$style.content">
-              <div :class="$style.title">
-                {{ test.name }}
-                <br />
-              </div>
-              <v-divider class="my-3" />
-              <v-icon color="blue" small>mdi-calendar</v-icon>
-              {{ formatDate(test.activation_time) }}
-            </div>
-            <div slot="actions">
-              <v-card-actions>
-                <v-layout row fill-height py-2>
-                  <v-flex xs4>
-                    <v-btn large color="primary" flat round>{{
-                      test.time_alotted
-                    }}</v-btn>
-                  </v-flex>
-                </v-layout>
-              </v-card-actions>
-            </div>
-          </ObjectCard>
-        </v-layout>
-      </v-card>
-    </v-dialog>
-    <v-dialog
       v-if="selectedExam"
       v-model="examDialog"
       fullscreen
       hide-overlay
-      transition="dialog-bottom-transition"
+      transition="scale-transition"
     >
       <v-card>
         <v-toolbar dark color="primary">
           <v-btn icon dark @click="examDialog = false">
             <v-icon>close</v-icon>
           </v-btn>
-          <v-toolbar-title
-            >{{ selectedExam.name }} Question Banks</v-toolbar-title
-          >
+          <v-toolbar-title>
+            {{ selectedExam.name }} Question Banks
+          </v-toolbar-title>
         </v-toolbar>
 
         <v-layout row wrap align-center pa-3>
-          <ObjectCard
+          <template v-if="status.loading">
+            <LoadingCard v-for="i in 4" :key="i" />
+          </template>
+          <QuestionBankCard
             v-for="testSeries in selectedExam.test_series"
             :key="testSeries.id"
-          >
-            <div slot="content" :class="$style.content">
-              <div :class="$style.title">
-                {{ testSeries.name }}
-                <br />
-                <span class="body-1 mx-1">{{ testSeries.institute.name }}</span>
-              </div>
-              <v-divider class="my-3" />
-              <v-icon color="blue" small>mdi-file-outline</v-icon>
-              {{ testSeries.tests.length }} tests
-            </div>
-            <div slot="actions">
-              <v-card-actions>
-                <v-layout row fill-height py-2>
-                  <v-flex xs4>
-                    <v-btn large color="blue" flat
-                      >&#8377; {{ testSeries.price }}</v-btn
-                    >
-                  </v-flex>
-
-                  <v-flex xs4>
-                    <v-btn round outline color="primary">Buy</v-btn>
-                  </v-flex>
-                  <v-flex xs4>
-                    <v-btn
-                      round
-                      outline
-                      color="primary"
-                      @click="
-                        selectedTestSeries = testSeries;
-                        viewDialog = true;
-                      "
-                      >View</v-btn
-                    >
-                  </v-flex>
-                </v-layout>
-              </v-card-actions>
-            </div>
-          </ObjectCard>
+            :testSeries="testSeries"
+            :outerParent="selectedExam.name"
+          />
         </v-layout>
       </v-card>
     </v-dialog>
@@ -128,7 +55,8 @@
 
 <script>
 import StandardLayout from "@/components/layouts/StandardLayout";
-import ObjectCard from "@/components/layouts/ObjectCard";
+import QuestionBankCard from "./QuestionBankCard";
+import LoadingCard from "@/components/layouts/LoadingCard";
 import { mapState } from "vuex";
 import utils from "@/js/utils";
 
@@ -146,7 +74,8 @@ export default {
   },
   components: {
     StandardLayout,
-    ObjectCard
+    QuestionBankCard,
+    LoadingCard
   },
   created() {
     this.$store.dispatch("exams/getAll");

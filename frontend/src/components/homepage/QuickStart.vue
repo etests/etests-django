@@ -53,7 +53,7 @@ export default {
         {
           id: "institute",
           title: "Institutes",
-          icon: "business",
+          icon: "mdi-domain",
           steps: [
             {
               title: "Join eTests",
@@ -80,7 +80,7 @@ export default {
         {
           id: "StudentServices",
           title: "Students",
-          icon: "group",
+          icon: "mdi-account-multiple",
           steps: [
             {
               title: "Join eTests",

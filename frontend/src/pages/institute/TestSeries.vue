@@ -72,7 +72,7 @@
                   label="Duration"
                 />
                 <v-select
-                  v-model="newTest.exams"
+                  v-model="newTest.exam"
                   :items="
                     exams.map(exam => {
                       return { text: exam.name, value: exam.id };
@@ -170,6 +170,12 @@
                         >
                           <v-icon small>mdi-delete</v-icon>
                         </v-btn>
+                        <v-btn round icon small
+                          color="info lighten-1"
+                          @click="exportTest(props.item.id)" >
+
+                          <v-icon small>mdi-export</v-icon>
+                        </v-btn>
                       </td>
                     </tr>
                   </template>
@@ -219,12 +225,13 @@ export default {
         { align: "center", sortable: false, text: "Actions" }
       ],
       newTest: {
-        name: "",
-        activationDate: "",
-        activationTime: "",
+        name: "fdsfsd",
+        activationDate: "2020-2-2",
+        activationTime: "6:30",
         duration: "03:00",
-        exams: []
-      }
+        exam: "0"
+      },
+      importedTest: ""
     };
   },
   created() {
@@ -236,7 +243,8 @@ export default {
       user: state => state.authentication.user,
       status: state => state.tests.status,
       myTestSeries: state => state.testSeries.my.items,
-      exams: state => state.exams.items
+      exams: state => state.exams.items,
+      exportedTest: state => state.tests.test
     })
   },
   methods: {
@@ -250,13 +258,45 @@ export default {
         answers: testTemplate.answers,
         sections: testTemplate.sections,
         practice: true,
-        test_series: [this.selectedTestSeries.id]
+        test_series: [this.selectedTestSeries.id],
+        exam: this.newTest.exam
       };
       this.$store.dispatch("tests/create", data);
     },
     deleteTest(id) {
       const { dispatch } = this.$store;
       dispatch("tests/remove", id).then((this.deleteDialog = false));
+    },
+    uploadData(){
+      // This method is used for importing test.
+    },
+    downloadData(data) {
+        var test = {
+          id: data.id,
+          time_alotted: data.time_alotted,
+          questions: data.questions,
+          sections: data.sections,
+          answers: data.answers
+        }
+        var a = document.createElement("a");
+        document.body.appendChild(a);
+        a.style = "display: none";
+        var json = JSON.stringify(test),
+        blob = new Blob([json], {type: "octet/stream"}),
+        url = window.URL.createObjectURL(blob);
+        a.href = url;
+        var fileName = `${data.name}_${data.id}.json`;
+        a.download = fileName;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    },
+    async exportTest(id){
+      await this.$store.dispatch("tests/get",id);
+      var vm = this;
+      setTimeout(function(){
+        console.log(vm.exportedTest.name)
+        vm.downloadData(vm.exportedTest);
+      },1000);
     }
   },
   components: {

@@ -163,7 +163,7 @@
           <v-toolbar-title>{{ test.name }}</v-toolbar-title>
         </v-toolbar>
         <v-layout row wrap align-center py-5 px-4 ma-auto>
-          <v-card :class="[$style.studentsTable, 'title']">
+          <v-card :class="[$style.table, 'title']">
             <v-card-title>
               Ranks
             </v-card-title>
@@ -433,6 +433,12 @@ export default {
     border: 1px solid #999;
     border-radius: 5px;
   }
+}
+
+.table{
+  width: 100%;
+  border-radius: 8px;
+  padding: 20px 0;
 }
 
 .testCard{
