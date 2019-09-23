@@ -255,7 +255,7 @@ const router = new Router({
     },
     {
       path: "/test/demo/:id",
-      name: "test",
+      name: "demo-test",
       props: { demo: true },
       component: () => import("@/pages/test/StartTest"),
       meta: {

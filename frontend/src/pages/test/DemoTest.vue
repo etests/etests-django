@@ -317,7 +317,7 @@ import TestLayout from "@/components/test/TestLayout.vue";
 import StandardLayout from "@/components/layouts/StandardLayout.vue";
 import Marks from "./Marks";
 import Analysis from "./Analysis";
-import { demoSession } from "@/js/demoTest";
+import { demoTests } from "@/js/demoTests";
 
 export default {
   data() {

@@ -2,7 +2,7 @@
   <div id="app">
     <v-app class="white text-xs-center">
       <Notification class="my-1" position="top center" />
-      <vue-progress-bar></vue-progress-bar>
+      <vue-progress-bar />
       <router-view />
     </v-app>
   </div>

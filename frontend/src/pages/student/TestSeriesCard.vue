@@ -17,7 +17,8 @@
         </div>
         <v-divider class="my-3" />
         <v-icon color="blue" small>mdi-file-outline</v-icon>
-        {{ testSeries.tests.length }} tests ({{ testSeries.exam }})
+        {{ testSeries.tests.length }} tests
+        <span v-if="testSeries.exams.length"> ({{ testSeries.exam }}) </span>
       </template>
     </div>
     <div slot="actions">

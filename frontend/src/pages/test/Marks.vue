@@ -3,7 +3,9 @@
     <v-card-title>
       {{ testName.toUpperCase() }}
       <v-spacer />
-      <router-link :to="`/review/${report.id}`">Review</router-link>
+      <v-btn round outline color="primary" v-if="report.result" @click="$emit('review')">
+        Review
+      </v-btn>
     </v-card-title>
     <v-data-table :headers="headers" :items="records" hide-actions>
       <template v-slot:items="props">
@@ -18,9 +20,19 @@
 
 <script>
 export default {
-  props: ["report", "questionWise"],
+  props: {
+    report: {
+      required: true,
+      type: Object
+    },
+    demo: {
+      required: false,
+      default: false
+    }
+  },
   data() {
     return {
+      reviewing: false,
       headers: [
         {
           text: "Subjects",

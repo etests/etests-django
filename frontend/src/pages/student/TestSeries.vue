@@ -36,10 +36,75 @@
                         </router-link>
                       </td>
                       <td class="text-xs-center">
-                        {{ props.item.activation_time }}
+                        {{ formatDate(props.item.activation_time) }}
                       </td>
                       <td class="text-xs-center"></td>
                     </tr>
+                  </template>
+                  <template v-slot:expand="props">
+                    <v-sheet>
+                      <v-layout align-center>
+                        <v-flex xs4> </v-flex>
+                        <v-flex xs4> </v-flex>
+                        <v-flex xs4>
+                          <v-btn
+                            round
+                            outline
+                            color="info"
+                            @click="$router.push(`/test/${props.item.id}`)"
+                          >
+                            Attempt
+                          </v-btn>
+                        </v-flex>
+                      </v-layout>
+                      <v-layout
+                        align-center
+                        v-for="(session, j) in props.item.sessions"
+                        :key="j"
+                      >
+                        <v-flex xs4>
+                          <span class="info--text" v-if="session.practice">
+                            Practice
+                          </span>
+                          <span v-else class="success--text">Ranked</span>
+                        </v-flex>
+                        <v-flex xs4>
+                          {{ formatDate(session.checkin_time) }}
+                        </v-flex>
+                        <v-flex xs4>
+                          <v-btn
+                            icon
+                            flat
+                            color="info"
+                            v-if="!session.completed"
+                            @click="$router.push(`/test/${props.item.id}`)"
+                          >
+                            <v-icon>mdi-play-pause</v-icon>
+                          </v-btn>
+                          <v-btn
+                            icon
+                            flat
+                            color="success"
+                            v-if="session.completed"
+                            @click="$router.push(`/result/${session.id}`)"
+                          >
+                            <v-icon>mdi-file-chart</v-icon>
+                          </v-btn>
+                          <v-btn
+                            icon
+                            flat
+                            color="warning"
+                            v-if="session.completed"
+                            @click="$router.push(`/review/${session.id}`)"
+                          >
+                            <v-icon>mdi-file-find</v-icon>
+                          </v-btn>
+                          <v-btn v-if="session.practice" icon flat color="error">
+                            <v-icon>mdi-delete</v-icon>
+                          </v-btn>
+                        </v-flex>
+                      </v-layout>
+                    </v-sheet>
                   </template>
                 </v-data-table>
               </v-flex>
@@ -85,6 +150,7 @@
 import StandardLayout from "@/components/layouts/StandardLayout";
 import SectionLayout from "@/components/layouts/SectionLayout";
 import TestSeriesCard from "./TestSeriesCard";
+import utils from "@/js/utils";
 
 export default {
   data() {
@@ -123,7 +189,11 @@ export default {
       return this.$store.state.testSeries.my.items;
     }
   },
-  methods: {},
+  methods: {
+    formatDate(dateString) {
+      return utils.formatDate(dateString);
+    }
+  },
   components: {
     StandardLayout,
     SectionLayout,

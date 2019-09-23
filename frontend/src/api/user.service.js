@@ -12,7 +12,6 @@ export const userService = {
 
 function login(username, password) {
   var x = process.env.VUE_APP_API_URL;
-  console.log("faf", x);
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },

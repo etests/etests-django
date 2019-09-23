@@ -207,7 +207,7 @@ class TestListView(generics.ListAPIView):
             if self.request.user.is_institute:
                 return Test.objects.filter(practice=False, institute=self.request.user.institute)
             elif self.request.user.is_student:
-                return Test.objects.filter(registered_students=self.request.user.student)
+                return Test.objects.filter(practice=False, registered_students=self.request.user.student)
             elif self.request.user.is_staff:
                 return Test.objects.all()
         else:
@@ -287,7 +287,7 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         try:
             test=Test.objects.get(id=test_id)
         except:
-            raise NotFound("This test does not exists.")
+            raise NotFound("This test does not exist.")
         try:
             session = Session.objects.get(test=test, student=self.request.user.student, completed=False)
         except:
@@ -316,8 +316,8 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     def partial_update(self,*args,**kwargs):
         instance = self.get_object()
         session = self.request.data
-        
         if session['completed']:
+            self.serializer_class = ResultSerializer
             if instance.completed:
                 raise PermissionDenied("You have already submitted this test.")
             else:   
@@ -328,7 +328,7 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
 
         serializer = self.get_serializer(instance, data=self.request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)  
+        self.perform_update(serializer)
 
         return Response(serializer.data)
 

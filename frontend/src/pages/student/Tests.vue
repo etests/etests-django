@@ -91,7 +91,7 @@
                       flat
                       color="info"
                       v-if="!session.completed"
-                      @click="$router.push(`/test/${props.item.id}/start`)"
+                      @click="$router.push(`/test/${props.item.id}`)"
                     >
                       <v-icon>mdi-play-pause</v-icon>
                     </v-btn>

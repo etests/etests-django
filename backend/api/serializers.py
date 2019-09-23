@@ -9,8 +9,24 @@ class TestInfoSerializer(serializers.ModelSerializer):
         model = Test
         fields = ('id','name', 'status', 'date_added', 'activation_time', 'time_alotted')
 
+class SessionListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Session
+        fields = ('id', 'practice', 'checkin_time', 'completed')
+
+class StudentTestListSerializer(serializers.ModelSerializer):
+    institute = serializers.SerializerMethodField()
+    sessions = SessionListSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Test
+        fields = ('id','name','institute', 'status', 'practice', 'date_added', 'activation_time', 'time_alotted', "sessions")
+    
+    def get_institute(self, obj):
+        return {"id": obj.institute.id, "name": obj.institute.user.name}
+
 class TestSeriesSerializer(serializers.ModelSerializer):
-    tests = TestInfoSerializer(many=True, read_only=True)
+    tests = StudentTestListSerializer(many=True, read_only=True)
     institute = serializers.SerializerMethodField()
     exams = serializers.SerializerMethodField()
 
@@ -69,22 +85,6 @@ class TestSerializer(serializers.ModelSerializer):
         model=Test
         exclude = ("registered_students",)
 
-class SessionListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Session
-        fields = ('id', 'practice', 'checkin_time', 'completed')
-
-class StudentTestListSerializer(serializers.ModelSerializer):
-    institute = serializers.SerializerMethodField()
-    sessions = SessionListSerializer(many=True, read_only=True)
-    
-    class Meta:
-        model = Test
-        fields = ('id','name','institute', 'status', 'practice', 'date_added', 'activation_time', 'time_alotted', "sessions")
-    
-    def get_institute(self, obj):
-        return {"id": obj.institute.id, "name": obj.institute.user.name}
-
 class StudentTestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test
@@ -120,7 +120,7 @@ class ResultSerializer(serializers.ModelSerializer):
     test = StudentTestSerializer(many=False, read_only=True)
     class Meta:
         model = Session
-        fields = ('id', 'test', 'marks')
+        fields = ('id', 'test', 'marks', 'completed')
 
 class ReviewSerializer(serializers.ModelSerializer):
     test = TestSerializer(many=False, read_only=True)

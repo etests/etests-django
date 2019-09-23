@@ -9,8 +9,8 @@ try {
   console.log(err);
 }
 
-if (session && session.completed) {
-  JSON.parse(localStorage.removeItem("session"));
+if (session !== null && session.completed) {
+  localStorage.removeItem("session");
   session = null;
 }
 const initialState = session
@@ -34,11 +34,6 @@ export const sessions = {
       sessionService.get(id).then(
         session => {
           commit("getSuccess", session);
-          setTimeout(() => {
-            dispatch("alert/success", `Starting ${session.test.name}...`, {
-              root: true
-            });
-          });
         },
         error => {
           commit("getFailure", error);
@@ -51,11 +46,6 @@ export const sessions = {
       sessionService.update(data).then(
         data => {
           commit("updateSuccess", data);
-          setTimeout(() => {
-            dispatch("alert/success", "Test submitted successfully!", {
-              root: true
-            });
-          });
         },
         error => {
           commit("updateFailure", error);
@@ -76,10 +66,11 @@ export const sessions = {
       state.status = { error };
     },
     updateRequest(state, data) {
-      state.status = { creating: true };
+      state.status = { updating: true };
     },
     updateSuccess(state, data) {
-      state.status = { created: true, session: data };
+      state.status = { updated: true };
+      state.session = data;
     },
     updateFailure(state, error) {
       state.status = { error: error };

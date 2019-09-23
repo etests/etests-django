@@ -1,240 +1,216 @@
 <template>
-  <div>
-    <StandardLayout v-if="loading || error">
-      <v-card :class="$style.card">
-        <v-layout column py-5 align-center>
-          <template v-if="loading">
-            <v-flex xs12 :class="$style.message">
-              Loading Review...
-            </v-flex>
-            <v-flex xs12>
-              <v-progress-circular
-                :size="70"
-                :width="5"
-                color="grey darken-1"
-                indeterminate
-              />
-            </v-flex>
-          </template>
-          <v-flex xs12 v-if="error" :class="$style.message">
-            {{ this.status.error }}
-          </v-flex>
-        </v-layout>
-      </v-card>
-    </StandardLayout>
-    <TestLayout v-else :sections="sections" :sectionIndex.sync="sectionIndex">
-      <template slot="controls">
-        <v-chip round outline color="primary">
-          <v-icon color="primary"> mdi-clock </v-icon>
-          &nbsp; {{ getMinutes(currentResponse.timeElapsed) }}
-        </v-chip>
-      </template>
+  <TestLayout :sections="sections" :sectionIndex.sync="sectionIndex">
+    <template slot="controls">
+      <v-chip round outline color="primary">
+        <v-icon color="primary"> mdi-clock </v-icon>
+        &nbsp; {{ getMinutes(currentResponse.timeElapsed) }}
+      </v-chip>
+    </template>
 
-      <template slot="info">
-        <v-btn color="success lighten-1" class="subheading" small outline icon>
-          +{{ currentQuestion.correctMarks }}
-        </v-btn>
-        <v-btn color="error lighten-1" class="subheading" small outline icon>
-          -{{ currentQuestion.incorrectMarks }}
-        </v-btn>
-        <v-chip color="indigo" outline>
-          {{ questionTypes[currentQuestion.type].text }}
-        </v-chip>
-      </template>
+    <template slot="info">
+      <v-btn color="success lighten-1" class="subheading" small outline icon>
+        +{{ currentQuestion.correctMarks }}
+      </v-btn>
+      <v-btn color="error lighten-1" class="subheading" small outline icon>
+        -{{ currentQuestion.incorrectMarks }}
+      </v-btn>
+      <v-chip color="indigo" outline>
+        {{ questionTypes[currentQuestion.type].text }}
+      </v-chip>
+    </template>
 
-      <template slot="text-image">
-        <v-chip color="grey darken-2" outline small>
-          <strong> Q{{ questionIndex + 1 }} </strong>
-        </v-chip>
-        <span :class="$style.questionText" v-html="currentQuestion.text">
-        </span>
-      </template>
+    <template slot="text-image">
+      <v-chip color="grey darken-2" outline small>
+        <strong> Q{{ questionIndex + 1 }} </strong>
+      </v-chip>
+      <span :class="$style.questionText" v-html="currentQuestion.text">
+      </span>
+    </template>
 
-      <v-layout slot="options">
-        <v-radio-group
+    <v-layout slot="options">
+      <v-radio-group
+        v-model="currentAnswer.answer"
+        :mandatory="false"
+        v-if="currentQuestion.type == 0"
+      >
+        <v-radio
+          v-for="(option, i) in currentQuestion.options"
+          :key="questionIndex + '-' + i"
+          :label="option"
+          :value="i"
+          :on-icon="`mdi-alpha-${letter('a', i, true)}-circle`"
+          :off-icon="`mdi-alpha-${letter('a', i, true)}-circle-outline`"
+          disabled
+        ></v-radio>
+      </v-radio-group>
+
+      <v-layout v-else-if="currentQuestion.type == 1" py-4 my-1 column>
+        <v-checkbox
+          v-for="(option, i) in currentQuestion.options"
           v-model="currentAnswer.answer"
-          :mandatory="false"
-          v-if="currentQuestion.type == 0"
+          multiple
+          height="0"
+          class="mt-0 mb-1"
+          :key="questionIndex + '-' + i"
+          :label="option"
+          :value="i"
+          :on-icon="`mdi-alpha-${letter('a', i, true)}-circle`"
+          :off-icon="`mdi-alpha-${letter('a', i, true)}-circle-outline`"
+          disabled
         >
-          <v-radio
-            v-for="(option, i) in currentQuestion.options"
-            :key="questionIndex + '-' + i"
-            :label="option"
-            :value="i"
-            :on-icon="`mdi-alpha-${letter('a', i, true)}-circle`"
-            :off-icon="`mdi-alpha-${letter('a', i, true)}-circle-outline`"
-            disabled
-          ></v-radio>
-        </v-radio-group>
-
-        <v-layout v-else-if="currentQuestion.type == 1" py-4 my-1 column>
-          <v-checkbox
-            v-for="(option, i) in currentQuestion.options"
+        </v-checkbox>
+      </v-layout>
+      <v-layout v-else-if="currentQuestion.type == 2" my-4>
+        <v-flex xs12 sm6 md3>
+          <v-text-field
+            label="Enter your answer (0-999)"
             v-model="currentAnswer.answer"
-            multiple
-            height="0"
-            class="mt-0 mb-1"
-            :key="questionIndex + '-' + i"
-            :label="option"
-            :value="i"
-            :on-icon="`mdi-alpha-${letter('a', i, true)}-circle`"
-            :off-icon="`mdi-alpha-${letter('a', i, true)}-circle-outline`"
+            type="number"
             disabled
-          >
-          </v-checkbox>
-        </v-layout>
-        <v-layout v-else-if="currentQuestion.type == 2" my-4>
-          <v-flex xs12 sm6 md3>
-            <v-text-field
-              label="Enter your answer (0-999)"
-              v-model="currentAnswer.answer"
-              type="number"
-              disabled
-            ></v-text-field>
+          ></v-text-field>
+        </v-flex>
+      </v-layout>
+      <v-layout v-else-if="currentQuestion.type == 3" my-3 column>
+        <v-layout row wrap justify-center>
+          <v-flex xs6>
+            <v-layout column justify-start>
+              <v-flex
+                v-for="(option, i) in currentQuestion.options"
+                :key="`${questionIndex}-option-${i}`"
+              >
+                <v-layout row wrap align-start>
+                  <v-flex xs8 :class="$style.option">
+                    <v-icon :class="$style.optionLetter">
+                      {{ `mdi-alpha-${letter("a", i, true)}-circle-outline` }}
+                    </v-icon>
+                    {{ option }}
+                  </v-flex>
+                </v-layout>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+          <v-flex xs6>
+            <v-layout column justify-end>
+              <v-flex
+                v-for="(answer, j) in currentQuestion.answers"
+                :key="`${questionIndex}-answer-${j}`"
+              >
+                <v-layout row wrap align-start>
+                  <v-flex xs8 :class="$style.option">
+                    <v-icon :class="$style.optionLetter">
+                      {{ `mdi-alpha-${letter("p", j, true)}-circle-outline` }}
+                    </v-icon>
+                    {{ answer }}
+                  </v-flex>
+                </v-layout>
+              </v-flex>
+            </v-layout>
           </v-flex>
         </v-layout>
-        <v-layout v-else-if="currentQuestion.type == 3" my-3 column>
-          <v-layout row wrap justify-center>
-            <v-flex xs6>
-              <v-layout column justify-start>
-                <v-flex
-                  v-for="(option, i) in currentQuestion.options"
-                  :key="`${questionIndex}-option-${i}`"
-                >
-                  <v-layout row wrap align-start>
-                    <v-flex xs8 :class="$style.option">
-                      <v-icon :class="$style.optionLetter">
-                        {{ `mdi-alpha-${letter("a", i, true)}-circle-outline` }}
-                      </v-icon>
-                      {{ option }}
-                    </v-flex>
-                  </v-layout>
-                </v-flex>
-              </v-layout>
-            </v-flex>
-            <v-flex xs6>
-              <v-layout column justify-end>
-                <v-flex
-                  v-for="(answer, j) in currentQuestion.answers"
-                  :key="`${questionIndex}-answer-${j}`"
-                >
-                  <v-layout row wrap align-start>
-                    <v-flex xs8 :class="$style.option">
-                      <v-icon :class="$style.optionLetter">
-                        {{ `mdi-alpha-${letter("p", j, true)}-circle-outline` }}
-                      </v-icon>
-                      {{ answer }}
-                    </v-flex>
-                  </v-layout>
-                </v-flex>
-              </v-layout>
+
+        <v-flex xs12 sm6 md3 mt-4>
+          <v-layout row>
+            <v-flex shrink mx-3> </v-flex>
+            <v-flex
+              shrink
+              v-for="j in currentQuestion.answers.length"
+              :key="`${questionIndex}-label-answer-${j}`"
+            >
+              <v-checkbox
+                height="0"
+                class="mt-0 mb-1"
+                :off-icon="`mdi-alpha-${letter('p', j - 1, true)}`"
+                disabled
+              >
+              </v-checkbox>
             </v-flex>
           </v-layout>
-
-          <v-flex xs12 sm6 md3 mt-4>
-            <v-layout row>
-              <v-flex shrink mx-3> </v-flex>
-              <v-flex
-                shrink
-                v-for="j in currentQuestion.answers.length"
-                :key="`${questionIndex}-label-answer-${j}`"
+          <v-layout
+            row
+            v-for="i in currentQuestion.options.length"
+            :key="`${questionIndex}-label-option-${i}`"
+            justify-start
+          >
+            <v-flex shrink>
+              <v-checkbox
+                height="0"
+                class="mt-0 mb-1"
+                :off-icon="`mdi-alpha-${letter('a', i - 1, true)}-circle`"
+                disabled
               >
-                <v-checkbox
-                  height="0"
-                  class="mt-0 mb-1"
-                  :off-icon="`mdi-alpha-${letter('p', j - 1, true)}`"
-                  disabled
-                >
-                </v-checkbox>
-              </v-flex>
-            </v-layout>
-            <v-layout
-              row
-              v-for="i in currentQuestion.options.length"
-              :key="`${questionIndex}-label-option-${i}`"
-              justify-start
+              </v-checkbox>
+            </v-flex>
+
+            <v-flex
+              shrink
+              v-for="j in currentQuestion.answers.length"
+              :key="`${questionIndex}-${i}-${j}`"
             >
-              <v-flex shrink>
-                <v-checkbox
-                  height="0"
-                  class="mt-0 mb-1"
-                  :off-icon="`mdi-alpha-${letter('a', i - 1, true)}-circle`"
-                  disabled
-                >
-                </v-checkbox>
-              </v-flex>
-
-              <v-flex
-                shrink
-                v-for="j in currentQuestion.answers.length"
-                :key="`${questionIndex}-${i}-${j}`"
+              <v-checkbox
+                v-model="currentAnswer.answer[i - 1]"
+                multiple
+                height="0"
+                class="mt-0 mb-1"
+                :value="j - 1"
+                disabled
+                :on-icon="$vuetify.icons.radioOn"
+                :off-icon="$vuetify.icons.radioOff"
               >
-                <v-checkbox
-                  v-model="currentAnswer.answer[i - 1]"
-                  multiple
-                  height="0"
-                  class="mt-0 mb-1"
-                  :value="j - 1"
-                  disabled
-                  :on-icon="$vuetify.icons.radioOn"
-                  :off-icon="$vuetify.icons.radioOff"
-                >
-                </v-checkbox>
-              </v-flex>
-            </v-layout>
-          </v-flex>
-        </v-layout>
+              </v-checkbox>
+            </v-flex>
+          </v-layout>
+        </v-flex>
       </v-layout>
+    </v-layout>
 
-      <template slot="footer">
-        <input @keyup.left="previousQuestion" type="hidden" />
-        <input @keyup.right="nextQuestion" type="hidden" />
-        <v-btn icon color="primary" @click="previousQuestion()">
-          <v-icon>mdi-arrow-left</v-icon>
-        </v-btn>
-        <v-btn icon color="primary" @click="nextQuestion()">
-          <v-icon>mdi-arrow-right</v-icon>
-        </v-btn>
-      </template>
+    <template slot="footer">
+      <input @keyup.left="previousQuestion" type="hidden" />
+      <input @keyup.right="nextQuestion" type="hidden" />
+      <v-btn icon color="primary" @click="previousQuestion()">
+        <v-icon>mdi-arrow-left</v-icon>
+      </v-btn>
+      <v-btn icon color="primary" @click="nextQuestion()">
+        <v-icon>mdi-arrow-right</v-icon>
+      </v-btn>
+    </template>
 
-      <template slot="test-name">{{ test.name }}</template>
+    <template slot="test-name">{{ test.name }}</template>
 
-      <template slot="sections">
-        <v-tabs
-          slot="tabs"
-          v-model="sectionIndex"
-          color="transparent"
-          hide-slider
-          centered
+    <template slot="sections">
+      <v-tabs
+        slot="tabs"
+        v-model="sectionIndex"
+        color="transparent"
+        hide-slider
+        centered
+      >
+        <v-tab
+          active-class="primary--text"
+          v-for="(section, index) in sections"
+          :key="section.subject"
+          @click="changeSection(index)"
         >
-          <v-tab
-            active-class="primary--text"
-            v-for="(section, index) in sections"
-            :key="section.subject"
-            @click="changeSection(index)"
-          >
-            {{ section.subject }}
-          </v-tab>
-        </v-tabs>
-      </template>
+          {{ section.subject }}
+        </v-tab>
+      </v-tabs>
+    </template>
 
-      <template slot="questions-panel">
-        <span v-for="(question, i) in questions" :key="i">
-          <v-btn
-            fab
-            v-if="question.section == sectionIndex"
-            dark
-            small
-            :flat="i != questionIndex"
-            :class="statusColor(session.result.questionWiseMarks[i].status)"
-            @click="changeQuestion(i)"
-          >
-            <span>{{ i + 1 }}</span>
-          </v-btn>
-        </span>
-      </template>
-    </TestLayout>
-  </div>
+    <template slot="questions-panel">
+      <span v-for="(question, i) in questions" :key="i">
+        <v-btn
+          fab
+          v-if="question.section == sectionIndex"
+          dark
+          small
+          :flat="i != questionIndex"
+          :class="statusColor(session.result.questionWiseMarks[i].status)"
+          @click="changeQuestion(i)"
+        >
+          <span>{{ i + 1 }}</span>
+        </v-btn>
+      </span>
+    </template>
+  </TestLayout>
 </template>
 
 <script>
@@ -243,13 +219,20 @@ import StandardLayout from "@/components/layouts/StandardLayout.vue";
 import { mapState } from "vuex";
 
 export default {
+  props: {
+    report: {
+      required: true,
+      type: Object
+    },
+    demo: {
+      required: false,
+      default: false
+    }
+  },
   data() {
     return {
-      id: this.$route.params.id,
-      loading:
-        this.$store.state.reviews.status.loading ||
-        !this.$store.state.reviews.status.exists,
-      error: false,
+      id: parseInt(this.$route.params.id),
+      session: this.report,
       questionTypes: [
         { value: 0, text: "Single Correct" },
         { value: 1, text: "Multiple Correct" },
@@ -333,61 +316,37 @@ export default {
     ...mapState({
       status: state => state.reviews.status
     }),
-    session() {
-      return this.$store.state.reviews.review;
-    },
     test() {
-      if (this.session) return this.session.test;
-      else return {};
+      return this.session.test;
     },
     time() {
-      if (this.session) return this.session.duration;
-      else return null;
+      return this.session.duration;
     },
     sections() {
-      if (this.test) return this.test.sections;
-      else return [];
+      return this.test.sections;
     },
     questions() {
-      if (this.test) return this.test.questions;
-      else return [];
+      return this.test.questions;
     },
     response() {
-      if (this.session) return this.session.response;
-      else return [];
+      return this.session.response;
     },
     answers() {
-      if (this.response) return this.response;
-      else return [];
+      return this.response;
     },
     currentQuestion() {
-      if (this.test && this.test.questions)
-        return this.test.questions[this.questionIndex];
-      else return [];
+      return this.test.questions[this.questionIndex];
     },
     currentResponse() {
-      if (this.response) return this.response[this.questionIndex];
-      else return {};
+      return this.response[this.questionIndex];
     },
     currentAnswer() {
-      if (this.session) return this.response[this.questionIndex];
-      else return [];
+      return this.response[this.questionIndex];
     },
     currentSection() {
-      if (this.session) return this.test.sections[this.sectionIndex];
-      else return [];
+      return this.test.sections[this.sectionIndex];
     }
-  },
-  created() {
-    if (!this.$store.state.reviews.status.exists) {
-      this.$watch("status", function(newStatus, oldStatus) {
-        this.loading = newStatus.loading;
-        this.error = newStatus.error;
-      });
-      this.$store.dispatch(`reviews/get`, this.id);
-    }
-  },
-  mounted() {}
+  }
 };
 </script>
 
