@@ -103,13 +103,13 @@ export default {
         email.split("@")[1].split(".")[1]
       );
     },
-    isValidPhone(phone){
+    isValidPhone(phone) {
       return (
         !isNaN(phone) &&
-        phone.length>=10 &&
-        phone.length<=13 &&
+        phone.length >= 10 &&
+        phone.length <= 13 &&
         parseInt(phone[0]) >= 6
-      )
+      );
     },
     login(e) {
       var error = null;
@@ -136,7 +136,8 @@ export default {
       else if (!this.userType) error = "Enter registration type.";
       else if (!this.email) error = "Enter your email id.";
       else if (!this.isValidEmail(this.email)) error = "Email id is invalid!";
-      else if (!this.isValidPhone(this.phone)) error = "Phone number is invalid."
+      else if (!this.isValidPhone(this.phone))
+        error = "Phone number is invalid.";
       else if (!this.registerPassword) error = "Enter a password.";
       else if (this.registerPassword.length < 8)
         error = "Password is too short!";

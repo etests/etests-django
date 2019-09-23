@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-flex xs12>
     <v-dialog v-model="submitDialog" max-width="400">
       <v-card :class="$style.submitDialog">
         <v-card-title :class="$style.title">
@@ -16,29 +16,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <StandardLayout v-if="loading || error">
-      <v-card :class="$style.card">
-        <v-layout column py-5 align-center>
-          <template v-if="loading">
-            <v-flex xs12 :class="$style.message">
-              Starting Test...
-            </v-flex>
-            <v-flex xs12>
-              <v-progress-circular
-                :size="70"
-                :width="5"
-                color="grey darken-1"
-                indeterminate
-              />
-            </v-flex>
-          </template>
-          <v-flex xs12 v-if="error" :class="$style.message">
-            {{ status.error }}
-          </v-flex>
-        </v-layout>
-      </v-card>
-    </StandardLayout>
-    <TestLayout v-else :sections="sections" :sectionIndex.sync="sectionIndex">
+    <TestLayout :sections="sections" :sectionIndex.sync="sectionIndex">
       <template slot="controls">
         <v-btn color="primary" flat>
           <v-icon> mdi-clock </v-icon>
@@ -313,7 +291,7 @@
         </v-btn>
       </template>
     </TestLayout>
-  </div>
+  </v-flex>
 </template>
 
 <script>
@@ -323,7 +301,7 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import { mapState } from "vuex";
 
 export default {
-  props: ["session"],
+  props: ["sessionData"],
   data() {
     return {
       questionEditor: ClassicEditor,
@@ -344,11 +322,11 @@ export default {
         { value: 5, text: "Subjective" }
       ],
       isSmallScreen: this.$vuetify.breakpoint.smAndDown,
-      submitDialog: false
+      submitDialog: false,
+      session: this.sessionData
     };
   },
   components: {
-    StandardLayout,
     TestLayout
   },
   methods: {
@@ -439,9 +417,6 @@ export default {
           this.response[i].status = 1;
       }
     },
-    updateSession() {
-      this.$store.dispatch("sessions/update", this.session);
-    },
     updateTime() {
       if (this.session) {
         this.response[this.questionIndex].timeElapsed += 1;
@@ -472,9 +447,7 @@ export default {
       }
     },
     submitTest() {
-      if (!this.session.completed) this.session.completed = true;
-      this.updateSession();
-      this.$router.push({ name: "result", params: { id: this.session.id } });
+      this.$emit("end");
     }
   },
   watch: {
@@ -484,30 +457,20 @@ export default {
     session: {
       deep: true,
       handler(newSession, oldSession) {
-        if (newSession.duration <= 0 && !newSession.completed) {
-          this.submitTest();
-          this.session.completed = true;
-        }
-        localStorage.session = JSON.stringify(newSession);
+        this.$emit("update", newSession);
       }
     }
   },
   computed: {
-    ...mapState({
-      status: state => state.sessions.status
-    }),
     test() {
-      if (this.session) return this.session.test;
-      else return {};
+      return this.session.test;
     },
     time() {
-      if (this.session) return this.session.duration;
-      else return null;
+      return this.session.duration;
     },
     sectionIndex: {
       get: function() {
-        if (this.session) return this.session.current.sectionIndex;
-        else return 0;
+        return this.session.current.sectionIndex;
       },
       set: function(value) {
         this.session.current.sectionIndex = value;
@@ -515,49 +478,35 @@ export default {
     },
     questionIndex: {
       get: function() {
-        if (this.session) return this.session.current.questionIndex;
-        else return 0;
+        return this.session.current.questionIndex;
       },
       set: function(value) {
         this.session.current.questionIndex = value;
       }
     },
     sections() {
-      if (this.test) return this.test.sections;
-      else return [];
+      return this.test.sections;
     },
     questions() {
-      if (this.test) return this.test.questions;
-      else return [];
+      return this.test.questions;
     },
     response() {
-      if (this.session) return this.session.response;
-      else return [];
+      return this.session.response;
     },
     answers() {
-      if (this.response) return this.response;
-      else return [];
+      return this.response;
     },
     currentQuestion() {
-      if (this.test && this.test.questions)
-        return this.test.questions[this.questionIndex];
-      else return [];
+      return this.test.questions[this.questionIndex];
     },
     currentAnswer() {
-      if (this.session) return this.response[this.questionIndex];
-      else return [];
+      return this.response[this.questionIndex];
     },
     currentSection() {
-      if (this.session) return this.test.sections[this.sectionIndex];
-      else return [];
+      return this.test.sections[this.sectionIndex];
     }
   },
   mounted() {
-    if (!this.session.practice)
-      setInterval(
-        this.updateSession,
-        parseInt(this.getRandom(18, 30) * 60 * 1000)
-      );
     setInterval(this.updateTime, 1000);
   }
 };

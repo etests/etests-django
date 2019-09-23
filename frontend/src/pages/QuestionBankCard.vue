@@ -1,112 +1,108 @@
 <template>
-    <ObjectCard>
-        <div slot="content" :class="$style.content">
-            <div :class="$style.title">
-            {{ testSeries.name }}
-            <br />
-            <span class="body-1 mx-1">{{ testSeries.institute.name }}</span>
-            </div>
-            <v-divider class="my-3" />
-            <v-layout row wrap>
-            <v-flex xs8>
-            <v-icon color="blue" small>mdi-file-outline</v-icon>
-            {{ testSeries.tests.length }} tests 
-            <span v-if="testSeries.exams.length">
-              ({{ testSeries.exams.join(", ") }})
-            </span>
-            </v-flex>
-            <v-flex xs4 class="blue--text subheading">
-                &#8377; {{ testSeries.price }}
-            </v-flex>
-            </v-layout>
-        </div>
-        <v-layout slot="actions" row fill-height py-2>
-            <Payment
-            :dialog="paymentDialog"
-            :testSeries="testSeries"
-            @close="paymentDialog = false"
-          />
-          <v-dialog
-            v-model="viewDialog"
-            fullscreen
-            hide-overlay
-            transition="slide-x-transition"
-          >
-            <v-card>
-              <v-toolbar dark color="primary">
-                <v-btn icon dark @click="viewDialog = false">
-                  <v-icon v-if="outerParent">mdi-arrow-left</v-icon>
-                  <v-icon v-else>close</v-icon>
-                </v-btn>
-                <v-toolbar-title>
-                  <span v-if="outerParent">
-                    {{ outerParent }}
-                    <v-icon>mdi-chevron-right</v-icon>
-                  </span>
-                  {{ testSeries.name }}
-                </v-toolbar-title>
-              </v-toolbar>
-              <v-layout row wrap align-center pa-3>
-                <ObjectCard v-for="test in testSeries.tests" :key="test.id">
-                  <div slot="content" :class="$style.content">
-                    <v-card-title :class="$style.title">{{ test.name }}</v-card-title>
-                    <v-divider class="mb-3 mx-3" />
-                    <v-icon color="blue" class="ml-3" small>mdi-calendar</v-icon>
-                    {{ formatDate(test.activation_time) }}
-                  </div>
-                  <div slot="actions">
-                    <v-card-actions>
-                      <v-layout row fill-height py-2>
-                        <v-flex xs4>
-                          <v-btn large color="primary" flat round>{{
-                            test.time_alotted
-                          }}</v-btn>
-                        </v-flex>
-                      </v-layout>
-                    </v-card-actions>
-                  </div>
-                </ObjectCard>
-              </v-layout>
-            </v-card>
-          </v-dialog>
-            <v-flex xs6>
-            <v-btn
-                round
-                outline
-                color="primary"
-                v-if="loggedIn && user.type=='student'"
-                @click="
-                testSeries = testSeries;
-                paymentDialog = true;
-                "
-            >
-                Buy
+  <ObjectCard>
+    <div slot="content" :class="$style.content">
+      <div :class="$style.title">
+        {{ testSeries.name }}
+        <br />
+        <span class="body-1 mx-1">{{ testSeries.institute.name }}</span>
+      </div>
+      <v-divider class="my-3" />
+      <v-layout row wrap>
+        <v-flex xs8>
+          <v-icon color="blue" small>mdi-file-outline</v-icon>
+          {{ testSeries.tests.length }} tests
+          <span v-if="testSeries.exams.length">
+            ({{ testSeries.exams.join(", ") }})
+          </span>
+        </v-flex>
+        <v-flex xs4 class="blue--text subheading">
+          &#8377; {{ testSeries.price }}
+        </v-flex>
+      </v-layout>
+    </div>
+    <v-layout slot="actions" row fill-height py-2>
+      <Payment
+        :dialog="paymentDialog"
+        :testSeries="testSeries"
+        @close="paymentDialog = false"
+      />
+      <v-dialog
+        v-model="viewDialog"
+        fullscreen
+        hide-overlay
+        transition="slide-x-transition"
+      >
+        <v-card>
+          <v-toolbar dark color="primary">
+            <v-btn icon dark @click="viewDialog = false">
+              <v-icon v-if="outerParent">mdi-arrow-left</v-icon>
+              <v-icon v-else>close</v-icon>
             </v-btn>
-            <v-btn
-                round
-                outline
-                color="primary"
-                v-else-if="!loggedIn"
-                disabled
-            >
-                Login to Buy
-            </v-btn>
-            </v-flex>
-            <v-flex xs6>
-            <v-btn
-                round
-                outline
-                color="primary"
-                @click="
-                testSeries = testSeries;
-                viewDialog = true;
-                "
-                >
-                  View
-                </v-btn>
-            </v-flex>
-        </v-layout>
-    </ObjectCard>
+            <v-toolbar-title>
+              <span v-if="outerParent">
+                {{ outerParent }}
+                <v-icon>mdi-chevron-right</v-icon>
+              </span>
+              {{ testSeries.name }}
+            </v-toolbar-title>
+          </v-toolbar>
+          <v-layout row wrap align-center pa-3>
+            <ObjectCard v-for="test in testSeries.tests" :key="test.id">
+              <div slot="content" :class="$style.content">
+                <v-card-title :class="$style.title">{{
+                  test.name
+                }}</v-card-title>
+                <v-divider class="mb-3 mx-3" />
+                <v-icon color="blue" class="ml-3" small>mdi-calendar</v-icon>
+                {{ formatDate(test.activation_time) }}
+              </div>
+              <div slot="actions">
+                <v-card-actions>
+                  <v-layout row fill-height py-2>
+                    <v-flex xs4>
+                      <v-btn large color="primary" flat round>{{
+                        test.time_alotted
+                      }}</v-btn>
+                    </v-flex>
+                  </v-layout>
+                </v-card-actions>
+              </div>
+            </ObjectCard>
+          </v-layout>
+        </v-card>
+      </v-dialog>
+      <v-flex xs6>
+        <v-btn
+          round
+          outline
+          color="primary"
+          v-if="loggedIn && user.type == 'student'"
+          @click="
+            testSeries = testSeries;
+            paymentDialog = true;
+          "
+        >
+          Buy
+        </v-btn>
+        <v-btn round outline color="primary" v-else-if="!loggedIn" disabled>
+          Login to Buy
+        </v-btn>
+      </v-flex>
+      <v-flex xs6>
+        <v-btn
+          round
+          outline
+          color="primary"
+          @click="
+            testSeries = testSeries;
+            viewDialog = true;
+          "
+        >
+          View
+        </v-btn>
+      </v-flex>
+    </v-layout>
+  </ObjectCard>
 </template>
 
 <script>
@@ -129,7 +125,7 @@ export default {
   data() {
     return {
       paymentDialog: false,
-      viewDialog: false,
+      viewDialog: false
     };
   },
   components: {

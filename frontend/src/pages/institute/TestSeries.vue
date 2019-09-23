@@ -170,10 +170,13 @@
                         >
                           <v-icon small>mdi-delete</v-icon>
                         </v-btn>
-                        <v-btn round icon small
+                        <v-btn
+                          round
+                          icon
+                          small
                           color="info lighten-1"
-                          @click="exportTest(props.item.id)" >
-
+                          @click="exportTest(props.item.id)"
+                        >
                           <v-icon small>mdi-export</v-icon>
                         </v-btn>
                       </td>
@@ -267,36 +270,36 @@ export default {
       const { dispatch } = this.$store;
       dispatch("tests/remove", id).then((this.deleteDialog = false));
     },
-    uploadData(){
+    uploadData() {
       // This method is used for importing test.
     },
     downloadData(data) {
-        var test = {
-          id: data.id,
-          time_alotted: data.time_alotted,
-          questions: data.questions,
-          sections: data.sections,
-          answers: data.answers
-        }
-        var a = document.createElement("a");
-        document.body.appendChild(a);
-        a.style = "display: none";
-        var json = JSON.stringify(test),
-        blob = new Blob([json], {type: "octet/stream"}),
+      var test = {
+        id: data.id,
+        time_alotted: data.time_alotted,
+        questions: data.questions,
+        sections: data.sections,
+        answers: data.answers
+      };
+      var a = document.createElement("a");
+      document.body.appendChild(a);
+      a.style = "display: none";
+      var json = JSON.stringify(test),
+        blob = new Blob([json], { type: "octet/stream" }),
         url = window.URL.createObjectURL(blob);
-        a.href = url;
-        var fileName = `${data.name}_${data.id}.json`;
-        a.download = fileName;
-        a.click();
-        window.URL.revokeObjectURL(url);
+      a.href = url;
+      var fileName = `${data.name}_${data.id}.json`;
+      a.download = fileName;
+      a.click();
+      window.URL.revokeObjectURL(url);
     },
-    async exportTest(id){
-      await this.$store.dispatch("tests/get",id);
+    async exportTest(id) {
+      await this.$store.dispatch("tests/get", id);
       var vm = this;
-      setTimeout(function(){
-        console.log(vm.exportedTest.name)
+      setTimeout(function() {
+        console.log(vm.exportedTest.name);
         vm.downloadData(vm.exportedTest);
-      },1000);
+      }, 1000);
     }
   },
   components: {

@@ -210,14 +210,21 @@ class Buyer(models.Model):
 class Payment(models.Model):
     id = models.AutoField(primary_key = True)
     transaction_id = models.CharField(max_length = 200)
-    receipt = models.FileField(upload_to = 'static/images/receipts/',default = 'static/images/receipts/Invoice,pdf', null = True)
+    receipt = models.FileField(upload_to = 'static/receipts/', null = True)
     date_added = models.DateField(auto_now_add = True)
     user = models.ForeignKey(User, related_name = "payments", blank = True, null = True, on_delete = models.SET_NULL)
     amount = models.IntegerField(default = 0)
     verified = models.BooleanField(default = False)
     test_series = models.ForeignKey(TestSeries, blank=True, null=True, on_delete=models.SET_NULL)
+    
     def __str__(self):
         return self.user.name
+
+    def save(self, *args, **kwargs):
+        if self.verified:
+            self.test_series.registered_students.add(self.user.student)
+
+        super(Payment, self).save(*args, **kwargs)
 
 
 class Variable(models.Model):

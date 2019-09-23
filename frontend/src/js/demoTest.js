@@ -11,7 +11,7 @@ export const demoSession = {
   ],
   test: {
     id: 0,
-    name: "Minor Test 1",
+    name: "Demo Test 1",
     practice: true,
     time_alotted: "03:00:00",
     sections: [

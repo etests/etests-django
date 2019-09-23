@@ -12,11 +12,13 @@ export const payments = {
       commit("createRequest");
       paymentService.create(data).then(
         data => {
-          commit("createSuccess")
-          dispatch("alert/success", "Payment details received successfully", { root: true });
+          commit("createSuccess");
+          dispatch("alert/success", "Payment details received successfully", {
+            root: true
+          });
         },
         error => {
-          commit("createFailure",error);
+          commit("createFailure", error);
           dispatch("alert/error", error, { root: true });
         }
       );

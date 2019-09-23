@@ -1,6 +1,14 @@
 import { sessionService } from "@/api/session.service";
 
-var session = JSON.parse(localStorage.getItem("session"));
+var session;
+
+try {
+  session = JSON.parse(localStorage.getItem("session")) || null;
+} catch (err) {
+  session = null;
+  console.log(err);
+}
+
 if (session && session.completed) {
   JSON.parse(localStorage.removeItem("session"));
   session = null;

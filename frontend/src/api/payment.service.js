@@ -1,5 +1,5 @@
 import * as axios from "axios";
-import handleResponse from "./handleResponse"
+import handleResponse from "./handleResponse";
 
 let token = JSON.parse(localStorage.getItem("token"));
 
@@ -15,7 +15,6 @@ async function create(data) {
     url: `${process.env.VUE_APP_API_URL}/payment/`,
     data,
     headers
-  })
+  });
   return response;
-  
 }

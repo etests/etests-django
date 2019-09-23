@@ -35,27 +35,37 @@
             </template>
             <template v-slot:expand="props">
               <v-sheet>
-                <v-layout
-                  align-center
-                >
+                <v-layout align-center>
+                  <v-flex xs4> </v-flex>
+                  <v-flex xs4> </v-flex>
                   <v-flex xs4>
-                  </v-flex>
-                  <v-flex xs4>
-                  </v-flex>
-                  <v-flex xs4>
-                    <v-btn round outline color="success" 
-                    v-if="!props.item.sessions.length && props.item.status==1" 
-                    @click="$router.push(`/test/${props.item.id}`)"
+                    <v-btn
+                      round
+                      outline
+                      color="success"
+                      v-if="
+                        !props.item.sessions.length && props.item.status == 1
+                      "
+                      @click="$router.push(`/test/${props.item.id}`)"
                     >
                       Start this test
                     </v-btn>
-                    <v-btn round outline disabled
-                    v-else-if="props.item.sessions.length && props.item.status==1"
+                    <v-btn
+                      round
+                      outline
+                      disabled
+                      v-else-if="
+                        props.item.sessions.length && props.item.status == 1
+                      "
                     >
                       Attempted
                     </v-btn>
-                    <v-btn round outline color="info" v-else
-                    @click="$router.push(`/test/${props.item.id}`)"
+                    <v-btn
+                      round
+                      outline
+                      color="info"
+                      v-else
+                      @click="$router.push(`/test/${props.item.id}`)"
                     >
                       Practice Attempt
                     </v-btn>
@@ -81,7 +91,7 @@
                       flat
                       color="info"
                       v-if="!session.completed"
-                      @click="$router.push(`/test/${props.item.id}`)"
+                      @click="$router.push(`/test/${props.item.id}/start`)"
                     >
                       <v-icon>mdi-play-pause</v-icon>
                     </v-btn>

@@ -74,6 +74,7 @@ export default {
     ...mapState({
       status: state => state.testSeries.status,
       loggedIn: state => state.authentication.status.loggedIn,
+      user: state => state.authentication.user
     }),
     testSeriesList() {
       return this.$store.state.testSeries.all.items;
