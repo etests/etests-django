@@ -8,9 +8,10 @@
         :disableDrawerClose="true"
         :showSearchBar="false"
         :dark="true"
+        :isAbsolute="true"
       />
       <div class="al-hero-cta">
-        <div class="text-xs-left">
+        <div class="text-xs-left mx-2">
           <h1 class="al-cta-title">
             Let's Make Conducting Online Tests Easier
           </h1>
@@ -40,16 +41,14 @@
           </template>
         </v-btn>
         <v-expansion-panel class="elevation-0" v-model="dialog" expand>
-          <v-expansion-panel-content class="transparent" hide-actions>
+          <v-expansion-panel-content class="transparent px-0" hide-actions>
             <v-card class="transparent elevation-0">
               <v-card-text>
                 <iframe
                   src="https://docs.google.com/forms/d/e/1FAIpQLSc1lTSlKR6X0Re4mHkUFd4Ixp0zAGrvj3-UUGSbjs2X_0Ay9Q/viewform?embedded=true"
-                  width="640"
-                  height="1594"
+                  width="100%"
+                  height="1600px"
                   frameborder="0"
-                  marginheight="0"
-                  marginwidth="0"
                   >Loading…</iframe
                 >
               </v-card-text>
@@ -102,7 +101,7 @@ export default {
   font-family: "Product Sans";
   max-width: 750px;
   margin: 0 auto;
-  padding: 60px 30px 100px 30px;
+  padding: 60px 10px 100px;
 }
 .al-hero-cta .al-cta-title {
   font-family: "Product Sans Thin";

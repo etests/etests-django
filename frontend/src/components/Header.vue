@@ -46,7 +46,8 @@
       clipped-left
       :scroll-off-screen="!drawer"
       :scroll-threshold="10"
-      :flat="offsetTop == 0"
+      :flat="offsetTop == 0 || isAbsolute"
+      :absolute="isAbsolute"
     >
       <v-toolbar-side-icon
         v-if="!disableDrawerClose || isSmallScreen"
@@ -211,30 +212,40 @@ export default {
           icon: "mdi-domain",
           link: { name: "institutes" }
         },
+        {
+          title: "Question Banks",
+          icon: "mdi-book",
+          link: { path: "/question-banks" }
+        },
+        {
+          title: "Exams",
+          icon: "mdi-newspaper-variant-outline",
+          link: { path: "/exams" }
+        },
 
         { divider: true },
 
+        {
+          title: "Tests",
+          icon: "mdi-note-multiple-outline",
+          link: { path: "/student/tests" },
+          requiresStudent: true
+        },
         {
           title: "Dashboard",
           icon: "mdi-view-dashboard-outline",
           link: { path: "/student/dashboard" },
           requiresStudent: true
         },
-        {
-          title: "Progress Report",
-          icon: "mdi-chart-line",
-          link: { name: "report" },
-          requiresStudent: true
-        },
-
-        {
-          title: "Exam Schedule",
-          icon: "mdi-calendar-text-outline",
-          link: { name: "schedule" },
-          requiresStudent: true
-        },
 
         { divider: true, requiresStudent: true },
+
+        {
+          title: "Tests",
+          icon: "mdi-note-multiple-outline",
+          link: { path: "/institute/tests" },
+          requiresInstitute: true
+        },
 
         {
           title: "Dashboard",
@@ -242,24 +253,12 @@ export default {
           link: { path: "/institute/dashboard" },
           requiresInstitute: true
         },
-        {
-          title: "Tests",
-          icon: "mdi-note-multiple-outline",
-          link: { path: "/institute/tests" },
-          requiresInstitute: true
-        },
-        {
-          title: "Notifications",
-          icon: "mdi-bell-ring-outline",
-          link: { path: "/institute/notifications" },
-          requiresInstitute: true
-        },
 
         { divider: true, requiresInstitute: true },
 
         {
           title: "FAQs",
-          icon: "mdi-account-group-outline",
+          icon: "mdi-help-circle-outline",
           link: { name: "faq" }
         }
       ],
