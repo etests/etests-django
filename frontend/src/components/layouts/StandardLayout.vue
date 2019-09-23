@@ -1,12 +1,12 @@
 <template>
-  <v-container fluid class="mt-4">
+  <v-container fluid class="mt-4 px-0">
     <Header
       :temporaryDrawer="true"
       :disableDrawerClose="true"
       :showSearchBar="false"
     >
     </Header>
-    <v-content app class="my-0 py-4">
+    <v-content app class="my-0 py-4 px-0">
       <v-layout row wrap :class="[$style.layout, 'mb-4 mt-4 pb-4']">
         <slot></slot>
       </v-layout>

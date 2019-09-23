@@ -4,14 +4,7 @@
       <v-flex xs12 md3>
         <v-card :class="$style.card"    elevation="0" class="transparent">
           <v-layout align-center justify-center column>
-            <v-flex xs12>
-              <v-img
-                :src="require('@/assets/images/footer/social.png')"
-                width="90"
-                class="mx-auto"
-                :class="$style.sticker"
-              />
-            </v-flex>
+         
             <v-flex xs12>
               <h3>Our Network</h3>
             </v-flex>
@@ -40,14 +33,7 @@
       <v-flex xs12 md3>
         <v-card :class="$style.card" elevation="0" class="transparent">
           <v-layout align-center justify-center column>
-            <v-flex xs12>
-              <v-img
-                :src="require('@/assets/images/footer/contact.png')"
-                width="90"
-                class="mx-auto"
-                :class="$style.sticker"
-              />
-            </v-flex>
+         
             <v-flex xs12>
               <h3>Contact Us</h3>
             </v-flex>
@@ -67,29 +53,21 @@
          <v-flex xs12 md3>
         <v-card :class="$style.card" elevation="0" class="transparent">
           <v-layout align-center justify-center column>
-            <v-flex xs12>
-              <v-img
-                :src="require('@/assets/images/footer/links.png')"
-                width="90"
-                class="mx-auto"
-                :class="$style.sticker"
-              />
-            </v-flex>
+        
             <v-flex xs12>
               <h3>Let Us Help You</h3>
               <v-list class="transparent">
                 <h4>100% support</h4>
                 <v-list-tile-content>
-                <v-list-tile-title class="subheading" >For student</v-list-tile-title>
-               <p>You can Practice all types of 
+               
+               <p v-if="userType==='student'">You can Practice all types of 
                  questions including Single Correct, Multiple Correct, Integer Types, Matrix Match for your Competitive exams. After the 
                  completion of exam the detailed analysis of your performance using pie charts and bar graphs are generated. You can review each
                  question and responses made by you including the time you spent on each question during the test. We promise to give you 100% support in the services. Any technical issue raised regarding exams or question banks or any
                   payment made by you will be resolved within 24 hrs.</p>
               </v-list-tile-content>
                <v-list-tile-content>
-                <v-list-tile-title class="subheading" >For Institutes</v-list-tile-title>
-               <p>Our online testing platform is developed and tested by team of IITians. We have support for wide range of examination pattern
+               <p v-if="userType==='institute'">Our online testing platform is developed and tested by team of IITians. We have support for wide range of examination pattern
                  There is special support for Pre-Engineering(including JEE Mains And JEE Advance) and Premedical( including NEET and AIMS) exams.
                  You can create test for your batches or question banks using our test editor. The text editor provides MS word like text editor for creating 
                  questions. Apart from this you can also send us the pdf of test papers for creation of your tests. We promise to resolve any technical issue within 
@@ -105,20 +83,14 @@
         <v-flex xs12 md3>
         <v-card :class="$style.card" elevation="0" class="transparent">
           <v-layout align-center justify-center column>
-            <v-flex xs12>
-              <v-img
-                :src="require('@/assets/images/footer/links.png')"
-                width="90"
-                class="mx-auto"
-                :class="$style.sticker"
-              />
-            </v-flex>
+         
             <v-flex xs12>
               <h3>Important Links</h3>
-              <p>Careers(Work From Home)</p>
-              <p>FAQs</p>
-              <p>Question Banks</p>
-              <p>Dashboard</p>
+              <router-link to="/career"><p>Careers(Work From Home)</p></router-link>
+              <router-link to="/faq"><p>FAQs</p></router-link>
+              <router-link to="/question-banks"><p>Question Banks</p></router-link>
+              <router-link to="/exams"><p  v-if="userType=='student'">Exams</p></router-link>
+              <router-link :to="`/${userType}/dashboard`"><p v-if="loggedIn">Dashboard</p></router-link>
             </v-flex>
           </v-layout>
         </v-card>
@@ -152,6 +124,14 @@ export default {
         { icon: "mdi-instagram", link: "" }
       ]
     };
+  },
+  computed: {
+     userType() {
+      return this.$store.state.authentication.user.type;
+    },
+    loggedIn(){
+      return this.$store.state.authentication.status.loggedIn;
+    }
   },
   components: {
     SectionLayout

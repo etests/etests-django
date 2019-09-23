@@ -57,10 +57,7 @@ export default {
   },
   computed: {
     disableFullpage() {
-      return (
-        window.innerHeight <= 450 &&
-        window.matchMedia("(orientation: landscape)").matches
-      );
+      return window.innerHeight <= 450 || window.innerWidth <= 970;
     },
     user() {
       return this.$store.state.authentication.user;

@@ -15,6 +15,14 @@ const router = new Router({
       }
     },
     {
+      path: "/career",
+      name: "career",
+      component: () => import("@/pages/career.vue"),
+      meta: {
+        title: "Career"
+      }
+    },
+    {
       path: "/home",
       name: "home",
       component: () => import("@/pages/HomePage"),
