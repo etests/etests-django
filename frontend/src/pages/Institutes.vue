@@ -74,7 +74,7 @@
       </v-card>
     </v-dialog>
 
-    <v-flex xs12>
+    <v-flex xs12 class="px-3">
       <v-text-field placeholder="Search Institutes" v-model="searchInstitute" />
     </v-flex>
 
@@ -221,7 +221,7 @@ export default {
   border-radius: 8px;
   height: 220px;
   width: 270px;
-  margin: 10px;
+  margin: 20px;
   .img{
     cursor: pointer;
   }

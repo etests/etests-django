@@ -172,7 +172,7 @@
         </v-layout>
       </v-card>
     </v-dialog>
-    <v-flex xs12>
+    <v-flex xs12 class="px-3">
       <v-card :class="[$style.testCard, 'title elevation-3 text-xs-center']">
         <v-card-title>
           Tests for your batches

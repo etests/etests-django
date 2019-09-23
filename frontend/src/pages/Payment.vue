@@ -48,7 +48,6 @@
                 <input
                   type="file"
                   v-show="false"
-                  id="receipt"
                   ref="receipt"
                   v-on:change="handleFileUpload()"
                 />

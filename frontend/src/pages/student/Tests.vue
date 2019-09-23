@@ -1,6 +1,6 @@
 <template>
   <StandardLayout>
-    <v-flex xs12>
+    <v-flex xs12 class="px-3">
       <v-card :class="[$style.card, 'title elevation-3']">
         <v-card-title>
           Tests for your batch

@@ -1,6 +1,6 @@
 <template>
   <StandardLayout>
-    <v-flex xs12>
+    <v-flex xs12 class="px-3">
       <v-card class="elevation-2">
         <v-card-title class="title">FAQ</v-card-title>
         <v-expansion-panel>

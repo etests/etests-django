@@ -24,7 +24,7 @@ const router = new Router({
     },
     {
       path: "/terms",
-      name: "career",
+      name: "terms",
       component: () => import("@/pages/terms.vue"),
       meta: {
         title: "Terms And Conditions"
