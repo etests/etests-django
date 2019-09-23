@@ -23,6 +23,14 @@ const router = new Router({
       }
     },
     {
+      path: "/terms",
+      name: "career",
+      component: () => import("@/pages/terms.vue"),
+      meta: {
+        title: "Terms And Conditions"
+      }
+    },
+    {
       path: "/home",
       name: "home",
       component: () => import("@/pages/HomePage"),

@@ -86,15 +86,27 @@
          
             <v-flex xs12>
               <h3>Important Links</h3>
+              <br/>
               <router-link to="/career"><p>Careers(Work From Home)</p></router-link>
               <router-link to="/faq"><p>FAQs</p></router-link>
               <router-link to="/question-banks"><p>Question Banks</p></router-link>
               <router-link to="/exams"><p  v-if="userType=='student'">Exams</p></router-link>
               <router-link :to="`/${userType}/dashboard`"><p v-if="loggedIn">Dashboard</p></router-link>
+              <router-link to="/terms"><p>Terms & Conditions</p></router-link>
             </v-flex>
           </v-layout>
         </v-card>
       </v-flex>
+      <v-container align-end fill-height>
+       <v-flex
+        class="transparent"
+        py-3
+        text-xs-center
+        xs12
+      >
+        &copy;2019 — <strong>eTests All Rights Reserved</strong>
+      </v-flex>
+      </v-container>
     </v-layout>
   </SectionLayout>
 </template>
