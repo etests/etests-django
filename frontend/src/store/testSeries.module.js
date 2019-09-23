@@ -104,13 +104,14 @@ export const testSeries = {
       state.status = { error };
     },
     getAllRequest(state) {
-      state.all = { loading: true };
+      state.status = { loading: true };
     },
     getAllSuccess(state, testSeries) {
+      state.status = { };
       state.all = { items: testSeries };
     },
     getAllFailure(state, error) {
-      state.all = { error };
+      state.status = { error };
     },
     getMyRequest(state) {
       state.my = { loading: true };

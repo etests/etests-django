@@ -7,7 +7,7 @@
     >
     </Header>
     <v-content app class="my-0 py-4 px-0">
-      <v-layout row wrap :class="[$style.layout, 'mb-4 mt-4 pb-4']">
+      <v-layout row wrap :class="[$style.layout, 'my-4 mx-2 pb-4']">
         <slot></slot>
       </v-layout>
     </v-content>

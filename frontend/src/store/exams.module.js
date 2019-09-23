@@ -9,7 +9,7 @@ export const exams = {
   namespaced: true,
   state: initialState,
   actions: {
-    getAll({ dispatch, commit }) {
+    getAll({ commit }) {
       commit("getAllRequest");
       examService.getAll().then(
         items => {

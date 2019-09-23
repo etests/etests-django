@@ -18,9 +18,6 @@
         </v-toolbar>
 
         <v-layout row wrap align-center pa-3>
-          <template v-if="status.loading">
-            <LoadingCard v-for="i in 4" :key="i" />
-          </template>
           <QuestionBankCard
             v-for="testSeries in selectedExam.test_series"
             :key="testSeries.id"
@@ -34,6 +31,9 @@
       <v-text-field placeholder="Search Exams" v-model="searchExam" />
     </v-flex>
 
+    <template v-if="status.loading">
+      <LoadingCard v-for="i in 4" :key="i" />
+    </template>
     <v-card
       v-for="exam in filteredExams"
       :key="exam.id"
@@ -92,11 +92,9 @@ export default {
   },
   computed: {
     ...mapState({
-      status: state => state.exams.status
-    }),
-    exams() {
-      return this.$store.state.exams.items;
-    }
+      status: state => state.exams.status,
+      exams: state => state.exams.items
+    })
   },
   methods: {
     formatDate(dateString) {

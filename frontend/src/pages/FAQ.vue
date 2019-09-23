@@ -1,8 +1,8 @@
 <template>
   <StandardLayout>
     <v-flex xs12 class="px-3">
-      <v-card class="elevation-2">
-        <v-card-title class="title">FAQ</v-card-title>
+      <v-card :class="[$style.stepCard, 'elevation-2']">
+        <v-card-title :class="$style.title">FAQ</v-card-title>
         <v-expansion-panel>
           <v-expansion-panel-content
             :class="$style.stepCard"
@@ -32,19 +32,19 @@ export default {
     return {
       steps: [
         {
-          title: "Can the limit of a polynomial involving infinity be finite?",
+          title: "How to join eTests?",
           description:
-            "I have been working around with limits involving infinity and was stuck with this limit: limx→∞[(x5+10x4+3)c−x] Can this limit have some finite value for any real value of c? If yes then what is c and the limit? I tried putting x=1/t and letting limt→0, then I used L'Hospital's Rule but ended up having another 0/0 form. Please help me."
+            "Click on Login / Register button at the top."
         },
         {
-          title: "Can the limit of a polynomial involving infinity be finite?",
+          title: "Can I attempt question bank tests any number of times?",
           description:
-            "I have been working around with limits involving infinity and was stuck with this limit: limx→∞[(x5+10x4+3)c−x] Can this limit have some finite value for any real value of c? If yes then what is c and the limit? I tried putting x=1/t and letting limt→0, then I used L'Hospital's Rule but ended up having another 0/0 form. Please help me."
+            "Yes, you can."
         },
         {
-          title: "Can the limit of a polynomial involving infinity be finite?",
+          title: "How to add questions to a test?",
           description:
-            "I have been working around with limits involving infinity and was stuck with this limit: limx→∞[(x5+10x4+3)c−x] Can this limit have some finite value for any real value of c? If yes then what is c and the limit? I tried putting x=1/t and letting limt→0, then I used L'Hospital's Rule but ended up having another 0/0 form. Please help me."
+            "Go to tests and click on pencil icon to launch test editor or send us the questions on Google form link."
         }
       ]
     };
@@ -64,13 +64,14 @@ export default {
 
   .step {
     font-size: 1.2rem;
-    margin: 8px auto;
+    margin: auto;
   }
 
   .title {
     font-size: 1.875rem;
     line-height: 1.75rem;
-    color: #202124;
+    margin: 5px;
+    color: #28cc9e;
   }
 
   .description {
@@ -79,6 +80,7 @@ export default {
     font-size: 1.08rem;
     line-height: 1.25rem;
     color: #5f6368;
+    margin: 0 15px;
   }
 }
 </style>
