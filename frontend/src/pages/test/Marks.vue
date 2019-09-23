@@ -3,7 +3,13 @@
     <v-card-title>
       {{ testName.toUpperCase() }}
       <v-spacer />
-      <v-btn round outline color="primary" v-if="report.result" @click="$emit('review')">
+      <v-btn
+        round
+        outline
+        color="primary"
+        v-if="report.result"
+        @click="$emit('review')"
+      >
         Review
       </v-btn>
     </v-card-title>

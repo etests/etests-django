@@ -10,9 +10,9 @@
         The on-screen computer countdown timer on the top middle corner of
         computer screen will display the remaining time available to you for
         completing the paper. When the on-screen countdown timer reaches zero,
-        the paper will end by itself – No input from your side will be
-        accepted after the timer reaches zero and whatever answers have been
-        saved by you will automatically be submitted for evaluation.
+        the paper will end by itself – No input from your side will be accepted
+        after the timer reaches zero and whatever answers have been saved by you
+        will automatically be submitted for evaluation.
       </li>
       <li>
         You cannot attempt any other test if another test is running (or
@@ -24,26 +24,26 @@
       </li>
       <li>
         After The test is submitted you can only reattempt it after the result
-        is declared. If the Test is question Bank you can attempt it at any
-        time and see your result and review your responses solution
+        is declared. If the Test is question Bank you can attempt it at any time
+        and see your result and review your responses solution
       </li>
       <li>
         The Questions Palette displayed on the right side of screen will show
         the status of each question using one of the following symbols:
         <ul>
           <li>
-            <v-btn autofocus fab dark small><span>1</span></v-btn> Not Visited: You
-            haven't visited the question yet
+            <v-btn autofocus fab dark small><span>1</span></v-btn> Not Visited:
+            You haven't visited the question yet
           </li>
           <li>
             <v-btn fab dark small color="error"><span>2</span></v-btn
-            >Visited Unanswered: You have visited the question but not
-            answered yet
+            >Visited Unanswered: You have visited the question but not answered
+            yet
           </li>
           <li>
             <v-btn fab dark small color="info"><span>3</span></v-btn
-            >Unanswered and Marked: You haven't answered the question but
-            marked it to review later.
+            >Unanswered and Marked: You haven't answered the question but marked
+            it to review later.
           </li>
           <li>
             <v-btn fab dark small color="purple"><span>4</span></v-btn
@@ -105,15 +105,14 @@
       </li>
       <br />
       <li>
-        Marking Scheme and Type of question is shown at the top of each
-        question
+        Marking Scheme and Type of question is shown at the top of each question
       </li>
       <br /><br />
       I have read and understood the instructions. All computer hardware
-      allotted to me are in proper working condition. I declare that I am not
-      in possession of / not wearing / not carrying any prohibited gadget like
-      mobile phone, bluetooth devices etc. /any prohibited material with me
-      into the Examination Hall.I agree that in case of not adhering to the
+      allotted to me are in proper working condition. I declare that I am not in
+      possession of / not wearing / not carrying any prohibited gadget like
+      mobile phone, bluetooth devices etc. /any prohibited material with me into
+      the Examination Hall.I agree that in case of not adhering to the
       instructions, I shall be liable to be debarred from this Test and/or to
       disciplinary action, which may include ban from future Tests /
       Examinations

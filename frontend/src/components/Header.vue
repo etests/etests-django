@@ -40,7 +40,7 @@
       </v-list>
     </v-navigation-drawer>
     <v-toolbar
-      color="white"
+      :color="color"
       tabs
       app
       clipped-left
@@ -52,13 +52,20 @@
         v-if="!disableDrawerClose || isSmallScreen"
         @click="drawer = !drawer"
       >
-        <v-icon color="primary">mdi-menu</v-icon>
+        <v-icon :color="textColor">mdi-menu</v-icon>
       </v-toolbar-side-icon>
 
       <router-link :to="{ name: 'home' }">
         <v-toolbar-title class="headline">
-          <img src="~@/assets/logos/etests.png" :class="$style.logo" />
-          <span><strong>eTests</strong></span>
+          <img
+            :src="
+              require(`@/assets/logos/${
+                dark ? 'etests_light.png' : 'etests.png'
+              }`)
+            "
+            :class="$style.logo"
+          />
+          <span :class="`${textColor}--text`"><strong>eTests</strong></span>
         </v-toolbar-title>
       </router-link>
 
@@ -82,7 +89,7 @@
             <template v-for="item in topNavMenu">
               <v-btn
                 flat
-                color="primary"
+                :color="textColor"
                 :to="item.link"
                 :key="item.title"
                 v-if="(item.requiresLogin && loggedIn) || !item.requiresLogin"
@@ -102,7 +109,7 @@
 
       <v-menu bottom left transition="slide-y-transition" v-if="loggedIn">
         <template v-slot:activator="{ on }">
-          <v-btn flat color="primary" icon v-on="on">
+          <v-btn flat :color="textColor" icon v-on="on">
             <v-icon large>mdi-account-circle</v-icon>
           </v-btn>
         </template>
@@ -147,6 +154,21 @@ import Login from "./Login";
 
 export default {
   props: {
+    dark: {
+      required: false,
+      default: false,
+      type: Boolean
+    },
+    textColor: {
+      required: false,
+      default: "primary",
+      type: String
+    },
+    color: {
+      required: false,
+      default: "white",
+      type: String
+    },
     isAbsolute: {
       reuired: false,
       default: false,

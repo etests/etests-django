@@ -229,11 +229,11 @@ export const demoTests = {
       ) {
         var arrayOfChildrenNames = responses[i].answer;
         var arrayOfFamilyMemberNames = answers[i].answer;
-        var isarrayOfNamesSubsetOfFamily = arrayOfChildrenNames.every(
-          function(val) {
-            return arrayOfFamilyMemberNames.indexOf(val) >= 0;
-          }
-        );
+        var isarrayOfNamesSubsetOfFamily = arrayOfChildrenNames.every(function(
+          val
+        ) {
+          return arrayOfFamilyMemberNames.indexOf(val) >= 0;
+        });
         if (
           isarrayOfNamesSubsetOfFamily &&
           arrayOfChildrenNames.length < arrayOfFamilyMemberNames.length &&
@@ -354,11 +354,10 @@ export const demoTests = {
     for (var i = 0; i < test.questions.length; i++) {
       session.response.push({
         answer: [],
-        status: (i==0 ? 1 : 0),
+        status: i == 0 ? 1 : 0,
         timeElapsed: 0
       });
     }
     return session;
   }
-}
-
+};

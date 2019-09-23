@@ -8,7 +8,7 @@
             class="white--text"
             height="250px"
             width="250px"
-            src="https://www.theuiaa.org/wp-content/uploads/2017/12/2018_banner.jpg"
+            src="http://vyfhealth.com/wp-content/uploads/2015/10/yoga-placeholder1.jpg"
           />
         </v-flex>
         <v-flex xs12 lg6>

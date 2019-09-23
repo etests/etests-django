@@ -6,7 +6,7 @@
         <Marks :report="report" :demo="demo" @review="reviewing = true" />
         <Analysis v-if="report && report.result" :report="report" />
         <v-card v-else :class="[$style.card, $style.message]">
-            Analysis of your test is not generated yet.
+          Analysis of your test is not generated yet.
         </v-card>
       </v-flex>
       <v-card v-else :class="[$style.card, 'elevation-3']">
@@ -15,19 +15,15 @@
             {{ error }}
           </v-flex>
           <v-flex xs12 v-else-if="loading" :class="$style.loading">
-            <v-progress-circular
-              :size="50"
-              color="primary"
-              indeterminate
-            />
+            <v-progress-circular :size="50" color="primary" indeterminate />
           </v-flex>
           <v-flex xs12 v-else @keyup.enter="startTest">
             <Instructions />
             <v-btn
-            round
-            style="width:160px;"
-            class="primary mx-auto"
-            @click="startTest"
+              round
+              style="width:160px;"
+              class="primary mx-auto"
+              @click="startTest"
             >
               Start Test
             </v-btn>
@@ -36,10 +32,7 @@
       </v-card>
     </StandardLayout>
     <template v-else-if="session !== null && !completed">
-      <Test
-        :sessionData="session"
-        @update="updateSession"
-      />
+      <Test :sessionData="session" @update="updateSession" />
     </template>
   </div>
 </template>
@@ -76,12 +69,12 @@ export default {
   computed: {
     ...mapState({
       storedSession: state => state.sessions.session,
-      status: state => state.sessions.status,
+      status: state => state.sessions.status
     })
   },
   methods: {
-    fetchSession(){
-       this.$store.dispatch("sessions/get", this.id)
+    fetchSession() {
+      this.$store.dispatch("sessions/get", this.id);
     },
     async startTest() {
       this.loading = true;
@@ -96,17 +89,15 @@ export default {
         }
         var vm = this;
         setTimeout(_ => {
-          if(vm.status.error){
+          if (vm.status.error) {
             vm.error = vm.status.error;
             this.$Progress.fail();
-          }
-          else{
-            if(localStorage.getItem(session)){
+          } else {
+            if (localStorage.getItem(session)) {
               var session = JSON.parse(localStorage.getItem(session));
               session.test = vm.storedSession.session;
               vm.session = session;
-            }
-            else{
+            } else {
               vm.session = vm.storedSession;
               var { test, ...session } = vm.storedSession;
               session.testId = test.id;
@@ -116,25 +107,24 @@ export default {
             vm.loading = false;
             this.$Progress.finish();
           }
-        }, 500) 
+        }, 500);
 
-        if(this.session && !this.session.practice) setInterval(
-          this.syncSession,
-          parseInt(this.getRandom(18, 30) * 60 * 1000)
-        );
-
+        if (this.session && !this.session.practice)
+          setInterval(
+            this.syncSession,
+            parseInt(this.getRandom(18, 30) * 60 * 1000)
+          );
       } else {
-        if(demoTests.tests.length > this.id ){
+        if (demoTests.tests.length > this.id) {
           var session = demoTests.newSession(demoTests.tests[this.id]);
           this.session = session;
           session.testId = this.id;
           localStorage.setItem("session", JSON.stringify(session));
           this.started = true;
           this.$Progress.finish();
-        }
-        else{
-            this.error = "This test does not exist."
-            this.$Progress.fail();
+        } else {
+          this.error = "This test does not exist.";
+          this.$Progress.fail();
         }
       }
     },
@@ -142,17 +132,16 @@ export default {
       this.loading = true;
       this.completed = true;
       this.$Progress.start();
-      if(this.demo && this.session.isDemo){
+      if (this.demo && this.session.isDemo) {
         this.report = demoTests.getResult(this.session);
         localStorage.removeItem("session");
         this.loading = false;
         this.$Progress.finish();
-      }
-      else{
+      } else {
         await this.syncSession();
         var vm = this;
         setTimeout(_ => {
-          if(vm.status.updated){
+          if (vm.status.updated) {
             vm.report = vm.storedSession;
             localStorage.removeItem("session");
             this.loading = false;
@@ -173,10 +162,14 @@ export default {
       this.$store.dispatch("sessions/update", this.session);
     }
   },
-  created(){
-    if(localStorage.getItem("session")){
+  created() {
+    if (localStorage.getItem("session")) {
       var session = JSON.parse(localStorage.getItem("session"));
-      if(session && this.demo === session.isDemo && session.testId === this.id){
+      if (
+        session &&
+        this.demo === session.isDemo &&
+        session.testId === this.id
+      ) {
         this.startTest();
       }
     }
@@ -191,7 +184,6 @@ export default {
   }
 };
 </script>
-
 
 <style module lang="stylus">
 @require '~@/stylus/components';

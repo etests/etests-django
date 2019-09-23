@@ -17,7 +17,7 @@ const router = new Router({
     {
       path: "/career",
       name: "career",
-      component: () => import("@/pages/career.vue"),
+      component: () => import("@/pages/Career.vue"),
       meta: {
         title: "Career"
       }
@@ -25,7 +25,7 @@ const router = new Router({
     {
       path: "/terms",
       name: "terms",
-      component: () => import("@/pages/terms.vue"),
+      component: () => import("@/pages/Terms.vue"),
       meta: {
         title: "Terms And Conditions"
       }

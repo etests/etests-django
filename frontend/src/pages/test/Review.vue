@@ -23,8 +23,7 @@
       <v-chip color="grey darken-2" outline small>
         <strong> Q{{ questionIndex + 1 }} </strong>
       </v-chip>
-      <span :class="$style.questionText" v-html="currentQuestion.text">
-      </span>
+      <span :class="$style.questionText" v-html="currentQuestion.text"> </span>
     </template>
 
     <v-layout slot="options">
@@ -215,7 +214,6 @@
 
 <script>
 import TestLayout from "@/components/test/TestLayout.vue";
-import StandardLayout from "@/components/layouts/StandardLayout.vue";
 import { mapState } from "vuex";
 
 export default {
@@ -247,7 +245,6 @@ export default {
     };
   },
   components: {
-    StandardLayout,
     TestLayout
   },
   methods: {

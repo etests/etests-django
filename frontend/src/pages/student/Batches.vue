@@ -38,12 +38,12 @@
         </template>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="info" flat @click="joinDialog = false">
+          <v-btn color="primary" flat @click="joinDialog = false">
             Close
           </v-btn>
           <v-btn
             v-if="!joining && !joined"
-            color="info"
+            color="primary"
             @click="join(currentBatch.id)"
           >
             Join
@@ -77,7 +77,7 @@
               <v-card-actions>
                 <v-btn
                   flat
-                  color="info"
+                  color="primary"
                   v-if="!institute.enrollments.includes(batch.id)"
                   @click="
                     currentBatch = batch;
@@ -86,7 +86,7 @@
                 >
                   Join
                 </v-btn>
-                <v-btn v-else color="info" flat>
+                <v-btn v-else color="primary" flat>
                   Open
                 </v-btn>
               </v-card-actions>

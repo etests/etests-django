@@ -99,7 +99,12 @@
                           >
                             <v-icon>mdi-file-find</v-icon>
                           </v-btn>
-                          <v-btn v-if="session.practice" icon flat color="error">
+                          <v-btn
+                            v-if="session.practice"
+                            icon
+                            flat
+                            color="error"
+                          >
                             <v-icon>mdi-delete</v-icon>
                           </v-btn>
                         </v-flex>

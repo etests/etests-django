@@ -1,19 +1,19 @@
 <template>
   <v-container>
     <v-layout row wrap>
-      <v-flex xs12 lg5 mb-3 >
-        <v-expansion-panel popout class="transparent" >
+      <v-flex xs12 lg5 mb-3>
+        <v-expansion-panel popout class="transparent">
           <v-expansion-panel-content
             :class="$style.stepCard"
             v-for="(step, i) in steps"
             :key="i"
-            
-          class="transparent" >
+            class="transparent"
+          >
             <template v-slot:header>
-              <div :class="$style.step"  >{{ step.title }}</div>
+              <div :class="$style.step">{{ step.title }}</div>
             </template>
             <v-card class="transparent">
-              <v-card-text :class="$style.description" >
+              <v-card-text :class="$style.description">
                 {{ step.description }}
               </v-card-text>
             </v-card>

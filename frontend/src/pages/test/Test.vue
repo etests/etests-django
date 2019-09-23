@@ -10,7 +10,15 @@
           <v-btn color="red" flat @click="submitDialog = false">
             Cancel
           </v-btn>
-          <v-btn dark color="primary" :loading="submitting" @click="loader = 'loading'; submitTest();">
+          <v-btn
+            dark
+            color="primary"
+            :loading="submitting"
+            @click="
+              loader = 'loading';
+              submitTest();
+            "
+          >
             Submit
           </v-btn>
         </v-card-actions>
@@ -233,14 +241,18 @@
         <v-btn
           :disabled="this.questionIndex === 0"
           :outline="this.questionIndex === 0"
-          icon color="primary" @click="previousQuestion()"
+          icon
+          color="primary"
+          @click="previousQuestion()"
         >
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
         <v-btn
-          :disabled="this.questionIndex === this.questions.length-1"
-          :outline="this.questionIndex === this.questions.length-1"
-          icon color="primary" @click="nextQuestion()"
+          :disabled="this.questionIndex === this.questions.length - 1"
+          :outline="this.questionIndex === this.questions.length - 1"
+          icon
+          color="primary"
+          @click="nextQuestion()"
         >
           <v-icon>mdi-arrow-right</v-icon>
         </v-btn>
@@ -512,13 +524,12 @@ export default {
     },
     currentSection() {
       return this.test.sections[this.sectionIndex];
-    },
-    
+    }
   },
   mounted() {
     setInterval(this.updateTime, 1000);
     var vm = this;
-    setInterval(function(){
+    setInterval(function() {
       vm.$emit("update", vm.session);
     }, 5000);
   }
