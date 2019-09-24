@@ -30,11 +30,11 @@ export default {
         //   image: require("@/assets/images/dashboard/transactions.png"),
         //   link: { path: "transactions" }
         // },
-        {
-          name: "Notifications",
-          image: require("@/assets/images/dashboard/notifications.png"),
-          link: { path: "notifications" }
-        },
+        // {
+        //   name: "Notifications",
+        //   image: require("@/assets/images/dashboard/notifications.png"),
+        //   link: { path: "notifications" }
+        // },
         // {
         //   name: "Discuss",
         //   image: require("@/assets/images/dashboard/discuss.png"),
@@ -49,6 +49,11 @@ export default {
           name: "Batches",
           image: require("@/assets/images/dashboard/groups.png"),
           link: { path: "batches" }
+        },
+          {
+          name: "Buyers",
+          image: require("@/assets/images/dashboard/groups.png"),
+          link: { path: "buyers" }
         }
       ]
     };

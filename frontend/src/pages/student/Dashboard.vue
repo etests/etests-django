@@ -25,11 +25,11 @@ export default {
           image: require("@/assets/images/dashboard/testseries.png"),
           link: { path: "question-banks" }
         },
-        {
-          name: "Notifications",
-          image: require("@/assets/images/dashboard/notifications.png"),
-          link: { path: "notifications" }
-        },
+        // {
+        //   name: "Notifications",
+        //   image: require("@/assets/images/dashboard/notifications.png"),
+        //   link: { path: "notifications" }
+        // },
         // {
         //   name: "Discuss",
         //   image: require("@/assets/images/dashboard/discuss.png"),
