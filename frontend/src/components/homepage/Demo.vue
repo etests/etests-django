@@ -35,7 +35,7 @@
             dark
             large
             color="primary"
-            @click="$router.push('/demo/test')"
+            @click="$router.push('/test/demo/0')"
             >attempt demo test</v-btn
           >
         </v-sheet>

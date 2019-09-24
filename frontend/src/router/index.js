@@ -130,6 +130,14 @@ const router = new Router({
           }
         },
         {
+          path: "instruction",
+          name: "institute-instruction",
+          component: () => import("@/components/institute/tests/instructions.vue"),
+          meta: {
+            title: "Instructions"
+          }
+        },
+        {
           path: "transactions",
           name: "institute-transactions",
           component: () => import("@/pages/institute/Transactions"),
