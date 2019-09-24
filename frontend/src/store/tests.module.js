@@ -17,11 +17,6 @@ export const tests = {
       testService.get(id).then(
         test => {
           commit("getSuccess", test);
-          setTimeout(() => {
-            dispatch("alert/success", "Test fetched successfully!", {
-              root: true
-            });
-          });
         },
         error => {
           commit("getFailure", error);
@@ -144,7 +139,7 @@ export const tests = {
       state.status = { loading: true };
     },
     getAllSuccess(state, tests) {
-      state.status = {};
+      state.status = {exists: true};
       state.all = { items: tests };
     },
     getAllFailure(state, error) {

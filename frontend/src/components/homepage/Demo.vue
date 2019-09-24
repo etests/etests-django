@@ -20,7 +20,7 @@
             dark
             large
             color="primary"
-            @click="$router.push('/demo/edit-test')"
+            @click="$router.push('/demo/edit')"
             >create demo test</v-btn
           >
         </v-sheet>

@@ -51,7 +51,7 @@ export default {
   props: {
     demo: {
       required: false,
-      default: true
+      default: false
     }
   },
   data() {
@@ -100,7 +100,8 @@ export default {
             } else {
               vm.session = vm.storedSession;
               var { test, ...session } = vm.storedSession;
-              session.testId = test.id;
+              session.testId = this.id;
+              session.isDemo= false;
               localStorage.setItem("session", JSON.stringify(session));
             }
             vm.started = true;
@@ -115,18 +116,27 @@ export default {
             parseInt(this.getRandom(18, 30) * 60 * 1000)
           );
       } else {
-        if (demoTests.tests.length > this.id) {
-          var session = demoTests.newSession(demoTests.tests[this.id]);
-          this.session = session;
-          session.testId = this.id;
-          localStorage.setItem("session", JSON.stringify(session));
-          this.started = true;
-          this.$Progress.finish();
-        } else {
-          this.error = "This test does not exist.";
-          this.$Progress.fail();
-        }
-      }
+          if(
+            localStorage.getItem("session") &&
+            JSON.parse(localStorage.getItem("session")).test &&
+            JSON.parse(localStorage.getItem("session")).testId == this.id
+          ){
+              this.session = JSON.parse(localStorage.getItem("session"));
+              this.started = true;
+              this.$Progress.finish();
+          }
+          else if (demoTests.tests.length > this.id) {
+            var session = demoTests.newSession(demoTests.tests[this.id]);
+            this.session = session;
+            session.testId = this.id;
+            localStorage.setItem("session", JSON.stringify(session));
+            this.started = true;
+            this.$Progress.finish();
+          } else {
+            this.error = "This test does not exist.";
+            this.$Progress.fail();
+          }
+        } 
     },
     async submitTest() {
       this.loading = true;
@@ -151,6 +161,7 @@ export default {
       }
     },
     updateSession(newSession) {
+      this.session = newSession;
       var { test, ...session } = newSession;
       session.testId = test.id;
       localStorage.session = JSON.stringify(session);
@@ -187,6 +198,11 @@ export default {
 
 <style module lang="stylus">
 @require '~@/stylus/components';
+.card{
+  width: 950px;
+  max-width: 100%;
+  margin: auto;
+}
 .loading, .error{
   margin-top: 150px;
   min-height: 250px;

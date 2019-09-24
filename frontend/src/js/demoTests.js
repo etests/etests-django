@@ -348,6 +348,7 @@ export const demoTests = {
       test,
       isDemo: true,
       duration: test.time_alotted,
+      checkin_time: (new Date()).toISOString(),
       current: { questionIndex: 0, sectionIndex: 0 },
       completed: false
     };

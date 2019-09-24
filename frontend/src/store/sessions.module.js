@@ -1,29 +1,10 @@
 import { sessionService } from "@/api/session.service";
 
-var session;
-
-try {
-  session = JSON.parse(localStorage.getItem("session")) || null;
-} catch (err) {
-  session = null;
-  console.log(err);
-}
-
-if (session !== null && session.completed) {
-  localStorage.removeItem("session");
-  session = null;
-}
-const initialState = session
-  ? {
-      status: { exists: true },
-      session,
-      all: { items: [] }
-    }
-  : {
-      status: {},
-      session: null,
-      all: { items: [] }
-    };
+const initialState = {
+  status: {},
+  session: JSON.parse(localStorage.getItem("session")) || null,
+  all: { items: [] }
+};
 
 export const sessions = {
   namespaced: true,

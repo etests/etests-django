@@ -451,8 +451,10 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import CustomUploadAdapterPlugin from "@/js/customuploadadapter";
 
 export default {
+  props: ["testData"],
   data() {
     return {
+      test: this.testData,
       questionEditor: ClassicEditor,
       questionConfig: {
         toolbar: [
@@ -472,7 +474,6 @@ export default {
         },
         extraPlugins: [CustomUploadAdapterPlugin]
       },
-      id: this.$route.params.id,
       questionTypes: [
         { value: 0, text: "Single Correct" },
         { value: 1, text: "Multiple Correct" },
@@ -636,7 +637,7 @@ export default {
       } else return false;
     },
     saveTest() {
-      this.$store.dispatch(`tests/update`, this.test);
+      this.$emit("save");
     },
     addSection(name) {
       this.sections.push({
@@ -686,9 +687,6 @@ export default {
     topics() {
       return subjectTopics.topics;
     },
-    test() {
-      return this.$store.state.tests.test;
-    },
     sections() {
       return this.test.sections;
     },
@@ -711,10 +709,12 @@ export default {
       else return {};
     }
   },
-  created() {
-    this.$store.dispatch(`tests/get`, this.id);
-  },
-  mounted() {}
+  mounted() {
+    var vm = this;
+    setInterval(function() {
+      vm.$emit("update", vm.test);
+    }, 5000);
+  }
 };
 </script>
 

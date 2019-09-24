@@ -192,13 +192,6 @@ const router = new Router({
           meta: {
             title: "My Question Banks"
           }
-        },
-        {
-          path: "test/preview",
-          component: () => import("@/pages/institute/TestPreview"),
-          meta: {
-            title: "Test Preview"
-          }
         }
       ]
     },
@@ -245,7 +238,18 @@ const router = new Router({
     {
       path: "/test/:id/edit",
       name: "edit-test",
-      component: () => import("@/pages/test/EditTest"),
+      component: () => import("@/pages/test/StartEdit"),
+      meta: {
+        title: "Edit Test",
+        requiresAuth: true,
+        requiresInstitute: true
+      }
+    },
+    {
+      path: "/demo/edit",
+      name: "edit-test-demo",
+      props: { demo: true },
+      component: () => import("@/pages/test/StartEdit"),
       meta: {
         title: "Edit Test",
         requiresAuth: true,
@@ -262,8 +266,8 @@ const router = new Router({
       }
     },
     {
-      path: "/test/demo/:id",
-      name: "demo-test",
+      path: "/demo/:id",
+      name: "test-demo",
       props: { demo: true },
       component: () => import("@/pages/test/StartTest"),
       meta: {
@@ -284,20 +288,6 @@ const router = new Router({
       component: () => import("@/pages/test/Review"),
       meta: {
         title: "Review"
-      }
-    },
-    {
-      path: "/demo/test",
-      component: () => import("@/pages/test/DemoTest"),
-      meta: {
-        title: "Demo Test"
-      }
-    },
-    {
-      path: "/demo/edit-test",
-      component: () => import("@/pages/test/DemoEditTest"),
-      meta: {
-        title: "Demo Edit Test"
       }
     }
   ]

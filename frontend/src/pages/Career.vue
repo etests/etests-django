@@ -47,7 +47,7 @@
                 <iframe
                   src="https://docs.google.com/forms/d/e/1FAIpQLSc1lTSlKR6X0Re4mHkUFd4Ixp0zAGrvj3-UUGSbjs2X_0Ay9Q/viewform?embedded=true"
                   width="100%"
-                  height="1600px"
+                  height="1700px"
                   frameborder="0"
                   >Loading…</iframe
                 >
@@ -56,10 +56,10 @@
           </v-expansion-panel-content>
         </v-expansion-panel>
       </div>
-      <svg viewBox="0 0 1240 120">
+      <svg viewBox="0 0 1240 150" class="shape">
         <path
           d="M682.2,39.6C418.5-11.1,140.2,9.9,0,30v96h1440V30C1252.7,52.2,1011,96.4,675.6,38.7z"
-          fill="#ffffff"
+          fill="#fff"
         />
       </svg>
     </header>
@@ -91,23 +91,24 @@ export default {
 <style scoped>
 .al-hero-header {
   font-family: "Product Sans";
-  background-image: linear-gradient(to right, #28cc9e, #28cc9e);
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-attachment: fixed;
+  background-image: linear-gradient(to right, #28cc9e, #31cea0);
+}
+.shape{
+  position: relative;
+  left: 0;
+  bottom: -50px;
 }
 .al-hero-cta {
   font-family: "Product Sans";
   max-width: 750px;
   margin: 0 auto;
-  padding: 60px 10px 100px;
+  padding: 60px 10px 0px;
 }
 .al-hero-cta .al-cta-title {
   font-family: "Product Sans Thin";
   color: #fff;
   padding-top: 50px;
-  padding-bottom: 20px;
+  padding-bottom: 0;
   font-weight: 900;
   font-size: 20pt;
 }

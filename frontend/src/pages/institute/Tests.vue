@@ -206,9 +206,7 @@
             <template v-slot:items="props">
               <tr @click="props.expanded = !props.expanded">
                 <td class="text-xs-center">
-                  <router-link :to="`/preview/${props.item.id}`">
-                    {{ props.item.name }}
-                  </router-link>
+                  {{ props.item.name }}
                 </td>
                 <td class="text-xs-center">
                   {{ formatDate(props.item.activation_time) }}
