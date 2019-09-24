@@ -33,22 +33,13 @@ export default {
       steps: [
       
         {
-<<<<<<< HEAD
-          title: "How to join eTests?",
-          description: "Click on Login / Register button at the top."
-=======
           title: "Can I attempt question bank tests multiple times?",
           description:
             "Yes, you can.",
             show:["student"]
->>>>>>> removed notification and completed FAQ
         },
      
         {
-<<<<<<< HEAD
-          title: "Can I attempt question bank tests any number of times?",
-          description: "Yes, you can."
-=======
           title: "Can I attempt tests multiple times?",
           description:
             "Yes, you can attempt. During the period the test is active you can attempt it once and rank will be generated for the same. After the ranks are declared you can attempt them any number of times for practise.",
@@ -59,7 +50,6 @@ export default {
           description:
             "You can Join a batch with the help of joining key shared by the institute you joined. The option is avialable in the dashboard.",
             show:["student"]
->>>>>>> removed notification and completed FAQ
         },
         {
           title: "How can you create a batch?",
