@@ -55,7 +55,7 @@ class RegisterView(CreateAPIView):
 
     def perform_create(self, serializer):
         user = serializer.create(self.request.data)
-        self.refresh = RefreshToken.for_user(self.user)
+        self.refresh = RefreshToken.for_user(user)
         self.access = self.refresh.access_token
         return user
 
