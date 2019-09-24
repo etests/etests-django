@@ -7,7 +7,7 @@
         </v-card-title>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="red" flat @click="submitDialog = false">
+          <v-btn color="primary" flat @click="submitDialog = false">
             Cancel
           </v-btn>
           <v-btn
@@ -300,7 +300,7 @@
       <template slot="submit">
         <v-btn
           outline
-          color="indigo"
+          color="success"
           fixed
           bottom
           :left="isSmallScreen"
@@ -395,21 +395,17 @@ export default {
       return i >= 0 && i <= this.sections.length - 1;
     },
     changeSection(i) {
-      console.log("Changing section...");
       if (this.validSectionIndex(i)) {
         this.sectionIndex = i;
         if (this.currentQuestion && this.currentQuestion.section !== i)
           this.changeQuestion(this.currentSection.start);
-        console.log(`Changed to section ${i + 1}`);
       }
     },
     changeQuestion(i) {
-      console.log("Changing question...");
       if (this.validQuestionIndex(i)) {
         this.questionIndex = i;
         if (this.currentQuestion.section !== this.sectionIndex)
           this.changeSection(this.currentQuestion.section);
-        console.log(`Changed to question ${i + 1}`);
       }
       this.updateStatus(i);
     },

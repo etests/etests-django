@@ -31,9 +31,7 @@
                   <template v-slot:items="props">
                     <tr @click="props.expanded = !props.expanded">
                       <td class="text-xs-center">
-                        <router-link :to="`/preview/${props.item.id}`">
                           {{ props.item.name }}
-                        </router-link>
                       </td>
                       <td class="text-xs-center">
                         {{ formatDate(props.item.activation_time) }}
@@ -95,7 +93,7 @@
                             flat
                             color="warning"
                             v-if="session.completed"
-                            @click="$router.push(`/review/${session.id}`)"
+                            @click="$router.push({name: 'result', params: {id: session.id, review: true} })"
                           >
                             <v-icon>mdi-file-find</v-icon>
                           </v-btn>

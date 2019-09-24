@@ -200,8 +200,7 @@ export default {
 <style module lang="stylus">
 @require '~@/stylus/components';
 .card{
-  width: 950px;
-  max-width: 100%;
+  width: 98%;
   margin: auto;
 }
 .loading, .error{

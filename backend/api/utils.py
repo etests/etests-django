@@ -118,11 +118,11 @@ def generateRanks(sessions):
         sectionwise_marks_list.sort()
         sectionwise_marks_list.reverse()
         for session in sessions:
-            if session.ranks == {}:
-                session.ranks['overall'] = 0
-                session.ranks['sectionWise'] = []
-                for section in range(len(session.marks['sectionWise'])):
-                    session.ranks['sectionWise'].append(0)
+            session.ranks = {}
+            session.ranks['overall'] = 0
+            session.ranks['sectionWise'] = []
+            for section in range(len(session.marks['sectionWise'])):
+                session.ranks['sectionWise'].append(0)
 
         total = 0
         sectionWiseTotal = [0 for i in range(len(sessions[0].marks['sectionWise']))]

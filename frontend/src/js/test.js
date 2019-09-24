@@ -24,5 +24,5 @@ export const testTemplate = {
       answers: ["P", "Q", "R", "S", "T"]
     }
   ],
-  answers: [{ answer: [] }]
+  answers: [{ answer: [], solution: "<p>Enter the solution text or image here.</p>" }]
 };

@@ -154,6 +154,19 @@
           @change="changeTopic()"
         />
       </v-btn>
+      <v-btn color="primary" round outline @click="solutionDialog = true">
+        <v-icon>mdi-eye</v-icon>
+        <span>&nbsp; Solution</span>
+      </v-btn>
+      <v-bottom-sheet v-model="solutionDialog">
+        <v-sheet class="pa-2" min-height="200px">
+          <ckeditor
+            :editor="questionEditor"
+            :config="questionConfig"
+            v-model="currentAnswer.solution"
+          />
+        </v-sheet>
+      </v-bottom-sheet>
     </template>
 
     <template slot="text-image">
@@ -161,7 +174,7 @@
         :editor="questionEditor"
         :config="questionConfig"
         v-model="currentQuestion.text"
-      ></ckeditor>
+      />
     </template>
 
     <v-layout slot="options">
@@ -300,7 +313,7 @@
           :class="index == sectionIndex ? 'primary--text' : ''"
           active-class="primary--text"
           v-for="(section, index) in sections"
-          :key="section.subject"
+          :key="index"
           @click="changeSection(index)"
         >
           {{ section.subject }}
@@ -338,11 +351,11 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="error" flat @click="editSectionDialog = false">
+            <v-btn color="primary" flat @click="editSectionDialog = false">
               Cancel
             </v-btn>
             <v-btn
-              color="success"
+              color="primary"
               @click="
                 changeSectionSubject(sectionIndex, subjectName);
                 editSectionDialog = false;
@@ -382,11 +395,11 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="error" flat @click="newSectionDialog = false">
+            <v-btn color="primary" flat @click="newSectionDialog = false">
               Cancel
             </v-btn>
             <v-btn
-              color="success"
+              color="primary"
               @click="
                 addSection(newSectionSubject);
                 newSectionDialog = false;
@@ -457,6 +470,7 @@ export default {
       test: this.testData,
       questionEditor: ClassicEditor,
       questionConfig: {
+        height: 400,
         toolbar: [
           "heading",
           "|",
@@ -492,6 +506,7 @@ export default {
       questionIndex: 0,
       editSectionDialog: false,
       newSectionDialog: false,
+      solutionDialog: false,
       subjectName: "",
       newSectionSubject: "",
       emptyQuestion: {
@@ -548,18 +563,14 @@ export default {
       return i >= 0 && i < this.sections.length;
     },
     changeSectionSubject(i, name) {
-      console.log(this.currentSection);
       this.sections[i].subject = name;
       this.sections[i].subjectIndex = this.subjects.indexOf(name);
-      console.log(this.currentSection);
     },
     changeSection(i) {
-      console.log(`Going to section ${i + 1}...`);
       if (this.validSectionIndex(i)) {
         this.sectionIndex = i;
         if (this.currentQuestion && this.currentQuestion.section !== i)
           this.changeQuestion(this.currentSection.start);
-        console.log(`Changed to section ${i + 1}`);
         return true;
       } else return false;
     },
@@ -570,12 +581,10 @@ export default {
       return this.changeSection(this.sectionIndex + 1);
     },
     changeQuestion(i) {
-      console.log("Changing question...");
       if (this.validQuestionIndex(i)) {
         this.questionIndex = i;
         if (this.currentQuestion.section !== this.sectionIndex)
           this.changeSection(this.currentQuestion.section);
-        console.log(`Changed to question ${i + 1}`);
         this.updateStatus(i);
         return true;
       } else return false;
@@ -654,6 +663,7 @@ export default {
         let start = this.sections[i].start;
         let end = this.sections[i].end;
         let len = end - start + 1;
+
         for (let j = end + 1; j < this.questions.length; j++) {
           this.questions[j].section--;
         }
@@ -661,10 +671,16 @@ export default {
           this.sections[j].start -= len;
           this.sections[j].end -= len;
         }
-        this.sections.splice(i, 1);
+
+        if(i>0) this.changeSection(i-1);
+
         this.questions.splice(start, len);
         this.answers.splice(start, len);
-        console.log(this.currentSection);
+
+        if(i==0) this.changeSection(i+1);
+        this.sections.splice(i, 1);
+        return true;
+
       } else return false;
     },
     changeTopic() {
@@ -697,16 +713,13 @@ export default {
       return this.test.answers;
     },
     currentQuestion() {
-      if (this.test.questions) return this.test.questions[this.questionIndex];
-      else return this.emptyQuestion;
+      return this.test.questions[this.questionIndex];
     },
     currentAnswer() {
-      if (this.test.answers) return this.test.answers[this.questionIndex];
-      else return [];
+      return this.test.answers[this.questionIndex];
     },
     currentSection() {
-      if (this.sections) return this.test.sections[this.sectionIndex];
-      else return {};
+      return this.test.sections[this.sectionIndex];
     }
   },
   mounted() {

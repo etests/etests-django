@@ -2,9 +2,9 @@
   <div>
     <v-card-title class="title">
       Instructions
-    </v-card-title>
+    </v-card-title> 
     <v-card-text class="text-xs-left">
-      <div class="subheadin">Please read the instructions carefully</div>
+      <div class="subheading">Please read the instructions carefully</div>
       <br />
       <li>
         The on-screen computer countdown timer on the top middle corner of
@@ -119,11 +119,3 @@
     </v-card-text>
   </div>
 </template>
-
-<script>
-export default {
-  data() {
-    return {};
-  }
-};
-</script>

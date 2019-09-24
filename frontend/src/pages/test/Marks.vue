@@ -117,7 +117,8 @@ export default {
 <style module lang="stylus">
 @require '~@/stylus/components';
 .marksTable{
-  width: 100%;
+  width: 98%;
+  margin: auto;
   border-radius: 8px;
   border: 1px solid #eee;
   td{

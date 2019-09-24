@@ -49,9 +49,6 @@
         <v-btn icon flat color="success lighten-1" @click="viewDialog = true">
           <v-icon class="px-1">mdi-eye</v-icon>
         </v-btn>
-        <v-btn icon flat color="info lighten-1">
-          <v-icon class="px-1">mdi-square-edit-outline</v-icon>
-        </v-btn>
 
         <v-btn icon flat color="error lighten-1" @click="deleteDialog = true">
           <v-icon class="px-1">mdi-delete</v-icon>
@@ -134,7 +131,7 @@
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
-              <v-btn color="info" flat @click="deleteDialog = false">
+              <v-btn color="black" flat @click="deleteDialog = false">
                 Cancel
               </v-btn>
               <v-btn color="error" @click="remove">
@@ -218,7 +215,7 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn
-                color="info"
+                color="error"
                 flat
                 @click="
                   $store.commit('enrollments/clearGenerated');
@@ -228,7 +225,7 @@
                 Close
               </v-btn>
               <v-btn
-                color="info"
+                color="primary"
                 v-if="!enrollmentStatus.loading && !enrollmentStatus.loaded"
                 @click="generate"
               >
@@ -349,9 +346,9 @@ export default {
         batch: this.batch.id,
         rollNumbers: this.rollNumbers
           .trim()
-          .split(" ")
           .replace(/(\r\n|\n|\r)/gm, " ")
           .replace(/\s+/g, " ")
+          .split(" ")
       };
       this.$store.dispatch("enrollments/batchEnroll", data);
     },

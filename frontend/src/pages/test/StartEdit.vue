@@ -27,7 +27,7 @@
         </v-layout>
       </v-card>
       <v-card v-else :class="[$style.card, 'elevation-3']">
-        <v-layout column justify-center align-center>
+        <v-layout column justify-center>
           <v-flex xs12 v-if="error" :class="[$style.error, $style.message]">
             {{ error }}
           </v-flex>
@@ -35,7 +35,7 @@
             <v-progress-circular :size="50" color="primary" indeterminate />
           </v-flex>
           <v-flex xs12 v-else @keyup.enter="startEdit">
-            <Instructions /> <br/>
+            <Instructions />
             <v-btn
               round
               style="width:160px;"
@@ -109,6 +109,7 @@ export default {
             this.$Progress.fail();
           } else {
             vm.test = vm.storedTest;
+            localStorage.setItem("editing", this.id);
             vm.started = true;
             vm.loading = false;
             this.$Progress.finish();
@@ -117,7 +118,9 @@ export default {
       } else {
         var test = testTemplate;
         this.test = test;
+        localStorage.setItem("editing", this.id);
         this.started = true;
+        this.loading = false;
         this.$Progress.finish();
       }
     },
@@ -127,6 +130,7 @@ export default {
     saveTest() {
       if (this.demo) {
         this.completed = true;
+        localStorage.removeItem("editing");
       } else {
         this.$store.dispatch("tests/update", this.test);
       }
@@ -146,15 +150,20 @@ export default {
     StandardLayout,
     Instructions,
     EditTest
+  },
+  created(){
+    if(localStorage.getItem("editing")){
+      if(parseInt(localStorage.getItem("editing")) === this.id)
+        this.startEdit();
+    }
   }
-};</script
->edit
+};
+</script>
 
 <style module lang="stylus">
 @require '~@/stylus/components';
 .card{
-  width: 950px;
-  max-width: 100%;
+  width: 98%;
   margin: auto;
 }
 .loading, .error{

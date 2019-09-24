@@ -17,6 +17,15 @@
       <v-chip color="indigo" outline>
         {{ questionTypes[currentQuestion.type].text }}
       </v-chip>
+      <v-chip color="primary" round outline @click="solutionDialog = true">
+        <v-icon>mdi-eye</v-icon>
+        <span>&nbsp; Solution</span>
+      </v-chip>
+      <v-bottom-sheet v-model="solutionDialog">
+        <v-sheet class="pa-2" min-height="200px">
+        <div v-html="test.answers[questionIndex].solution"></div>
+        </v-sheet>
+      </v-bottom-sheet>
     </template>
 
     <template slot="text-image">
@@ -250,7 +259,8 @@ export default {
       ],
       isSmallScreen: this.$vuetify.breakpoint.smAndDown,
       sectionIndex: 0,
-      questionIndex: 0
+      questionIndex: 0,
+      solutionDialog: false
     };
   },
   components: {

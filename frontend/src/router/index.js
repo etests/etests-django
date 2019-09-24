@@ -277,17 +277,10 @@ const router = new Router({
     {
       path: "/result/:id",
       name: "result",
+      props: true,
       component: () => import("@/pages/test/Result"),
       meta: {
         title: "Result"
-      }
-    },
-    {
-      path: "/review/:id",
-      name: "review",
-      component: () => import("@/pages/test/Review"),
-      meta: {
-        title: "Review"
       }
     }
   ]

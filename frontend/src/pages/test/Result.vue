@@ -1,7 +1,7 @@
 <template>
-  <StandardLayout>
-    <Review :report="report" v-if="reviewing" />
-    <v-layout column align-center v-else-if="report">
+  <Review :report="report" v-if="report && reviewing" />
+  <StandardLayout v-else>
+    <v-layout column align-center v-if="report">
       <SectionLayout heading="Subjectwise Marks">
         <v-flex xs12>
           <Marks :report="report" @review="reviewing = true" />
@@ -23,10 +23,17 @@ import Analysis from "./Analysis";
 import Marks from "./Marks";
 
 export default {
+  props: {
+    review: {
+      required: false,
+      default: false,
+      type: Boolean
+    }
+  },
   data() {
     return {
       id: parseInt(this.$route.params.id),
-      reviewing: false
+      reviewing: this.review
     };
   },
   components: {
