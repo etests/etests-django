@@ -15,6 +15,7 @@ export default {
   name: "app",
   computed: {
     ...mapState({
+      loggedIn: state => state.authentication.status.loggedIn,
       alertType: state => state.alert.type,
       alert: state => state.alert
     })
@@ -57,6 +58,12 @@ export default {
   },
   mounted() {
     this.$Progress.finish();
+    var vm = this;
+    if(this.loggedIn){
+      setInterval(_ =>{
+        vm.$store.dispatch("authentication/refresh");
+      }, 5*60*1000);
+    }
   }
 };
 </script>

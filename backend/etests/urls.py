@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_swagger.views import get_swagger_view
-from rest_framework_jwt.views import ObtainJSONWebToken, obtain_jwt_token, refresh_jwt_token
 
 schema_view = get_swagger_view(title="eTests API")
 

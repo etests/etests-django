@@ -1,26 +1,19 @@
-from django.contrib.auth import get_user_model, authenticate
 from django.conf import settings
+from django.contrib.auth import authenticate
+from django.contrib.auth import password_validation as validators
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
+from django.http import HttpRequest
+from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode as uid_decoder
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import force_text
-import django.contrib.auth.password_validation as validators
+from django.utils.translation import ugettext_lazy as _
+from requests.exceptions import HTTPError
 
 from rest_framework import serializers, exceptions
 from rest_framework.exceptions import ValidationError
 
 from .models import *
-from .utils import import_callable
-
-from django.http import HttpRequest
-from requests.exceptions import HTTPError
-
-from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
-
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -154,7 +147,8 @@ class JWTSerializer(serializers.Serializer):
     """
     Serializer for JWT authentication.
     """
-    token = serializers.CharField()
+    refresh = serializers.CharField()
+    access = serializers.CharField()
     user = serializers.SerializerMethodField()
 
     def get_user(self, obj):

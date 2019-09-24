@@ -21,26 +21,33 @@ function login(username, password) {
   return fetch(`${process.env.VUE_APP_API_URL}/login/`, requestOptions)
     .then(handleResponse)
     .then(data => {
-      if (data.token) {
-        localStorage.setItem("token", JSON.stringify(data.token));
+      if (data.refresh) {
+        var token = {
+          access: data.access,
+          refresh: data.refresh,
+        }
+        localStorage.setItem("token", JSON.stringify(token));
         localStorage.setItem("user", JSON.stringify(data.user));
       }
-
       return data;
     });
 }
 
 function refresh() {
+  const token = JSON.parse(localStorage.getItem("token"));
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: {
-      token: JSON.parse(localStorage.getItem("token"))
-    }
+    body: JSON.stringify({refresh: token.refresh})
   };
-  return fetch(`${process.env.VUE_APP_API_URL}/refresh/`, requestOptions).then(
-    response => {
-      return response;
+  return fetch(`${process.env.VUE_APP_API_URL}/refresh/`, requestOptions)
+  .then(handleResponse)
+  .then(
+    data => {
+      if(data.access){
+        token.access = data.access;
+        localStorage.setItem("token", JSON.stringify(token));
+      }
     }
   );
 }

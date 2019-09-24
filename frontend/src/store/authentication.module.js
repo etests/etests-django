@@ -27,6 +27,18 @@ export const authentication = {
         }
       );
     },
+    refresh({ commit }) {
+      commit("refreshRequest");
+
+      userService.refresh().then(
+        data => {
+          commit("refreshSuccess", data);
+        },
+        error => {
+          commit("refreshFailure", error);
+        }
+      );
+    },
     register({ dispatch, commit }, data) {
       commit("registerRequest", data);
       const credentials = {
@@ -66,9 +78,18 @@ export const authentication = {
       state.status = { loggedIn: true };
       state.user = data.user;
     },
-    loginFailure(state) {
-      state.status = {};
+    loginFailure(state, error) {
+      state.status = {error};
       state.user = null;
+    },
+    refreshRequest(state,) {
+      state.status.refreshing = true;
+    },
+    refreshSuccess(state) {
+      state.status = { loggedIn: true };
+    },
+    refreshFailure(state, error) {
+      state.status.error = error
     },
     logout(state) {
       state.status = {};

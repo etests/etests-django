@@ -26,7 +26,7 @@ INSTALLED_APPS = [
     "django.contrib.sites",
 
     "rest_framework",
-    "rest_framework_jwt",
+    "rest_framework_simplejwt",
     "rest_framework_swagger",
 
     "corsheaders",
@@ -34,11 +34,10 @@ INSTALLED_APPS = [
     "api"
 ]
 
-JWT_AUTH = {
-    "JWT_AUTH_HEADER_PREFIX": "Bearer",
-    "JWT_ALLOW_REFRESH": True,
-    "JWT_EXPIRATION_DELTA": timedelta(days=20),
-    "JWT_REFRESH_EXPIRATION_DELTA": timedelta(days=30),
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 LOGIN_URL = "rest/login/"
@@ -61,7 +60,7 @@ MIDDLEWARE = [
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAdminUser"],
