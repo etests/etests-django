@@ -33,13 +33,11 @@ export default {
       steps: [
         {
           title: "How to join eTests?",
-          description:
-            "Click on Login / Register button at the top."
+          description: "Click on Login / Register button at the top."
         },
         {
           title: "Can I attempt question bank tests any number of times?",
-          description:
-            "Yes, you can."
+          description: "Yes, you can."
         },
         {
           title: "How to add questions to a test?",

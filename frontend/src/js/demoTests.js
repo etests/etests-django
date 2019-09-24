@@ -119,7 +119,7 @@ export const demoTests = {
           topic: "Permutations and combinations",
           status: 3,
           answers: ["Vector", "Scalar", "m", "m/s", "Tensor"],
-          ofinishptions: ["2", "-2", "6", "9"],
+          options: ["2", "-2", "6", "9"],
           section: 1,
           topicIndex: 3,
           correctMarks: 4,
@@ -264,9 +264,10 @@ export const demoTests = {
         responses[i].answer.length !== 0
       ) {
         if (
-          parseFloat(responses[i].answer) / parseFloat(answers[i].answer) >=
-          0.99 <=
-          1.01
+          parseFloat(responses[i].answer) <=
+            1.01 * parseFloat(answers[i].answer) &&
+          parseFloat(responses[i].answer) >=
+            0.99 * parseFloat(answers[i].answer)
         ) {
           questionWiseMarks[i].marks = currentQuestion.correctMarks;
           questionWiseMarks[i].status = 2;
@@ -348,7 +349,7 @@ export const demoTests = {
       test,
       isDemo: true,
       duration: test.time_alotted,
-      checkin_time: (new Date()).toISOString(),
+      checkin_time: new Date().toISOString(),
       current: { questionIndex: 0, sectionIndex: 0 },
       completed: false
     };

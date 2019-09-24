@@ -35,7 +35,7 @@
             dark
             large
             color="primary"
-            @click="$router.push('/test/demo/0')"
+            @click="$router.push('/demo/0')"
             >attempt demo test</v-btn
           >
         </v-sheet>
@@ -61,19 +61,6 @@ export default {
       }
     };
   },
-  //   methods: {
-  //     showText(target, message, index, interval) {
-  //       if (index < message.length) {
-  //         $(target).append(message[index++]);
-  //         setTimeout(function() {
-  //           showText(target, message, index, interval);
-  //         }, interval);
-  //       }
-  //     },
-  //     mounted() {
-  //       this.showText("#description1", "Hello, World!", 0, 500);
-  //     }
-  //   },
   components: {
     SectionLayout
   }

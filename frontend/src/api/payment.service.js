@@ -7,7 +7,7 @@ export const paymentService = { create };
 
 async function create(data) {
   var headers = {
-    Authorization: "Bearer " + token,
+    Authorization: "Bearer " + token.access,
     "Content-Type": "multipart/form-data"
   };
   let response = await axios({

@@ -31,6 +31,8 @@
                 <slot name="info"></slot>
               </v-layout>
 
+              <slot name="review"></slot>
+
               <slot name="text-image"></slot>
 
               <slot name="options"></slot>

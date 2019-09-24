@@ -93,7 +93,7 @@ export default {
   font-family: "Product Sans";
   background-image: linear-gradient(to right, #28cc9e, #31cea0);
 }
-.shape{
+.shape {
   position: relative;
   left: 0;
   bottom: -50px;

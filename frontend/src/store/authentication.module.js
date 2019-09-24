@@ -16,7 +16,7 @@ export const authentication = {
         data => {
           commit("loginSuccess", data);
           setTimeout(() => {
-            dispatch("alert/success", "Logged in successfully!", {
+            dispatch("alert/success", `Welcome ${data.user.name}!`, {
               root: true
             });
           });
@@ -72,24 +72,23 @@ export const authentication = {
   mutations: {
     loginRequest(state, user) {
       state.status = { loggingIn: true };
-      state.user = user;
     },
     loginSuccess(state, data) {
       state.status = { loggedIn: true };
       state.user = data.user;
     },
     loginFailure(state, error) {
-      state.status = {error};
-      state.user = null;
+      state.status = { error };
     },
-    refreshRequest(state,) {
+    refreshRequest(state) {
       state.status.refreshing = true;
     },
     refreshSuccess(state) {
       state.status = { loggedIn: true };
     },
     refreshFailure(state, error) {
-      state.status.error = error
+      state.status.error = error;
+      this.dispatch("logout");
     },
     logout(state) {
       state.status = {};
@@ -100,6 +99,7 @@ export const authentication = {
     },
     registerSuccess(state, user) {
       state.status = {};
+      state.user = user;
     },
     registerFailure(state, error) {
       state.status = {};

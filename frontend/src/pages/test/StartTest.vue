@@ -101,7 +101,7 @@ export default {
               vm.session = vm.storedSession;
               var { test, ...session } = vm.storedSession;
               session.testId = this.id;
-              session.isDemo= false;
+              session.isDemo = false;
               localStorage.setItem("session", JSON.stringify(session));
             }
             vm.started = true;
@@ -116,27 +116,28 @@ export default {
             parseInt(this.getRandom(18, 30) * 60 * 1000)
           );
       } else {
-          if(
-            localStorage.getItem("session") &&
-            JSON.parse(localStorage.getItem("session")).test &&
-            JSON.parse(localStorage.getItem("session")).testId == this.id
-          ){
-              this.session = JSON.parse(localStorage.getItem("session"));
-              this.started = true;
-              this.$Progress.finish();
-          }
-          else if (demoTests.tests.length > this.id) {
-            var session = demoTests.newSession(demoTests.tests[this.id]);
-            this.session = session;
-            session.testId = this.id;
-            localStorage.setItem("session", JSON.stringify(session));
-            this.started = true;
-            this.$Progress.finish();
-          } else {
-            this.error = "This test does not exist.";
-            this.$Progress.fail();
-          }
-        } 
+        var session = null;
+        if (localStorage.getItem("session")) {
+          session = JSON.parse(localStorage.getItem("session"));
+        }
+        if (session !== null && session.test && session.testId == this.id) {
+          this.session = session;
+          this.started = true;
+          this.$Progress.finish();
+        } else if (demoTests.tests.length > this.id) {
+          if (session === null)
+            session = demoTests.newSession(demoTests.tests[this.id]);
+          else session.test = demoTests.tests[this.id];
+          this.session = session;
+          session.testId = this.id;
+          localStorage.setItem("session", JSON.stringify(session));
+          this.started = true;
+          this.$Progress.finish();
+        } else {
+          this.error = "This test does not exist.";
+          this.$Progress.fail();
+        }
+      }
     },
     async submitTest() {
       this.loading = true;

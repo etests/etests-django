@@ -141,7 +141,7 @@
                   <template v-slot:items="props">
                     <tr @click="props.expanded = !props.expanded">
                       <td class="text-xs-center">
-                          {{ props.item.name }}
+                        {{ props.item.name }}
                       </td>
 
                       <td class="text-xs-center">

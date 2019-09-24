@@ -3,7 +3,7 @@
     <template slot="controls">
       <v-chip round outline color="primary">
         <v-icon color="primary"> mdi-clock </v-icon>
-        &nbsp; {{ getMinutes(currentResponse.timeElapsed) }}
+        &nbsp; {{ getMinutes(currentAnswer.timeElapsed) }}
       </v-chip>
     </template>
 
@@ -162,6 +162,15 @@
       </v-layout>
     </v-layout>
 
+    <v-sheet slot="review">
+      <span :class="`${statusColor(currentResult.status)}--text subheading`">
+        {{ statusText(currentResult.status) }}
+      </span>
+      <div>Answer: {{ formatAnswer(questionIndex) }}</div>
+      <div>Marks obtained: {{ currentResult.marks }}</div>
+      <br />
+    </v-sheet>
+
     <template slot="footer">
       <input @keyup.left="previousQuestion" type="hidden" />
       <input @keyup.right="nextQuestion" type="hidden" />
@@ -261,10 +270,19 @@ export default {
         x == null || x === "" || (Array.isArray(x) && x.every(this.isEmpty))
       );
     },
+    statusCode(status) {
+      if (Array.isArray(status)) {
+        status = status.filter((v, i, a) => a.indexOf(v) === i);
+        if (status.length == 1 && status[0] == 0) return 0;
+        else if (status.length == 1 && status[0] == 1) return 1;
+        else if (status.length == 1 && status[0] == 2) return 2;
+        else return 3;
+      } else return status;
+    },
     statusColor(status) {
-      switch (status) {
+      switch (this.statusCode(status)) {
         case 0:
-          return "grey darken-2";
+          return "grey";
         case 1:
           return "error";
         case 2:
@@ -275,6 +293,43 @@ export default {
           return "grey";
       }
     },
+    statusText(status) {
+      switch (this.statusCode(status)) {
+        case 0:
+          return "Unattempted";
+        case 1:
+          return "Incorrect";
+        case 2:
+          return "Correct";
+        case 3:
+          return "Partially Correct";
+        default:
+          return "Unattempted";
+      }
+    },
+    formatAnswer(i) {
+      switch (this.questions[i].type) {
+        case 0:
+          return this.letter("A", this.test.answers[i].answer, 0);
+        case 1:
+          return this.test.answers[i].answer
+            .map(answer => this.letter("A", answer, 0))
+            .join(", ");
+        case 2:
+          return this.test.answers[i].answer;
+        case 3:
+          return this.test.answers[i].answer
+            .map(
+              (option, index) =>
+                "[" +
+                option.map(answer => this.letter("P", answer, 0)).join(", ") +
+                "]"
+            )
+            .join(", ");
+        default:
+          return "";
+      }
+    },
     validQuestionIndex(i) {
       return i >= 0 && i <= this.questions.length - 1;
     },
@@ -282,21 +337,17 @@ export default {
       return i >= 0 && i <= this.sections.length - 1;
     },
     changeSection(i) {
-      console.log("Changing section...");
       if (this.validSectionIndex(i)) {
         this.sectionIndex = i;
         if (this.currentQuestion && this.currentQuestion.section !== i)
           this.changeQuestion(this.currentSection.start);
-        console.log(`Changed to section ${i + 1}`);
       }
     },
     changeQuestion(i) {
-      console.log("Changing question...");
       if (this.validQuestionIndex(i)) {
         this.questionIndex = i;
         if (this.currentQuestion.section !== this.sectionIndex)
           this.changeSection(this.currentQuestion.section);
-        console.log(`Changed to question ${i + 1}`);
       }
     },
     previousQuestion() {
@@ -334,14 +385,17 @@ export default {
     currentQuestion() {
       return this.test.questions[this.questionIndex];
     },
-    currentResponse() {
-      return this.response[this.questionIndex];
+    correctAnswer() {
+      return this.test.answers[this.questionIndex];
     },
     currentAnswer() {
       return this.response[this.questionIndex];
     },
     currentSection() {
       return this.test.sections[this.sectionIndex];
+    },
+    currentResult() {
+      return this.session.result.questionWiseMarks[this.questionIndex];
     }
   }
 };

@@ -3,7 +3,9 @@
     <v-card :class="[$style.card, 'elevation-3']">
       <v-layout row wrap>
         <v-flex xs12 md4>
-          <v-card :class="[$style.dashboardCard, $style.profile, 'px-4 elevation-0']">
+          <v-card
+            :class="[$style.dashboardCard, $style.profile, 'px-4 elevation-0']"
+          >
             <div :class="$style.profilePicContainer">
               <v-img
                 src="http://vyfhealth.com/wp-content/uploads/2015/10/yoga-placeholder1.jpg"
@@ -54,11 +56,7 @@
           <v-card class="elevation-0 pa-1">
             <v-container grid-list-sm fluid>
               <v-layout row wrap>
-                <v-flex
-                  v-for="control in controls"
-                  :key="control.name"
-                  xs6
-                >
+                <v-flex v-for="control in controls" :key="control.name" xs6>
                   <v-card flat tile class="d-flex">
                     <v-layout column align-center justify-center>
                       <v-flex xs12>

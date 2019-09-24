@@ -59,11 +59,11 @@ export default {
   mounted() {
     this.$Progress.finish();
     var vm = this;
-    if(this.loggedIn){
-      setInterval(_ =>{
-        vm.$store.dispatch("authentication/refresh");
-      }, 5*60*1000);
-    }
+    // if(this.loggedIn){
+    //   setInterval(_ =>{
+    //     vm.$store.dispatch("authentication/refresh");
+    //   }, 9*30*1000);
+    // }
   }
 };
 </script>

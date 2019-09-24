@@ -3,7 +3,7 @@ import { testSeriesService } from "@/api/testSeries.service";
 const initialState = {
   status: {},
   testSeries: {},
-  all: { items: {} },
+  all: { items: [] },
   my: { items: [] }
 };
 
@@ -107,7 +107,7 @@ export const testSeries = {
       state.status = { loading: true };
     },
     getAllSuccess(state, testSeries) {
-      state.status = { };
+      state.status = {};
       state.all = { items: testSeries };
     },
     getAllFailure(state, error) {
@@ -126,7 +126,7 @@ export const testSeries = {
       state.status = { creating: true };
     },
     createSuccess(state, data) {
-      state.all.items.push(data);
+      state.my.items.push(data);
       state.status = { created: true, testSeries: data };
     },
     createFailure(state, error) {
@@ -137,6 +137,7 @@ export const testSeries = {
     },
     removeSuccess(state, id) {
       state.status = { removed: true, id: id };
+      state.my.items = state.my.items.filter(item => item.id !== id);
     },
     removeFailure(state, error) {
       state.status = { error: error };

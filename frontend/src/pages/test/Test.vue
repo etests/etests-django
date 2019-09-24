@@ -439,7 +439,7 @@ export default {
       }
     },
     updateTime() {
-      if (this.session) {
+      if (this.session && !this.session.completed) {
         this.response[this.questionIndex].timeElapsed += 1;
 
         var currentTime = new Date();

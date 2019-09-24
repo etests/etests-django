@@ -139,7 +139,7 @@ export const tests = {
       state.status = { loading: true };
     },
     getAllSuccess(state, tests) {
-      state.status = {exists: true};
+      state.status = { exists: true };
       state.all = { items: tests };
     },
     getAllFailure(state, error) {
@@ -158,10 +158,11 @@ export const tests = {
       state.status = { creating: true };
     },
     createSuccess(state, data) {
-      if (data.test_series)
+      if (data.test_series && data.test_series.length){
         this.dispatch("testSeries/addTest", data, {
           root: true
         });
+      }
       else state.all.items.push(data);
       state.status = { created: true, test: data };
     },

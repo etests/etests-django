@@ -21,14 +21,14 @@
         </template>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="info" flat @click="followDialog = false">Close</v-btn>
+          <v-btn color="error" flat @click="followDialog = false">Close</v-btn>
           <v-btn
             v-if="
               (!status.following && !status.followed) ||
                 !status.id ||
                 status.id !== selectedInstitute.id
             "
-            color="info"
+            color="primary"
             @click="follow(selectedInstitute.id)"
           >
             Follow

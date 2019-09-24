@@ -1,26 +1,29 @@
 <template>
   <div>
     <StandardLayout v-if="!started || completed">
-      <v-card v-if="demo && completed" :class="[$style.card, 'py-5 elevation-3']">   
+      <v-card
+        v-if="demo && completed"
+        :class="[$style.card, 'py-5 elevation-3']"
+      >
         <v-card-title class="title">
-        {{ test.name }}
+          {{ test.name }}
         </v-card-title>
         <v-card-text class="subheading text-xs-left px-3">
-            You have finished creating your demo test. Now you can go ahead and
-            attempt the test you have created.
+          You have finished creating your demo test. Now you can go ahead and
+          attempt the test you have created.
         </v-card-text>
         <v-layout mt-4>
-        <v-flex xs12>
+          <v-flex xs12>
             <v-btn flat color="success" @click="attemptTest">
-                Attempt the test
+              Attempt the test
             </v-btn>
-            <v-btn flat color="info" @click="completed=false">
-                Re-edit this test
+            <v-btn flat color="info" @click="completed = false">
+              Re-edit this test
             </v-btn>
             <v-btn flat color="error" @click="deleteTest">
-                Start afresh
+              Start afresh
             </v-btn>
-        </v-flex>
+          </v-flex>
         </v-layout>
       </v-card>
       <v-card v-else :class="[$style.card, 'elevation-3']">
@@ -32,7 +35,7 @@
             <v-progress-circular :size="50" color="primary" indeterminate />
           </v-flex>
           <v-flex xs12 v-else @keyup.enter="startEdit">
-            Instructions <br/>
+            <Instructions /> <br/>
             <v-btn
               round
               style="width:160px;"
@@ -53,12 +56,12 @@
 
 <script>
 import StandardLayout from "@/components/layouts/StandardLayout";
-import Instructions from "./Instructions";
+import Instructions from "@/components/institute/tests/Instructions.vue";
 import EditTest from "./EditTest";
 import Review from "./Review";
 import Marks from "./Marks";
 import Analysis from "./Analysis";
-import { testTemplate } from "@/js/test"
+import { testTemplate } from "@/js/test";
 import { demoTests } from "@/js/demoTests";
 import { mapState } from "vuex";
 
@@ -76,7 +79,7 @@ export default {
       started: false,
       loading: false,
       completed: false,
-      error: null,
+      error: null
     };
   },
   computed: {
@@ -111,24 +114,22 @@ export default {
             this.$Progress.finish();
           }
         }, 500);
-
       } else {
-          var test = testTemplate;
-          this.test = test;
-          this.started = true;
-          this.$Progress.finish();
+        var test = testTemplate;
+        this.test = test;
+        this.started = true;
+        this.$Progress.finish();
       }
     },
     updateTest(newTest) {
-        this.test = newTest;
+      this.test = newTest;
     },
     saveTest() {
-        if(this.demo){
-            this.completed = true;
-        }
-        else{
-            this.$store.dispatch("tests/update", this.test);
-        }
+      if (this.demo) {
+        this.completed = true;
+      } else {
+        this.$store.dispatch("tests/update", this.test);
+      }
     },
     attemptTest() {
       var session = demoTests.newSession(this.test);
@@ -146,8 +147,8 @@ export default {
     Instructions,
     EditTest
   }
-};
-</script>edit
+};</script
+>edit
 
 <style module lang="stylus">
 @require '~@/stylus/components';

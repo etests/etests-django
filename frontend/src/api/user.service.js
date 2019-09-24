@@ -24,8 +24,9 @@ function login(username, password) {
       if (data.refresh) {
         var token = {
           access: data.access,
-          refresh: data.refresh,
-        }
+          issued_at: new Date().toISOString(),
+          refresh: data.refresh
+        };
         localStorage.setItem("token", JSON.stringify(token));
         localStorage.setItem("user", JSON.stringify(data.user));
       }
@@ -34,22 +35,22 @@ function login(username, password) {
 }
 
 function refresh() {
-  const token = JSON.parse(localStorage.getItem("token"));
+  var token = JSON.parse(localStorage.getItem("token"));
   const requestOptions = {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({refresh: token.refresh})
+    body: JSON.stringify({ refresh: token.refresh })
   };
   return fetch(`${process.env.VUE_APP_API_URL}/refresh/`, requestOptions)
-  .then(handleResponse)
-  .then(
-    data => {
-      if(data.access){
+    .then(handleResponse)
+    .then(data => {
+      if (data.access) {
         token.access = data.access;
+        token.issued_at = new Date().toISOString();
         localStorage.setItem("token", JSON.stringify(token));
       }
-    }
-  );
+      return data;
+    });
 }
 
 function register(data) {
