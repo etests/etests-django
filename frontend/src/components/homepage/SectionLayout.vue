@@ -35,11 +35,13 @@ export default {
 
   .heading{
     font-family: "Open Sans";
+    font-weight: 800;
     font-size: 2.1rem;
   }
 
   .subheading{
       font-family: "Montserrat";
+      font-weight: 600;
       font-size: 1.2rem;
   }
 }

@@ -28,7 +28,7 @@ export default {
 @require '~@/stylus/theme/colors';
 
 .section{
-    font-family: 'Montserrat',Roboto,Arial,sans-serif;
+    font-family: 'Montserrat',Arial,sans-serif;
     margin: 20px 10px;
     width: 100%;
     .heading{
@@ -36,6 +36,8 @@ export default {
       text-align: left;
       letter-spacing: .014em;
       font-size: 2.08rem;
+      font-family: 'Open Sans',Arial,sans-serif;
+      font-weight: 600;
       line-height: 1.25rem;
       color: #5f6368;
       &:not(:first-child){

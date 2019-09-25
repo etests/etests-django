@@ -252,8 +252,6 @@ const router = new Router({
       component: () => import("@/pages/test/StartEdit"),
       meta: {
         title: "Edit Test",
-        requiresAuth: true,
-        requiresInstitute: true
       }
     },
     {
@@ -262,7 +260,9 @@ const router = new Router({
       props: { demo: false },
       component: () => import("@/pages/test/StartTest"),
       meta: {
-        title: "Start Test"
+        title: "Start Test",
+        requiresAuth: true,
+        requiresStudent: true
       }
     },
     {

@@ -56,7 +56,7 @@
         <v-icon :color="textColor">mdi-menu</v-icon>
       </v-toolbar-side-icon>
 
-      <router-link :to="{ name: 'home' }">
+      <router-link :to="{ name: 'home' }" v-if="showLogo">
         <v-toolbar-title class="headline">
           <img
             :src="
@@ -171,8 +171,13 @@ export default {
       type: String
     },
     isAbsolute: {
-      reuired: false,
+      required: false,
       default: false,
+      type: Boolean
+    },
+    showLogo: {
+      required: false,
+      default: true,
       type: Boolean
     },
     disableDrawerClose: {
@@ -377,7 +382,7 @@ export default {
 @require '~@/stylus/theme/colors';
 
 .logo{
-  width: 30px;
+  width: 25px;
   float: left;
   margin: 0 5px;
 }
@@ -403,7 +408,7 @@ export default {
 <style scoped>
 .v-menu__content {
   border-radius: 8px;
-  font-family: "Montserrat Light";
+  font-family: "Montserrat";
   font-size: 1.3rem;
   min-width: 160px;
 }

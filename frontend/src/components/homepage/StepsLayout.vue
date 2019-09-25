@@ -48,6 +48,7 @@ export default {
 
     .step{
         font-family: "Open Sans";
+        font-weight: 600;
         font-size: 1.1rem;
         margin: 8px auto;
     }

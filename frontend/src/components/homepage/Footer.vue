@@ -180,6 +180,7 @@ export default {
 
    .heading{
      font-family: 'Open Sans';
+     font-weight: 600;
      font-size: 1.4rem;
    }
    .text{
@@ -190,6 +191,9 @@ export default {
      p{
       text-align: justify;
      }
+   }
+   a{
+     font-weight: 600;
    }
 }
 </style>

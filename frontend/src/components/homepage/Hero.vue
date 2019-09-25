@@ -3,6 +3,10 @@
     <v-layout row wrap fill-height :class="$style.hero">
       <v-flex xs12>
         <div :class="$style.heading">
+          <img
+            :src="require('@/assets/logos/etests_light.png')"
+            :class="$style.logo"
+          />
           eTests
         </div>
         <div :class="$style.subheading" xs12>
@@ -10,7 +14,7 @@
         </div>
       </v-flex>
       <v-flex xs12>
-        <v-carousel light hide-delimiters class="elevation-0" height="auto">
+        <v-carousel dark hide-delimiters class="elevation-0" height="auto">
           <v-carousel-item
             v-for="(feature, i) in features"
             :key="i"
@@ -22,15 +26,14 @@
               </v-flex>
 
               <v-flex xs12 sm6 :class="$style.title">
-                <p :class="`${feature.color}--text`">
+                <p>
                   {{ feature.title }}
                 </p>
                 <v-flex xs12 :class="$style.btn">
                   <v-btn
+                    class="white primary--text"
                     round
-                    outline
                     :large="['md', 'lg', 'xl'].includes($mq)"
-                    :color="feature.color"
                   >
                     {{ feature.btn.title }}
                     <v-icon right dark>
@@ -63,7 +66,7 @@ export default {
           color: "info"
         },
         {
-          title: "Useful analytics for self assesment",
+          title: "Useful analytics",
           src: require("@/assets/images/features/analytics.png"),
           btn: {
             icon: "mdi-youtube",
@@ -72,7 +75,7 @@ export default {
           color: "success"
         },
         {
-          title: "Partner With Us",
+          title: "Partner with us",
           src: require("@/assets/images/features/money.png"),
           btn: {
             icon: "mdi-currency-usd",
@@ -89,14 +92,22 @@ export default {
 <style module lang="stylus">
 .hero {
     padding: 50px 20px;
-    background-color: #fefeff;
+    background-color: #28cc9e;
+    background-image: url('@/assets/images/bg/wave.svg');
+    background-position: left bottom;
+    background-repeat: no-repeat;
+    background-size: 100%;
+
+    color: #fff;
     .heading{
         font-family: "Open Sans";
+        font-weight: 800;
         margin-top: 30px;
-        font-size: 3rem;
+        font-size: 4rem;
     }
     .subheading{
         font-family: "Montserrat";
+        font-weight: 600;
         font-size: 1.6rem;
         text-transform: uppercase
         margin-bottom: 10px;
@@ -104,6 +115,7 @@ export default {
     .carouselItem{
         .title{
             font-family: "Open Sans";
+            font-weight: 600;
             font-size: 1.5rem
             margin-top: 50px;
 
@@ -118,10 +130,10 @@ export default {
     }
 }
 
-
 .logo{
-  width: 30px;
-  float: left;
-  margin: 0 5px;
+  width: 50px;
+  position: relative;
+  left: 5px;
+  bottom: -10px;
 }
 </style>

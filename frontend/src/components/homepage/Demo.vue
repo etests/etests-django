@@ -74,6 +74,7 @@ export default {
 
   .heading {
     font-family: 'Open Sans';
+    font-weight: 600;
     font-size: 1.1rem;
     text-transform: uppercase;
   }

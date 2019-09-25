@@ -2,11 +2,15 @@
   <v-layout>
     <v-content app class="my-0 py-0">
       <Header
+        color="transparent"
+        textColor="white"
         :temporaryDrawer="true"
         :disableDrawerClose="true"
         :showSearchBar="false"
-      >
-      </Header>
+        :dark="true"
+        :isAbsolute="true"
+        :showLogo="false"
+      />
       <v-layout row wrap class="mb-4 mx-0 px-0">
         <slot></slot>
       </v-layout>
@@ -33,11 +37,5 @@ export default {
 body{
   margin: 0;
   padding: 0;
-}
-
-.logo{
-  width: 40px;
-  float: left;
-  margin: 0 5px;
 }
 </style>

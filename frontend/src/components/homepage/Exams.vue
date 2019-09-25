@@ -67,7 +67,7 @@ export default {
    margin-top: 50px;
 
   .card{
-    margin: 5px auto 40px;
+    margin: 25px auto 40px;
     border-radius: 8px;
     padding: 5px;
     width: 90%;
@@ -85,7 +85,7 @@ export default {
     .text{
       font-family: "Montserrat";
       font-size: 1.1rem;
-      width: 100%
+      width: 100%16pt
       text-align: center;
       position: relative  ;
       bottom: 10px
