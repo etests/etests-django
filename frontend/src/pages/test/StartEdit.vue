@@ -74,7 +74,7 @@ export default {
   },
   data() {
     return {
-      id: parseInt(this.$route.params.id),
+      id: parseInt(this.$route.params.id) || 75,
       test: null,
       started: false,
       loading: false,
@@ -137,9 +137,9 @@ export default {
     },
     attemptTest() {
       var session = demoTests.newSession(this.test);
-      session.testId = 75;
+      session.testId = this.id;
       localStorage.setItem("session", JSON.stringify(session));
-      this.$router.push("/demo/75");
+      this.$router.push(`/demo/${this.id}`);
     },
     deleteTest() {
       localStorage.removeItem("session");

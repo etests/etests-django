@@ -79,8 +79,8 @@ export default {
     }
 
     .text{
-      font-family: "Product Sans";
-      font-size: 1.2rem;
+      font-family: "Montserrat";
+      font-size: 1.1rem;
       width: 100%
       text-align: center;
       position: relative  ;

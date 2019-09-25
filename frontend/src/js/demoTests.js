@@ -246,7 +246,8 @@ export const demoTests = {
           questionWiseMarks[i].status = 3;
           report.marks.sectionWise[currentQuestion.section] +=
             currentQuestion.partialMarks * arrayOfChildrenNames.length;
-        } else if (isarrayOfNamesSubsetOfFamily) {
+        } else if (isarrayOfNamesSubsetOfFamily &&
+          arrayOfChildrenNames.length == arrayOfFamilyMemberNames.length) {
           questionWiseMarks[i].marks = currentQuestion.correctMarks;
           questionWiseMarks[i].status = 2;
           report.marks.total += currentQuestion.correctMarks;

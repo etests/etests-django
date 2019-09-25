@@ -90,18 +90,20 @@ export default {
 .hero {
     padding: 50px 20px;
     background-color: #fefeff;
-    font-family: "Product Sans Light";
     .heading{
+        font-family: "Open Sans";
         margin-top: 30px;
         font-size: 3rem;
     }
     .subheading{
+        font-family: "Montserrat";
         font-size: 1.6rem;
         text-transform: uppercase
         margin-bottom: 10px;
     }
     .carouselItem{
         .title{
+            font-family: "Open Sans";
             font-size: 1.5rem
             margin-top: 50px;
 

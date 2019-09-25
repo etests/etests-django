@@ -417,7 +417,7 @@ export default {
 .submitDialog, .card{
   border: 1px solid #dadce0;
   border-radius: 5px;
-  font-family: 'Product Sans Light', Roboto, Arial, sans-serif;
+  font-family: 'Open Sans', Roboto, Arial, sans-serif;
   text-align: left;
   .title{
     padding: 20px 10px 70px;
@@ -434,7 +434,7 @@ export default {
 }
 
 .message{
-  font-family: 'Product Sans Thin', Roboto, Arial, sans-serif;
+  font-family: 'Open Sans', Roboto, Arial, sans-serif;
   font-size: 22pt;
   margin: 10px auto;
 }

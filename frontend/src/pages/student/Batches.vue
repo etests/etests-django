@@ -64,15 +64,9 @@
               v-for="(batch, i) in institute.batches"
               :key="i"
             >
-              <v-img
-                class="white--text"
-                height="170px"
-                src="https://www.theuiaa.org/wp-content/uploads/2017/12/2018_banner.jpg"
-              >
                 <v-card-title class="align-end fill-height">
                   {{ batch.name }}
                 </v-card-title>
-              </v-img>
 
               <v-card-actions>
                 <v-btn
@@ -161,7 +155,7 @@ export default {
 .joinDialog{
   border: 1px solid #dadce0;
   border-radius: 5px;
-  font-family: 'Product Sans Light',Roboto,Arial,sans-serif;
+  font-family: 'Open Sans',Roboto,Arial,sans-serif;
   text-align: left;
   .title{
     font-size: 1.375rem;

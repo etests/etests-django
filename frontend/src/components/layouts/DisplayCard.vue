@@ -46,7 +46,7 @@ export default {
   border: 1px solid #dadce0;
   border-radius: 8px;
   .title{
-    font-family: 'Product Sans Light',Roboto,Arial,sans-serif;
+    font-family: 'Open Sans',Roboto,Arial,sans-serif;
     font-size: 1.875rem;
     line-height: 1.75rem;
     color: #202124;
@@ -54,7 +54,7 @@ export default {
   .description{
     text-align: left;
     letter-spacing: .014em;
-    font-family: 'Product Sans Light',Roboto,Arial,sans-serif;
+    font-family: 'Open Sans',Roboto,Arial,sans-serif;
     font-size: 1.08rem;
     line-height: 1.25rem;
     color: #5f6368;

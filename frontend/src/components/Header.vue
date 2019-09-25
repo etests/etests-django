@@ -403,7 +403,7 @@ export default {
 <style scoped>
 .v-menu__content {
   border-radius: 8px;
-  font-family: "Product Sans Light";
+  font-family: "Montserrat Light";
   font-size: 1.3rem;
   min-width: 160px;
 }

@@ -1,11 +1,29 @@
 @import '~vuetify/src/stylus/main'
-@import './fonts.styl'
 
+@import url('https://fonts.googleapis.com/css?family=Montserrat|Open+Sans:400,600&display=swap&subset=latin-ext');
 
-$body-font-family = 'Product Sans Light'
+*{
+    font-family: "Montserrat";
+}
+$body-font-family = 'Montserrat', Arial, sans-serif;
+$heading-font-family = 'Open Sans', sans-serif;
+$headings = {
+  h1: { size: 112px, weight: 300, line-height: 1, letter-spacing: -.04em, font-family: $heading-font-family },
+  h2: { size: 56px, weight: 400, line-height: 1.35, letter-spacing: -.02em, font-family: $heading-font-family },
+  h3: { size: 45px, weight: 400, line-height: 48px, letter-spacing: normal, font-family: $heading-font-family },
+  h4: { size: 34px, weight: 400, line-height: 40px, letter-spacing: normal, font-family: $heading-font-family },
+  h5: { size: 24px, weight: 400, line-height: 32px, letter-spacing: normal, font-family: $heading-font-family },
+  h6: { size: 20px, weight: 500, line-height: 1, letter-spacing: .02em, font-family: $heading-font-family },
+  title: { size: 1.2rem, weight: 400, font-family: $heading-font-family },
+  subheading: { size: 16px, weight: 400, font-family: $body-font-family },
+  body-2: { size: 14px, weight: 500, font-family: $body-font-family },
+  body-1: { size: 14px, weight: 400, font-family: $body-font-family },
+  caption: { size: 12px, weight: 400, font-family: $body-font-family },
+  button: { size: 14px, weight: 500, font-family: $body-font-family }
+}
 
 .application {
-    font-family: 'Product Sans', 'Roboto', Arial, sans-serif;
+    font-family: 'Montserrat', 'Roboto', Arial, sans-serif;
     line-height: 1.5;
 }
 

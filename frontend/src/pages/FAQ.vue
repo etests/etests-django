@@ -8,11 +8,12 @@
             :class="$style.stepCard"
             v-for="(step, i) in steps"
             :key="i"
+             v-show="step.show.includes(userType)"
           >
-            <template v-slot:header v-if="step.show.includes(userType)" >
+            <template v-slot:header>
               <div :class="$style.step" >{{ step.title }}</div>
             </template >
-            <v-card v-if="step.show.includes(userType)">
+            <v-card>
               <v-card-text :class="$style.description" >{{
                 step.description
               }}</v-card-text>
@@ -95,15 +96,17 @@ export default {
 
 .stepCard {
   border-radius: 8px !important;
-  font-family: 'Product Sans Light', Roboto, Arial, sans-serif;
 
   .step {
+    font-family: 'Open Sans', Arial, sans-serif;
     font-size: 1.2rem;
+    font-weight: 400;
     margin: auto;
   }
 
   .title {
-    font-size: 1.875rem;
+    font-family: 'Open Sans', Arial, sans-serif;
+    font-size: 1.7rem;
     line-height: 1.75rem;
     margin: 5px;
     color: #28cc9e;

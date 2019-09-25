@@ -13,7 +13,7 @@
           :class="$style.demoSheet"
           :height="!isSmallScreen ? '360' : ''"
         >
-          <h1 :class="$style.heading">Institutes</h1>
+          <div :class="$style.heading">Institutes</div>
           <p :class="$style.description">{{ institute.description }}</p>
           <v-btn
             round
@@ -28,7 +28,7 @@
       <v-divider class="mx-3" inset vertical v-if="!isSmallScreen" />
       <v-flex xs12 md6>
         <v-sheet color="transparent" :class="$style.demoSheet">
-          <h1 :class="$style.heading">Students</h1>
+          <div :class="$style.heading">Students</div>
           <p :class="$style.description">{{ student.description }}</p>
           <v-btn
             round
@@ -73,14 +73,16 @@ export default {
   min-height: 150px;
 
   .heading {
-    font-family: 'Product Sans Light';
-    font-size: 1.3rem;
+    font-family: 'Open Sans';
+    font-size: 1.1rem;
     text-transform: uppercase;
   }
 
   .description {
-    font-family: 'Product Sans';
-    font-size: 1.08rem;
+    margin: 15px auto;
+    max-width: 400px;
+    font-family: 'Montserrat';
+    font-size: 0.99rem;
   }
 }
 </style>

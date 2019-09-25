@@ -155,10 +155,10 @@ export default {
   padding: 10px 20px;
   width: 100%;
   border-radius: 8px;
-  font: "Product Sans Light";
+  font: "Montserrat Light";
   margin-bottom: 12px;
 }
 p{
-font-family: "Product Sans Light";
+font-family: "Montserrat Light";
 }
 </style>

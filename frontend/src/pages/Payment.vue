@@ -179,7 +179,7 @@ export default {
 
 <style module lang="stylus">
 .dialog {
-  font-family: 'Product Sans Light', Roboto, Arial, sans-serif;
+  font-family: 'Montserrat Light', Roboto, Arial, sans-serif;
   padding: 20px;
   border-radius: 8px;
 

@@ -171,20 +171,17 @@ export default {
 
 .dialog{
   border-radius: 12px;
-  font-family: 'Product Sans Light', Roboto;
   height: 500px;
   min-height: 400px;
 
   .tabs{
     border-radius: 0;
     padding-top: 20px;
-    font-family: 'Product Sans Medium', Roboto;
   }
 
   .title{
     margin-left: 50px;
     text-align: left;
-    font-family: 'Product Sans Light', Roboto;
     font-size: 1.4rem;
     color: #7e777e;
   }
@@ -195,7 +192,6 @@ export default {
     max-width: 95%;
     min-height: 300px;
     border-radius: 8px;
-    font-family: 'Product Sans Light', Roboto;
   }
 }
 </style>

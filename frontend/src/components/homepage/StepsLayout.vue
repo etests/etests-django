@@ -47,18 +47,19 @@ export default {
     border-radius: 8px !importants;
 
     .step{
-        font-family: "Product Sans Light";
-        font-size: 1.2rem;
+        font-family: "Open Sans";
+        font-size: 1.1rem;
         margin: 8px auto;
     }
 
     .description{
-        font-family: "Product Sans Thin";
-        font-size: 1.08rem;
+        font-family: "Montserrat";
+        text-align: left;
+        font-size: 0.99rem;
     }
 }
 .video{
-    font-family: "Product Sans Light";
+    font-family: "Open Sans";
     font-size: 1.08rem;
 }
 </style>

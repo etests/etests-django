@@ -1,12 +1,14 @@
 <template>
   <TestLayout :sections="sections" :sectionIndex="sectionIndex">
     <template slot="controls">
-      <v-btn color="primary" flat>
+      <v-chip class="transparent primary--text" flat>
         <v-text-field
           prepend-inner-icon="mdi-clock"
+          type="time"
           v-model="test['time_alotted']"
+          width="100px"
         />
-      </v-btn>
+      </v-chip>
       <v-menu offset-y transition="slide-y-transition" bottom>
         <template v-slot:activator="{ on }">
           <v-btn
@@ -33,18 +35,6 @@
       </v-menu>
 
       <v-btn
-        color="red"
-        round
-        outline
-        :icon="isSmallScreen"
-        :small="!isSmallScreen"
-        @click="clearQuestion(questionIndex)"
-      >
-        <v-icon>mdi-close</v-icon>
-        <span v-if="!isSmallScreen">Clear answer</span>
-      </v-btn>
-
-      <v-btn
         color="error"
         round
         outline
@@ -55,108 +45,15 @@
         <v-icon>mdi-delete</v-icon>
         <span v-if="!isSmallScreen">Delete question</span>
       </v-btn>
-    </template>
-
-    <template slot="info">
-      <v-menu
-        v-if="currentQuestion.type !== 3"
-        offset-y
-        transition="slide-y-transition"
-        bottom
-        max-height="300"
+      <v-btn color="primary"
+        round
+        outline
+        :icon="isSmallScreen"
+        :small="!isSmallScreen"
+        @click="solutionDialog = true"
       >
-        <template v-slot:activator="{ on }">
-          <v-btn color="success" round outline v-on="on">
-            <v-icon>mdi-plus</v-icon>
-            <span> {{ currentQuestion.correctMarks }} &nbsp; </span>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-tile
-            v-for="n in 100"
-            :key="n"
-            @click="currentQuestion.correctMarks = n"
-          >
-            <v-list-tile-title>{{ n }}</v-list-tile-title>
-          </v-list-tile>
-        </v-list>
-      </v-menu>
-
-      <v-menu
-        v-if="[1, 3].includes(currentQuestion.type)"
-        offset-y
-        transition="slide-y-transition"
-        bottom
-        max-height="300"
-      >
-        <template v-slot:activator="{ on }">
-          <v-btn color="blue" round outline v-on="on">
-            <v-icon>mdi-plus</v-icon>
-            <span> {{ currentQuestion.partialMarks }} &nbsp; </span>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-tile
-            v-for="n in 21"
-            :key="n"
-            @click="currentQuestion.partialMarks = n - 1"
-          >
-            <v-list-tile-title>{{ n - 1 }}</v-list-tile-title>
-          </v-list-tile>
-        </v-list>
-      </v-menu>
-
-      <v-menu offset-y transition="slide-y-transition" bottom max-height="300">
-        <template v-slot:activator="{ on }">
-          <v-btn color="error" round outline v-on="on">
-            <v-icon>mdi-minus</v-icon>
-            <span> {{ currentQuestion.incorrectMarks }} &nbsp; </span>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-tile
-            v-for="n in 20"
-            :key="n"
-            @click="currentQuestion.incorrectMarks = n"
-          >
-            <v-list-tile-title>{{ n }}</v-list-tile-title>
-          </v-list-tile>
-        </v-list>
-      </v-menu>
-
-      <v-menu offset-y transition="slide-y-transition" bottom>
-        <template v-slot:activator="{ on }">
-          <v-btn color="indigo" round outline v-on="on">
-            <span> {{ questionTypes[currentQuestion.type].text }} &nbsp; </span>
-            <v-icon>mdi-chevron-down</v-icon>
-          </v-btn>
-        </template>
-        <v-list>
-          <v-list-tile
-            v-for="(type, index) in questionTypes"
-            :key="index"
-            @click="
-              currentQuestion.type = type.value;
-              clearQuestion(questionIndex);
-            "
-          >
-            <v-list-tile-title>{{ type.text }}</v-list-tile-title>
-          </v-list-tile>
-        </v-list>
-      </v-menu>
-      <v-btn flat round outline color="info">
-        <v-autocomplete
-          v-model="currentQuestion.topic"
-          :items="topics[currentSection.subjectIndex]"
-          :readonly="false"
-          label="Topic"
-          single-line
-          @change="changeTopic()"
-        />
-      </v-btn>
-      <v-btn color="primary" round outline @click="solutionDialog = true">
         <v-icon>mdi-eye</v-icon>
-        <span>&nbsp; Solution</span>
+        <span v-if="!isSmallScreen">&nbsp; Solution</span>
       </v-btn>
       <v-bottom-sheet v-model="solutionDialog">
         <v-sheet class="pa-2" min-height="200px">
@@ -167,6 +64,124 @@
           />
         </v-sheet>
       </v-bottom-sheet>
+    </template>
+
+    <template slot="info">
+      <v-layout row wrap align-center justify-center>
+        <v-flex xs4 md1>
+          <v-menu
+            v-if="currentQuestion.type !== 3"
+            offset-y
+            transition="slide-y-transition"
+            bottom
+            max-height="300"
+          >
+            <template v-slot:activator="{ on }">
+              <v-btn icon large color="success" round outline v-on="on">
+                <v-icon>mdi-plus</v-icon>
+                <span> {{ currentQuestion.correctMarks }} &nbsp; </span>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-tile
+                v-for="n in 100"
+                :key="n"
+                @click="currentQuestion.correctMarks = n"
+              >
+                <v-list-tile-title>{{ n }}</v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
+        </v-flex>
+        <v-flex xs4 md1 v-if="[1, 3].includes(currentQuestion.type)">
+          <v-menu
+            offset-y
+            transition="slide-y-transition"
+            bottom
+            max-height="300"
+          >
+            <template v-slot:activator="{ on }">
+              <v-btn icon large  color="blue" round outline v-on="on">
+                <v-icon>mdi-plus</v-icon>
+                <span> {{ currentQuestion.partialMarks }} &nbsp; </span>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-tile
+                v-for="n in 21"
+                :key="n"
+                @click="currentQuestion.partialMarks = n - 1"
+              >
+                <v-list-tile-title>{{ n - 1 }}</v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
+        </v-flex>
+        <v-flex xs4 md1>
+          <v-menu offset-y transition="slide-y-transition" bottom max-height="300">
+            <template v-slot:activator="{ on }">
+              <v-btn icon large  color="error" round outline v-on="on">
+                <v-icon>mdi-minus</v-icon>
+                <span> {{ currentQuestion.incorrectMarks }} &nbsp; </span>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-tile
+                v-for="n in 20"
+                :key="n"
+                @click="currentQuestion.incorrectMarks = n"
+              >
+                <v-list-tile-title>{{ n }}</v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
+        </v-flex>
+        <v-flex xs12 md3>
+          <v-menu offset-y transition="slide-y-transition" bottom>
+            <template v-slot:activator="{ on }">
+              <v-btn color="indigo" round outline v-on="on" style="width:95%">
+                <span> {{ questionTypes[currentQuestion.type].text }} &nbsp; </span>
+                <v-icon>mdi-chevron-down</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-tile
+                v-for="(type, index) in questionTypes"
+                :key="index"
+                @click="
+                  currentQuestion.type = type.value;
+                  clearQuestion(questionIndex);
+                "
+              >
+                <v-list-tile-title>{{ type.text }}</v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
+        </v-flex>
+        <v-flex xs12 md3>
+          <v-menu offset-y transition="slide-y-transition" bottom max-height="300px" max-width="300px">
+            <template v-slot:activator="{ on }">
+              <v-btn color="info" round outline v-on="on" style="width:95%">
+                <span class="text-truncate"> 
+                  {{ topics[currentSection.subjectIndex][currentQuestion.topicIndex] }} &nbsp; 
+                </span>
+                <v-icon>mdi-chevron-down</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-tile
+                v-for="(topic, index) in topics[currentSection.subjectIndex]"
+                :key="index"
+                @click="changeTopic(index)"
+              >
+                <v-list-tile-title>
+                  {{ topic }}
+                </v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
+        </v-flex>
+      </v-layout>
     </template>
 
     <template slot="text-image">
@@ -186,27 +201,27 @@
         v-if="currentQuestion.type == 0"
       >
         <template v-for="(option, i) in currentQuestion.options">
-          <v-text-field
-            solo
-            flat
-            v-model="currentQuestion.options[i]"
-            :key="questionIndex + '-' + i"
-            class="my-4 mr-5"
-            style="width: 115px;"
-          >
-            <v-radio
-              slot="prepend-inner"
-              :value="i"
-              :on-icon="`mdi-alpha-${letter('a', i, true)}-circle`"
-              :off-icon="`mdi-alpha-${letter('a', i, true)}-circle-outline`"
-            />
-          </v-text-field>
+          <v-flex xs12 md3 :key="questionIndex + '-' + i">
+            <v-text-field
+              solo
+              flat
+              v-model="currentQuestion.options[i]"
+              style="min-width: 100px;"
+            >
+              <v-radio
+                slot="prepend-inner"
+                :value="i"
+                :on-icon="`mdi-alpha-${letter('a', i, true)}-circle`"
+                :off-icon="`mdi-alpha-${letter('a', i, true)}-circle-outline`"
+              />
+            </v-text-field>
+          </v-flex>
         </template>
       </v-radio-group>
 
       <v-layout v-else-if="currentQuestion.type == 1" py-4 my-1 row wrap>
         <v-flex
-          xs2
+          xs12 md3
           v-for="(option, i) in currentQuestion.options"
           :key="questionIndex + '-' + i"
         >
@@ -214,7 +229,7 @@
             solo
             flat
             v-model="currentQuestion.options[i]"
-            style="width: 100px;"
+            style="min-width: 100px;"
           >
             <v-checkbox
               slot="prepend-inner"
@@ -292,17 +307,45 @@
           </v-layout>
         </v-flex>
       </v-layout>
+
+    </v-layout>
+
+
+
+    <v-layout slot="clear">
+
+      <v-btn
+        color="red"
+        round
+        outline
+        :small="!isSmallScreen"
+        @click="clearQuestion(questionIndex)"
+      >
+        <v-icon>mdi-close</v-icon>
+        <span>Clear</span>
+      </v-btn>
+
     </v-layout>
 
     <template slot="footer">
-      <input @keyup.left="previousQuestion" type="hidden" />
-      <input @keyup.right="nextQuestion" type="hidden" />
-      <v-btn icon color="primary" @click="previousQuestion()">
-        <v-icon>mdi-arrow-left</v-icon>
-      </v-btn>
-      <v-btn icon color="primary" @click="nextQuestion()">
-        <v-icon>mdi-arrow-right</v-icon>
-      </v-btn>
+      <v-btn
+          :disabled="this.questionIndex === 0"
+          :outline="this.questionIndex === 0"
+          icon
+          color="primary"
+          @click="previousQuestion()"
+        >
+          <v-icon>mdi-arrow-left</v-icon>
+        </v-btn>
+        <v-btn
+          :disabled="this.questionIndex === this.questions.length - 1"
+          :outline="this.questionIndex === this.questions.length - 1"
+          icon
+          color="primary"
+          @click="nextQuestion()"
+        >
+          <v-icon>mdi-arrow-right</v-icon>
+        </v-btn>
     </template>
 
     <template slot="test-name">{{ test.name }}</template>
@@ -322,9 +365,9 @@
     </template>
 
     <template slot="section-controls">
-      <v-dialog v-model="editSectionDialog" persistent max-width="400px">
+      <v-dialog v-model="editSectionDialog" max-width="400px">
         <template v-slot:activator="{ on }">
-          <v-btn round outline small color="info" dark v-on="on">
+          <v-btn round outline small color="info" dark v-on="on" style="width: 200px">
             <v-icon>mdi-pencil</v-icon>
             Change subject
           </v-btn>
@@ -366,9 +409,9 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-dialog v-model="newSectionDialog" persistent max-width="400px">
+      <v-dialog v-model="newSectionDialog" max-width="400px">
         <template v-slot:activator="{ on }">
-          <v-btn round outline small color="primary" dark v-on="on">
+          <v-btn round outline small color="primary" dark v-on="on" style="width: 200px">
             <v-icon>mdi-plus</v-icon>
             Create new section
           </v-btn>
@@ -416,6 +459,7 @@
         small
         color="error"
         @click="deleteSection(sectionIndex)"
+        style="width: 200px"
       >
         <v-icon>mdi-delete</v-icon>
         Delete this section
@@ -683,12 +727,11 @@ export default {
 
       } else return false;
     },
-    changeTopic() {
+    changeTopic(i) {
       var subjectIndex = this.sections[this.currentQuestion.section]
         .subjectIndex;
-      this.currentQuestion.topicIndex = this.topics[subjectIndex].indexOf(
-        this.currentQuestion.topic
-      );
+      this.currentQuestion.topicIndex = i;
+      this.currentQuestion.topic = this.topics[i];
     }
   },
   watch: {
@@ -756,9 +799,8 @@ export default {
 }
 
 .dialog{
-  border: 1px solid #dadce0;
-  border-radius: 5px;
-  font-family: 'Product Sans Light',Roboto,Arial,sans-serif;
+  border-radius: 8px;
+  font-family: 'Open Sans',Roboto,Arial,sans-serif;
   text-align: left;
   .title{
     font-size: 1.375rem;
@@ -771,14 +813,12 @@ export default {
 <style scoped>
 .v-text-field {
   padding-top: 0;
-  font-family: "Product Sans Light";
 }
 .v-chip {
   padding-top: 15px;
 }
 .v-menu__content {
   border-radius: 8px;
-  font-family: "Product Sans Light";
   font-size: 1.3rem;
   min-width: 160px;
 }

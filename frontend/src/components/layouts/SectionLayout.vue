@@ -28,7 +28,7 @@ export default {
 @require '~@/stylus/theme/colors';
 
 .section{
-    font-family: 'Product Sans',Roboto,Arial,sans-serif;
+    font-family: 'Montserrat',Roboto,Arial,sans-serif;
     margin: 20px 10px;
     width: 100%;
     .heading{

@@ -201,7 +201,7 @@ export default {
 .deleteDialog{
   border: 1px solid #dadce0;
   border-radius: 5px;
-  font-family: 'Product Sans Light'
+  font-family: 'Open Sans'
   text-align: left;
   .title{
     font-size: 1.375rem;

@@ -36,7 +36,7 @@ body{
 }
 
 .layout{
-  font-family: "Product Sans Light";
+  font-family: "Open Sans";
 }
 
 .logo{

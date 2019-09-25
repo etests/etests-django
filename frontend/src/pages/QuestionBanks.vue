@@ -97,7 +97,7 @@ export default {
 .dialog {
   border: 1px solid #dadce0;
   border-radius: 5px;
-  font-family: 'Product Sans Light', Roboto, Arial, sans-serif;
+  font-family: 'Montserrat Light', Roboto, Arial, sans-serif;
   text-align: left;
 
   .title {

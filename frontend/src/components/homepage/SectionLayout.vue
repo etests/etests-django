@@ -5,12 +5,12 @@
       :class="[$style.section, !isSmallScreen ? $style.space : '']"
     >
       <v-flex xs12 align-end flexbox>
-        <h1 :class="$style.heading">
+        <div :class="$style.heading">
           <slot name="heading"></slot>
-        </h1>
-        <h3 :class="$style.subheading">
+        </div>
+        <div :class="$style.subheading">
           <slot name="subheading"></slot>
-        </h3>
+        </div>
         <v-layout row justify-center wrap>
           <slot name="content"></slot>
         </v-layout>
@@ -34,12 +34,12 @@ export default {
   padding: 70px 10px 20px;
 
   .heading{
-    font-family: "Product Sans Thin";
+    font-family: "Open Sans";
     font-size: 2.1rem;
   }
 
   .subheading{
-      font-family: "Product Sans Thin";
+      font-family: "Montserrat";
       font-size: 1.2rem;
   }
 }

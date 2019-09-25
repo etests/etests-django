@@ -24,7 +24,7 @@
   width: 90%;
   border-radius: 8px;
   margin: 10px auto;
-  font-family: 'Product Sans Light',Roboto,Arial,sans-serif;
+  font-family: 'Open Sans',Roboto,Arial,sans-serif;
   letter-spacing: 0.06rem;
 }
 </style>

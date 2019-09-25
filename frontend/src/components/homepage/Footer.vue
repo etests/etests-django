@@ -5,7 +5,7 @@
         <v-card :class="$style.card" elevation="0" class="transparent">
           <v-layout align-center justify-center column>
             <v-flex xs12>
-              <h3>Our Network</h3>
+              <div :class="$style.heading">Our Network</div>
             </v-flex>
             <v-flex xs12 :class="['mx-5 mt-5', $style.text]">
               <p>
@@ -36,7 +36,7 @@
         <v-card :class="$style.card" elevation="0" class="transparent">
           <v-layout align-center justify-center column>
             <v-flex xs12>
-              <h3>Contact Us</h3>
+              <div :class="$style.heading">Contact Us</div>
             </v-flex>
             <v-flex xs12 :class="['mx-5 my-5', $style.text]">
               <v-icon color="primary">mdi-phone-outline</v-icon><br />
@@ -55,9 +55,9 @@
         <v-card :class="$style.card" elevation="0" class="transparent">
           <v-layout align-center justify-center column>
             <v-flex xs12>
-              <h3>Let Us Help You</h3>
+              <div :class="$style.heading">Let Us Help You</div>
               <v-list :class="['mx-5 mt-4 transparent', $style.text]">
-                <h4>100% support</h4>
+                <strong>100% support</strong>
                 <v-list-tile-content>
                   <p v-if="userType === 'student'">
                     You can practice all types of questions including Single
@@ -77,13 +77,9 @@
                     Our online testing platform is developed and tested by team
                     of IITians. We have support for wide range of examination
                     pattern There is special support for
-                    Pre-Engineering(including JEE Mains And JEE Advance) and
-                    Premedical( including NEET and AIMS) exams. You can create
-                    test for your batches or question banks using our test
-                    editor. The text editor provides MS word like text editor
-                    for creating questions. Apart from this you can also send us
-                    the pdf of test papers for creation of your tests. We
-                    promise to resolve any technical issue within 24 hrs.
+                    engineering (including JEE Main and JEE Advanced) and
+                    medical (including NEET and AIIMS) entrance exams. In case of any
+                    issues you can contact us and we will try our best to help.
                   </p>
                 </v-list-tile-content>
               </v-list>
@@ -95,11 +91,11 @@
         <v-card :class="$style.card" elevation="0" class="transparent">
           <v-layout align-center justify-center column>
             <v-flex xs12>
-              <h3>Important Links</h3>
+              <div :class="$style.heading">Important Links</div>
               <br />
               <div :class="['mx-5 mt-4 transparent', $style.text]">
                 <router-link to="/career"
-                  ><p>Career (Work from home)</p></router-link
+                  ><p>Career (work from home)</p></router-link
                 >
                 <router-link to="/faq"><p>FAQs</p></router-link>
                 <router-link to="/question-banks"
@@ -118,11 +114,13 @@
         </v-card>
       </v-flex>
       <v-flex
-        class="transparent py-3 subheading primary--text"
+        class="transparent py-3 primary--text"
         text-xs-center
         xs12
       >
-        &copy;2019 — <strong>eTests All Rights Reserved</strong>
+        <v-icon small color="primary">mdi-copyright</v-icon>
+        2019 eTests <br/>
+        <strong>All rights reserved</strong>
       </v-flex>
     </v-layout>
   </SectionLayout>
@@ -180,13 +178,15 @@ export default {
      top: -50px;
    }
 
-   h3{
-     font-family: "Product Sans Thin";
-     font-size: 18pt;
+   .heading{
+     font-family: 'Open Sans';
+     font-size: 1.4rem;
    }
    .text{
-     font-family: "Product Sans Light";
-     font-size: 11pt;
+      margin: 15  px auto;
+      max-width: 400px;
+      font-family: 'Montserrat';
+      font-size: 0.95rem;
      p{
       text-align: justify;
      }

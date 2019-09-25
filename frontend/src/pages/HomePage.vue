@@ -26,11 +26,10 @@ export default {
     return {
       sections: [
         "Hero",
-        "Exams",
-        "Demo",
-        "QuickStart",
         "Welcome",
-        // "Subscribe",
+        "Demo",
+        "Exams",
+        "QuickStart",
         "Footer"
       ],
       options: {

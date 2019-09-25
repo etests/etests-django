@@ -36,6 +36,9 @@
               <slot name="text-image"></slot>
 
               <slot name="options"></slot>
+
+              <slot name="clear"></slot>
+
             </v-sheet>
           </v-card>
         </v-flex>
@@ -166,7 +169,7 @@ export default {
 .content{
   margin-top: 20px;
   letter-spacing: 0.04em;
-  font-family: 'Product Sans',Roboto,Arial,sans-serif;
+  font-family: 'Montserrat',Roboto,Arial,sans-serif;
   .questionContainer{
     text-align: left;
     border: 1px solid #c9cbd0;
@@ -182,7 +185,7 @@ export default {
 .dialog{
   border: 1px solid #dadce0;
   border-radius: 5px;
-  font-family: 'Product Sans Light',Roboto,Arial,sans-serif;
+  font-family: 'Open Sans',Roboto,Arial,sans-serif;
   text-align: left;
   .title{
     font-size: 1.375rem;
