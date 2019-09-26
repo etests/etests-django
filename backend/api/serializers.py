@@ -25,12 +25,20 @@ class StudentTestListSerializer(serializers.ModelSerializer):
     def get_institute(self, obj):
         return {"id": obj.institute.id, "name": obj.institute.user.name}
 
+
+class FilteredListSerializer(serializers.ListSerializer):
+
+    def to_representation(self, data):
+        data = data.filter(institute__verified = True, visible = True)
+        return super(FilteredListSerializer, self).to_representation(data)
+
 class TestSeriesSerializer(serializers.ModelSerializer):
     tests = StudentTestListSerializer(many=True, read_only=True)
     institute = serializers.SerializerMethodField()
     exams = serializers.SerializerMethodField()
 
     class Meta:
+        list_serializer_class = FilteredListSerializer
         model = TestSeries
         fields = ("id", "name", "price", "visible", "exams", "tests", "institute")
 

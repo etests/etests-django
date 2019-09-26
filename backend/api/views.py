@@ -56,7 +56,7 @@ class FollowingInstitutesView(generics.ListAPIView):
     serializer_class = FollowingInstitutesSerializer
     def get_queryset(self):
         if self.request.user.is_student:
-            return Institute.objects.filter(following_students=self.request.user.student)
+            return Institute.objects.filter(following_students=self.request.user.student,verified=True)
         else:
             return None
 
@@ -125,7 +125,7 @@ class FollowInstituteView(APIView):
 class InstitutesListView(viewsets.ViewSet):
     permission_classes = (ReadOnly,)
     def list(self, request):
-        queryset = Institute.objects.filter()
+        queryset = Institute.objects.filter(verified=True)
         serializer = InstituteListSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -159,7 +159,7 @@ class TestSeriesListView(generics.ListAPIView):
     permission_classes = (ReadOnly,)
     serializer_class = TestSeriesSerializer
     def get_queryset(self):
-        return TestSeries.objects.all()
+        return TestSeries.objects.filter(institute__verified=True, visible=True)
         
 class TestSeriesListCreateView(generics.ListCreateAPIView):
     permission_classes = (ReadOnly | IsInstituteOwner | permissions.IsAdminUser,)
@@ -169,7 +169,7 @@ class TestSeriesListCreateView(generics.ListCreateAPIView):
         if self.request.user.is_institute:
             return TestSeries.objects.filter(institute=self.request.user.institute)
         elif self.request.user.is_student:
-            return TestSeries.objects.filter(registered_students = self.request.user.student)
+            return TestSeries.objects.filter(registered_students = self.request.user.student,visible=True,institute__verified=True)
         elif self.request.user.is_staff:
             return TestSeries.objects.all()
         return None
@@ -206,7 +206,7 @@ class TestListView(generics.ListAPIView):
             if self.request.user.is_institute:
                 return Test.objects.filter(practice=False, institute=self.request.user.institute)
             elif self.request.user.is_student:
-                return Test.objects.filter(practice=False, registered_students=self.request.user.student)
+                return Test.objects.filter(practice=False, registered_students=self.request.user.student,visible=True)
             elif self.request.user.is_staff:
                 return Test.objects.all()
         else:

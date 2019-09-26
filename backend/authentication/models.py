@@ -52,8 +52,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Institute(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE)
-    pincode = models.CharField(max_length = 10, null = True)
+    pincode = models.CharField(max_length = 10, null = True, blank=True)
     current_credits = models.IntegerField(default = 0)
+    verified = models.BooleanField(default=False)
 
     def __str__(self):
         return self.user.name
@@ -104,10 +105,10 @@ class Enrollment(models.Model):
 class Student(models.Model):
     GENDERS = (("M", "Male"), ("F", "Female"), ("O", "Others"))
     user = models.OneToOneField(User, on_delete = models.CASCADE)
-    gender = models.CharField(max_length = 1, choices = GENDERS)
+    gender = models.CharField(max_length = 1, choices = GENDERS,blank=True,null=True)
     following = models.ManyToManyField(Institute, related_name = "following_students", blank = True)
     institutes = models.ManyToManyField(Institute, related_name = "students", through = Enrollment, blank = True)
-    birth_date = models.DateField(null = True)
+    birth_date = models.DateField(null = True,blank=True)
 
     def __str__(self):
         return self.user.name

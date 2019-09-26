@@ -90,7 +90,7 @@ class TestSeries(models.Model):
     price = models.IntegerField()
     date_added = models.DateField(auto_now_add = True)
     slug = models.SlugField(unique = True, editable = False)
-    visible = models.BooleanField(default = False)
+    visible = models.BooleanField(default = True)
     exams = models.ManyToManyField(Exam, related_name = 'test_series', blank = True)
     institute = models.ForeignKey(Institute, related_name = 'test_series', blank = True, null = True, on_delete = models.CASCADE)
     registered_students = models.ManyToManyField(Student, blank = True)
@@ -132,6 +132,7 @@ class Test(models.Model):
     stats = JSONField(blank = True, null = True)
     corrected = models.BooleanField(default = False)
     finished = models.BooleanField(default = False)
+    visible = models.BooleanField(default = True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -216,6 +217,7 @@ class Payment(models.Model):
     amount = models.IntegerField(default = 0)
     verified = models.BooleanField(default = False)
     test_series = models.ForeignKey(TestSeries, blank=True, null=True, on_delete=models.SET_NULL)
+    show = models.BooleanField(default = False)
     
     def __str__(self):
         return self.user.name

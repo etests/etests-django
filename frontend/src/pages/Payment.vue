@@ -68,7 +68,7 @@
           </v-layout>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn flat color="error" @click="$emit('close')">cancel</v-btn>
+            <v-btn flat color="grey" @click="$emit('close')">cancel</v-btn>
             <v-btn color="primary" @click="submit">
               submit
             </v-btn>

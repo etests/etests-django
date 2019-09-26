@@ -21,7 +21,7 @@
         </template>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="error" flat @click="followDialog = false">Close</v-btn>
+          <v-btn color="primary" flat @click="followDialog = false">Cancel</v-btn>
           <v-btn
             v-if="
               (!status.following && !status.followed) ||
@@ -82,44 +82,57 @@
       <LoadingCard v-for="i in 1" :key="i" />
     </template>
 
-    <v-card
+    <ObjectCard
       v-for="institute in filteredInstitutes"
       :key="institute.id"
       :class="$style.card"
-    >
-      <v-img
-        :class="$style.img"
-        height="170px"
-        :src="institute.src"
         @click="
           selectedInstitute = institute;
           instituteDialog = true;
         "
-      />
-      <span class="subheading mr-5">{{ institute.name }}</span>
-      <v-btn
-        class="white primary--text"
-        round
-        dark
-        flat
-        v-if="showFollowing(institute.id)"
-        @click="
-          selectedInstitute = institute;
-          followDialog = true;
-        "
-      >
-        Follow
-      </v-btn>
-      <v-btn v-else class="white primary--text" dark flat disabled>
-        Follow
-      </v-btn>
-    </v-card>
+    >
+      <div slot="content" :class="$style.content">
+        <div :class="$style.title">{{ institute.name }}</div>
+         <v-divider class="my-1" />
+        <div class="subheading my-3 text-xs-left">{{institute.city}}, {{institute.state}} - {{institute.pincode}}</div>
+      </div>
+      <v-layout row slot="actions">
+        <v-flex xs6>
+        <v-btn
+          round
+          color="primary"
+          outline
+          @click="
+            selectedInstitute = institute;
+            instituteDialog = true;
+          "
+        >
+          Open
+        </v-btn>
+        </v-flex>
+        <v-flex xs6>
+        <v-btn
+          round
+          color="primary"
+          outline
+          v-if="showFollowing(institute.id)"
+          @click="
+            selectedInstitute = institute;
+            followDialog = true;
+          "
+        >
+          Follow
+        </v-btn>
+        </v-flex>
+      </v-layout>
+    </ObjectCard>
   </StandardLayout>
 </template>
 
 <script>
 import StandardLayout from "@/components/layouts/StandardLayout";
 import LoadingCard from "@/components/layouts/LoadingCard";
+import ObjectCard from "@/components/layouts/ObjectCard";
 import QuestionBankCard from "./QuestionBankCard";
 import { mapState } from "vuex";
 import utils from "@/js/utils";
@@ -139,7 +152,8 @@ export default {
   components: {
     StandardLayout,
     QuestionBankCard,
-    LoadingCard
+    LoadingCard,
+    ObjectCard
   },
   created() {
     this.$store.dispatch("institutes/getAll");
@@ -168,6 +182,7 @@ export default {
           list.push({
             id: item.id,
             ...item.user,
+            pincode: item.pincode,
             test_series: item.test_series,
             src:
               "https://d2mpqlmtgl1znu.cloudfront.net/AcuCustom/Sitename/DAM/011/news-buildings-jan18-dnaiot.jpg"
@@ -206,7 +221,7 @@ export default {
 .dialog {
   border: 1px solid #dadce0;
   border-radius: 5px;
-  font-family: 'Montserrat Light', Roboto, Arial, sans-serif;
+  font-family: 'Montserrat', Roboto, Arial, sans-serif;
   text-align: left;
 
   .title {
@@ -221,7 +236,7 @@ export default {
   border-radius: 8px;
   height: 220px;
   width: 270px;
-  margin: 20px;
+  margin: 10px;
   .img{
     cursor: pointer;
   }

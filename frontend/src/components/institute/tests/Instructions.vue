@@ -149,6 +149,35 @@
       <li>
         You can create another test only after saving the current test.
       </li>
+      <li v-if="instituteId">
+        You can also send us PDF / images containing your questions and we will add them to the test.
+        Fill out <a target="_blank" href="https://forms.gle/XuzzwBP31c3Z1dwn8">this form</a> with the following details: <br />
+        <ul type="circle">
+          <li> Institute Id: {{ instituteId }} </li>
+          <li> Test Id: {{ testId }} </li>
+        </ul>
+      </li>
     </v-card-text>
   </div>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      testId: this.$route.params.id
+    };
+  },
+  computed: {
+    instituteId() {
+      if(
+        this.$store.state.authentication.status.loggedIn &&
+        this.$store.state.authentication.user.type == "institute"
+      ){
+        return this.$store.state.authentication.user.id;
+      }
+      else return false;
+    }
+  }
+}
+</script>
