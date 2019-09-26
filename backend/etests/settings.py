@@ -13,7 +13,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["etests.netlify.com"]
+ALLOWED_HOSTS = ["etests.co.in", "*.etests.co.in"]
 
 # Application definition
 INSTALLED_APPS = [
@@ -123,36 +123,10 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ORIGIN_WHITELIST = (
-    "https://etests.netlify.com"
+    "https://etests.co.in"
 )
 
 try:
     from local_settings import *
-except ImportError:
-    import django_heroku
-    import dj_database_url
-    import psycopg2
-    # Activate Django-Heroku.
-    django_heroku.settings(locals())
-    # Database
-    DATABASE_URL = os.environ['DATABASE_URL']
-    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-    DATABASES = {}
-    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
-
-    # Logs
-    LOGGING = {
-        'version': 1,
-        'disable_existing_loggers': False,
-        'handlers': {
-            'console': {
-                'class': 'logging.StreamHandler',
-            },
-        },
-        'loggers': {
-            'django': {
-                'handlers': ['console'],
-                'level': os.getenv('DJANGO_LOG_LEVEL', 'ERROR'),
-            },
-        },
-    }
+except:
+    pass
