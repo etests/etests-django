@@ -331,6 +331,11 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
 
         return Response(serializer.data)
 
+def updateTestRanks(test):
+    sessions = Session.objects.filter(test = test)
+    generated = generateRanks(sessions)
+    Session.objects.bulk_update(generated.pop("sessions", None), ["ranks"])
+
 class ResultView(generics.RetrieveAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
     def get_serializer_class(self):
@@ -340,6 +345,7 @@ class ResultView(generics.RetrieveAPIView):
             return ReviewSerializer
         else:
             return ResultSerializer
+
     def get_queryset(self):
         if self.request.user.is_student:
             return Session.objects.filter(student = self.request.user.student)
@@ -348,6 +354,14 @@ class ResultView(generics.RetrieveAPIView):
         elif self.request.user.is_staff:
             return Session.objects.all()
         return None
+
+    def retrieve(self, *args, **kwargs):
+        instance = self.get_object()
+
+        if not instance.practice and not instance.ranks and instance.test.status() > 1:
+            updateTestRanks(instance.test)
+
+        return Response(self.get_serializer(instance).data)
 
 class Review(generics.RetrieveAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
@@ -363,12 +377,10 @@ class Review(generics.RetrieveAPIView):
 
     def retrieve(self, *args, **kwargs):
         instance = self.get_object()
-        
         if instance.result or (instance.result and len(instance.result)!=0):
             return Response(self.get_serializer(instance).data)
         else:
             raise ParseError("You cannot review this test yet.")
-
 
 class GenerateRanks(APIView):
     permission_classes = (IsInstituteOwner,)
@@ -383,9 +395,7 @@ class GenerateRanks(APIView):
         if test.status <=1:
             raise PermissionDenied("Ranks can be generated only after test closes.")  
         elif test.status in [2,3]:
-            sessions = Session.objects.filter(test = test, practice = False)
-            generated = generateRanks(sessions)
-            Session.objects.bulk_update(generated.pop("sessions", None), ["ranks"])
+            updateTestRanks(test)
             test.stats = generated
             test.finished = True
             test.save()

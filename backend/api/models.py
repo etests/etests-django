@@ -141,24 +141,18 @@ class Test(models.Model):
 
     @property
     def status(self):
-        if self.practice: 
-            if not self.activation_time or timezone.now() < self.activation_time:
-                return 0
+        if not self.activation_time or timezone.now() < self.activation_time:
+            return 0
+        elif not self.closing_time or self.activation_time <= timezone.now() and timezone.now() < self.closing_time:
+            return 1
+        elif self.closing_time <= timezone.now():
+            if not self.corrected and not self.finished:
+                return 2
+            elif not self.finished:
+                return 3
             else:
-                return 1
-        else:
-            if not self.activation_time or timezone.now() < self.activation_time:
-                return 0
-            elif not self.closing_time or self.activation_time <= timezone.now() and timezone.now() < self.closing_time:
-                return 1
-            elif self.closing_time <= timezone.now():
-                if not self.corrected and not self.finished:
-                    return 2
-                elif not self.finished:
-                    return 3
-                else:
-                    return 4
-
+                return 4
+            
     def __str__(self):
         return self.name
         
