@@ -213,7 +213,7 @@ class Payment(models.Model):
     def save(self, *args, **kwargs):
         if self.verified:
             self.test_series.registered_students.add(self.user.student)
-            for test in self.test_series.tests:
+            for test in self.test_series.tests.all():
                 test.registered_students.add(self.user.student)
 
         super(Payment, self).save(*args, **kwargs)

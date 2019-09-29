@@ -102,8 +102,10 @@ class BatchJoinView(APIView):
             enrollment = Enrollment.objects.get(batch=batch, roll_number=roll_number)
             if enrollment.joining_key == joining_key:
                 enrollment.student = request.user.student
-            enrollment.save()
-            return Response("Joined Successfully")
+                enrollment.save()
+                return Response("Joined Successfully")
+            else:
+                raise ParseError("Invalid roll number or joining key!")
         except:
             raise ParseError("Invalid roll number or joining key!") 
 
@@ -126,14 +128,14 @@ class InstitutesListView(viewsets.ViewSet):
     permission_classes = (ReadOnly,)
     def list(self, request):
         queryset = Institute.objects.filter(verified=True)
-        serializer = InstituteListSerializer(queryset, many=True)
+        serializer = InstituteListSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data)
 
 class ExamListView(viewsets.ViewSet):
     permission_classes = (ReadOnly,)
     def list(self, request):
         queryset = Exam.objects.filter()
-        serializer = ExamListSerializer(queryset, many=True)
+        serializer = ExamListSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data)
         
 class SubjectListView(viewsets.ViewSet):
@@ -319,8 +321,9 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
             # self.serializer_class = ResultSerializer
             if instance.completed:
                 raise PermissionDenied("You have already submitted this test.")
-            else:   
-                test = Test.objects.get(id=instance.test.id)
+            else: 
+                self.serializer_class = SessionSolutionSerializer
+                # test = Test.objects.get(id=instance.test.id)
                 # evaluated = SessionEvaluation(test, session).evaluate()
                 # instance.marks = evaluated[0]
                 # instance.result = {"questionWiseMarks": evaluated[1], "topicWiseMarks": evaluated[2]}
