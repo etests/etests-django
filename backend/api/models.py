@@ -178,12 +178,6 @@ class Session(models.Model):
             return self.duration <= timedelta(seconds = 0) or self.status == 3
         else:
             return self.test.start_time+self.test.time_alotted <= timezone.now()
-        
-    def save(self, *args, **kwargs):
-        if not self.practice:
-            self.practice = self.test.practice
-
-        super(Session, self).save(*args, **kwargs)
     
     class Meta:
         ordering = ["-practice","student","test"]
@@ -219,6 +213,8 @@ class Payment(models.Model):
     def save(self, *args, **kwargs):
         if self.verified:
             self.test_series.registered_students.add(self.user.student)
+            for test in self.test_series.tests:
+                test.registered_students.add(self.user.student)
 
         super(Payment, self).save(*args, **kwargs)
 

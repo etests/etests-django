@@ -278,7 +278,7 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
             "questionIndex": 0,
             "sectionIndex": 0
         }    
-        session = Session.objects.create(student=self.request.user.student, test=test, response=response, result=[], current=current, practice=(test.practice or test.status>1))
+        session = Session.objects.create(student=self.request.user.student, test=test, response=response, result=[], current=current, practice=(test.status>1))
         return session
 
     def retrieve(self, *args, **kwargs):
@@ -316,14 +316,14 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         instance = self.get_object()
         session = self.request.data
         if session['completed']:
-            self.serializer_class = ResultSerializer
+            # self.serializer_class = ResultSerializer
             if instance.completed:
                 raise PermissionDenied("You have already submitted this test.")
             else:   
                 test = Test.objects.get(id=instance.test.id)
-                evaluated = SessionEvaluation(test, session).evaluate()
-                instance.marks = evaluated[0]
-                instance.result = {"questionWiseMarks": evaluated[1], "topicWiseMarks": evaluated[2]}
+                # evaluated = SessionEvaluation(test, session).evaluate()
+                # instance.marks = evaluated[0]
+                # instance.result = {"questionWiseMarks": evaluated[1], "topicWiseMarks": evaluated[2]}
 
         serializer = self.get_serializer(instance, data=self.request.data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -358,7 +358,12 @@ class ResultView(generics.RetrieveAPIView):
     def retrieve(self, *args, **kwargs):
         instance = self.get_object()
 
-        if not instance.practice and not instance.ranks and instance.test.status() > 1:
+        print(not instance.practice , instance.ranks==None , instance.test.status > 1)
+    
+        if not instance.practice and instance.ranks==None and instance.test.status > 1:
+            print("dfdsf")
+            instance.test.finished = True
+            instance.test.save()
             updateTestRanks(instance.test)
 
         return Response(self.get_serializer(instance).data)
