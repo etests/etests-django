@@ -104,7 +104,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('name', 'phone', 'city', 'state', 'birth_date', 'pincode')
+        fields = ('id', 'name', 'phone', 'city', 'state', 'birth_date', 'pincode')
         
     def get_birth_date(self, obj):
         if obj.is_student:
