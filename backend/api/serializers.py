@@ -162,13 +162,13 @@ class ResultSerializer(serializers.ModelSerializer):
     test = StudentTestSerializer(many=False, read_only=True)
     class Meta:
         model = Session
-        fields = ('id', 'test', 'marks', 'completed')
+        fields = ('id', 'response', 'test', 'marks', 'completed')
 
 class ReviewSerializer(serializers.ModelSerializer):
     test = TestSerializer(many=False, read_only=True)
     class Meta:
         model = Session
-        fields = ('id', 'response', 'test', 'result', 'marks', 'ranks')
+        fields = ('id', 'response', 'test', 'result', 'marks', 'completed', 'ranks')
 
 
 class RankListSerializer(serializers.ModelSerializer):
