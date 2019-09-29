@@ -318,15 +318,15 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         instance = self.get_object()
         session = self.request.data
         if session['completed']:
-            # self.serializer_class = ResultSerializer
+            self.serializer_class = ResultSerializer
             if instance.completed:
                 raise PermissionDenied("You have already submitted this test.")
             else: 
-                self.serializer_class = SessionSolutionSerializer
-                # test = Test.objects.get(id=instance.test.id)
-                # evaluated = SessionEvaluation(test, session).evaluate()
-                # instance.marks = evaluated[0]
-                # instance.result = {"questionWiseMarks": evaluated[1], "topicWiseMarks": evaluated[2]}
+                # self.serializer_class = SessionSolutionSerializer
+                test = Test.objects.get(id=instance.test.id)
+                evaluated = SessionEvaluation(test, session).evaluate()
+                instance.marks = evaluated[0]
+                instance.result = {"questionWiseMarks": evaluated[1], "topicWiseMarks": evaluated[2]}
 
         serializer = self.get_serializer(instance, data=self.request.data, partial=True)
         serializer.is_valid(raise_exception=True)
