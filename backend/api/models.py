@@ -120,6 +120,7 @@ class Test(models.Model):
     institute = models.ForeignKey(Institute, blank = True, null = True, on_delete = models.CASCADE)
     slug = models.SlugField(unique = True, editable = False)
     exam = models.ForeignKey(Exam, related_name = 'tests', blank = True, null = True, on_delete = models.SET_NULL)
+    aits = models.BooleanField(default = False)
     practice = models.BooleanField(default = False)
     tags = models.ManyToManyField(Tag, blank = True)
     date_added = models.DateTimeField(auto_now_add = True)

@@ -99,10 +99,11 @@ class BatchJoinView(APIView):
         joining_key = request.data['joiningKey']
         try:
             batch = Batch.objects.get(id=self.request.data['batch'])
-            enrollment = Enrollment.objects.get(batch=batch, roll_number=roll_number)
+            enrollment = Enrollment.objects.get(batch = batch, roll_number=roll_number)
             if enrollment.joining_key == joining_key:
                 enrollment.student = request.user.student
                 enrollment.save()
+                # Feature required: Register this student to all the previous tests of this batch
                 return Response("Joined Successfully")
             else:
                 raise ParseError("Invalid roll number or joining key!")
@@ -206,9 +207,9 @@ class TestListView(generics.ListAPIView):
     def get_queryset(self):
         if self.request.user.is_authenticated:
             if self.request.user.is_institute:
-                return Test.objects.filter(practice=False, institute=self.request.user.institute)
+                return Test.objects.filter(aits = False, institute = self.request.user.institute)
             elif self.request.user.is_student:
-                return Test.objects.filter(practice=False, registered_students=self.request.user.student,visible=True)
+                return Test.objects.filter(aits = False, registered_students = self.request.user.student, visible = True)
             elif self.request.user.is_staff:
                 return Test.objects.all()
         else:
@@ -259,6 +260,7 @@ class TestRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
 
 class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     permission_classes = (permissions.IsAuthenticated, IsStudentOwner | permissions.IsAdminUser,)
+    
     serializer_class = SessionSerializer
 
     def get_queryset(self):
@@ -309,6 +311,8 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         else:
             raise PermissionDenied("You cannot attempt this test.")
         if session:
+            if session.practice:
+                self.serializer_class = PracticeSessionSerializer
             return Response(self.get_serializer(session).data)
         else:
             raise NotFound("Invalid Request.")
@@ -317,12 +321,13 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     def partial_update(self,*args,**kwargs):
         instance = self.get_object()
         session = self.request.data
-        if session['completed']:
+        if session['practice']:
+            self.serializer_class = PracticeSessionSerializer
+        elif session['completed']:
             self.serializer_class = ResultSerializer
             if instance.completed:
                 raise PermissionDenied("You have already submitted this test.")
             else: 
-                # self.serializer_class = SessionSolutionSerializer
                 test = Test.objects.get(id=instance.test.id)
                 evaluated = SessionEvaluation(test, session).evaluate()
                 instance.marks = evaluated[0]
@@ -344,7 +349,7 @@ class ResultView(generics.RetrieveAPIView):
     def get_serializer_class(self):
         session = self.get_object()
         test = session.test
-        if test.status == 4:
+        if session.practice or test.status == 4:
             return ReviewSerializer
         else:
             return ResultSerializer
@@ -361,10 +366,7 @@ class ResultView(generics.RetrieveAPIView):
     def retrieve(self, *args, **kwargs):
         instance = self.get_object()
 
-        print(not instance.practice , instance.ranks==None , instance.test.status > 1)
-    
         if not instance.practice and instance.ranks==None and instance.test.status > 1:
-            print("dfdsf")
             instance.test.finished = True
             instance.test.save()
             updateTestRanks(instance.test)
@@ -398,8 +400,8 @@ class GenerateRanks(APIView):
         except Exception as e:
             print(e)
             raise NotFound("No such Test!")
-        if test.practice:
-            raise PermissionDenied("Ranks cannot be generated for practice tests.")  
+        if test.practice or test.aits:
+            raise PermissionDenied("Ranks cannot be generated for this test.")  
         if test.status <=1:
             raise PermissionDenied("Ranks can be generated only after test closes.")  
         elif test.status in [2,3]:

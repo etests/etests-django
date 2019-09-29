@@ -20,7 +20,7 @@ class StudentTestListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Test
-        fields = ('id','name','institute', 'status', 'practice', 'date_added', 'activation_time', "closing_time",  'time_alotted', "sessions")
+        fields = ('id','name','institute', 'status', 'aits', 'date_added', 'activation_time', "closing_time",  'time_alotted', "sessions")
     
     def get_institute(self, obj):
         return {"id": obj.institute.id, "name": obj.institute.user.name}
@@ -101,13 +101,13 @@ class TestListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Test
-        fields = ("id", "name", "status", "practice", "activation_time", "closing_time", "institute")
+        fields = ("id", "name", "status", "aits", "activation_time", "closing_time", "institute")
 
 class TestCreateSerializer(serializers.ModelSerializer):        
 
     class Meta:
         model=Test
-        fields = ("id", "name", "practice", "activation_time", "closing_time", "institute", "questions", "answers", "sections", "test_series", "exam", "status")
+        fields = ("id", "name", "aits", "activation_time", "closing_time", "institute", "questions", "answers", "sections", "test_series", "exam", "status")
         extra_kwargs = {'test_series': {'required': False}, 'status': {'read_only': True}}
 
 class PaymentSerializer(serializers.ModelSerializer):
@@ -124,12 +124,12 @@ class TestSerializer(serializers.ModelSerializer):
 class StudentTestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test
-        fields = ('id','name','institute', 'status','practice','tags','date_added','activation_time', "closing_time", 'time_alotted','sections','questions')
+        fields = ('id','name','institute', 'status','aits','tags','date_added','activation_time', "closing_time", 'time_alotted','sections','questions')
 
 class TestRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test
-        fields = ('id','name','institute','slug','status','practice','tags','date_added','activation_time', "closing_time",  'time_alotted')
+        fields = ('id','name','institute','slug','status','aits','tags','date_added','activation_time', "closing_time",  'time_alotted')
 
 class SessionSerializer(serializers.ModelSerializer):
     test = StudentTestSerializer(many=False, read_only=True)
@@ -137,11 +137,11 @@ class SessionSerializer(serializers.ModelSerializer):
         model = Session
         fields = ('id', 'practice', 'response', 'test', 'checkin_time', 'duration', 'current', 'completed')
 
-class SessionSolutionSerializer(serializers.ModelSerializer):
+class PracticeSessionSerializer(serializers.ModelSerializer):
     test = TestSerializer(many=False, read_only=True)
     class Meta:
         model = Session
-        fields = ('id', 'practice', 'response', 'test', 'checkin_time', 'duration', 'current', 'completed')
+        fields = ('id', 'practice', 'response', 'test', 'checkin_time', 'duration', 'current', 'completed', 'result', 'marks')
 
 class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
