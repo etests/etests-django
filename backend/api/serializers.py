@@ -16,7 +16,7 @@ class SessionListSerializer(serializers.ModelSerializer):
 
 class StudentTestListSerializer(serializers.ModelSerializer):
     institute = serializers.SerializerMethodField()
-    sessions = SessionListSerializer(many=True, read_only=True)
+    sessions = serializers.SerializerMethodField()
     
     class Meta:
         model = Test
@@ -24,6 +24,15 @@ class StudentTestListSerializer(serializers.ModelSerializer):
     
     def get_institute(self, obj):
         return {"id": obj.institute.id, "name": obj.institute.user.name}
+
+    def get_sessions(self, obj):
+        user = self.context.get("request").user
+        if user.is_authenticated and user.is_student:
+            serializer_context = {'request': self.context.get('request') }
+            sessions =  Session.objects.filter(test=obj, student=user.student)
+            return SessionListSerializer(sessions, many=True, read_only=True, context = serializer_context).data
+        else:
+            return None
 
 
 class FilteredListSerializer(serializers.ListSerializer):
@@ -33,7 +42,7 @@ class FilteredListSerializer(serializers.ListSerializer):
         return super(FilteredListSerializer, self).to_representation(data)
 
 class TestSeriesSerializer(serializers.ModelSerializer):
-    tests = StudentTestListSerializer(many=True, read_only=True)
+    tests = serializers.SerializerMethodField()
     institute = serializers.SerializerMethodField()
     exams = serializers.SerializerMethodField()
     status = serializers.SerializerMethodField()
@@ -42,6 +51,12 @@ class TestSeriesSerializer(serializers.ModelSerializer):
         list_serializer_class = FilteredListSerializer
         model = TestSeries
         fields = ("id", "name", "price", "visible", "exams", "tests", "institute", "status")
+
+    def get_tests(self, obj):
+        serializer_context = {'request': self.context.get('request') }
+        tests = obj.tests
+        serializer = StudentTestListSerializer(tests, many=True, read_only=True, context=serializer_context)
+        return serializer.data
 
     def get_status(self, obj):
         if not self.context['request'].user.is_authenticated:
@@ -107,7 +122,7 @@ class TestCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Test
-        fields = ("id", "name", "aits", "activation_time", "closing_time", "institute", "questions", "answers", "sections", "test_series", "exam", "status")
+        fields = ("id", "name", "aits", "activation_time", "closing_time","time_alotted", "institute", "questions", "answers", "sections", "test_series", "exam", "status")
         extra_kwargs = {'test_series': {'required': False}, 'status': {'read_only': True}}
 
 class PaymentSerializer(serializers.ModelSerializer):
@@ -155,15 +170,6 @@ class PracticeSessionSerializer(serializers.ModelSerializer):
         model = Session
         fields = ('id', 'practice', 'response', 'test', 'checkin_time', 'duration', 'current', 'completed', 'result', 'marks')
 
-class SubjectSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Subject
-        fields = '__all__'
-
-class TopicSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Topic
-        fields = '__all__'
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:

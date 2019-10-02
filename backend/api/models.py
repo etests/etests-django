@@ -34,38 +34,6 @@ class Exam(models.Model):
         super(Exam, self).save(*args, **kwargs)
 
 
-class Subject(models.Model):
-    id = models.AutoField(primary_key = True)
-    name = models.CharField(max_length = 100)
-    slug = models.SlugField(unique = True, editable = False)
-    image = models.ImageField(upload_to = 'static/images/subjects/', default = 'static/images/subjects/subject.png', max_length = 20*1024, blank = True)
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = get_unique_slug(self, "name")
-        super(Subject, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name
-
-class Topic(models.Model):
-    id = models.AutoField(primary_key = True)
-    name = models.CharField(max_length = 100, blank = True)
-    subject = models.ForeignKey(Subject, related_name = 'topics', blank = True, null = True, on_delete = models.CASCADE)
-    image = models.ImageField(upload_to = 'static/images/topics/', default = 'static/images/topics/topic.png', max_length = 20*1024, blank = True)
-    slug = models.SlugField(unique = True, editable = False)
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = get_unique_slug(self, "name")
-        super(Topic, self).save(*args, **kwargs)
-
-    class Meta:
-        ordering = ["subject", "name"]
-
-    def __str__(self):
-        return self.name
-
 class AccessCode(models.Model):
     id = models.AutoField(primary_key = True)
     limit = models.IntegerField()
@@ -183,19 +151,7 @@ class Session(models.Model):
     class Meta:
         ordering = ["-practice","student","test"]
 
-# class Buyer(models.Model):
-#     id = models.AutoField(primary_key = True)
-#     transaction_id = models.CharField(max_length = 200)
-#     date_added = models.DateField(auto_now_add = True)
-#     user = models.ForeignKey(User, related_name = "buyers", blank = True, null = True, on_delete = models.SET_NULL)
-#     amount = models.IntegerField(default = 0)
-#     verified = models.BooleanField(default = False)
-#     content_type = models.ForeignKey(ContentType, blank = True, null = True, on_delete = models.SET_NULL)
-#     object_id = models.PositiveIntegerField()
-#     content_object = GenericForeignKey('content_type', 'object_id')
 
-#     def __str__(self):
-#         return self.user.name
 
 class Payment(models.Model):
     id = models.AutoField(primary_key = True)
