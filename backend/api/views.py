@@ -352,6 +352,7 @@ def updateTestRanks(test):
     sessions = Session.objects.filter(test = test)
     generated = generateRanks(sessions)
     Session.objects.bulk_update(generated.pop("sessions", None), ["ranks"])
+    return generated
 
 class ResultView(generics.RetrieveAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
@@ -378,8 +379,9 @@ class ResultView(generics.RetrieveAPIView):
         if not instance.practice and instance.ranks==None and instance.test.status > 1:
             instance.test.finished = True
             instance.test.save()
-            updateTestRanks(instance.test)
-
+            test.stats = updateTestRanks(instance.test)
+            instance.test.finished = True
+            instance.test.save()
         return Response(self.get_serializer(instance).data)
 
 class Review(generics.RetrieveAPIView):
@@ -402,20 +404,19 @@ class Review(generics.RetrieveAPIView):
             raise ParseError("You cannot review this test yet.")
 
 class GenerateRanks(APIView):
-    permission_classes = (IsInstituteOwner,)
+    permission_classes = (IsInstituteOwner|permissions.IsAdminUser,)
     def post(self, request, id):
         try:
             test = Test.objects.get(id=id)
         except Exception as e:
             print(e)
             raise NotFound("No such Test!")
-        if test.practice or test.aits:
+        if (test.practice or test.aits) and not request.user.is_staff:
             raise PermissionDenied("Ranks cannot be generated for this test.")  
         if test.status <=1:
             raise PermissionDenied("Ranks can be generated only after test closes.")  
-        elif test.status in [2,3]:
-            updateTestRanks(test)
-            test.stats = generated
+        elif test.status in [2,3] or request.user.is_staff:
+            test.stats = updateTestRanks(test)
             test.finished = True
             test.save()
             return Response("Ranks generated.", status=status.HTTP_201_CREATED)
@@ -597,3 +598,16 @@ class AITSBuyer(generics.ListAPIView):
             return Payment.objects.filter(verified=True,show=True)
         else:
             return None
+
+
+
+class PublishTestSeries(APIView):
+    permission_classes = (permissions.IsAuthenticated,IsInstituteOwner)
+    def post(self,request):
+        try:
+            instance = TestSeries.objects.get(id=request.data['id'])
+            instance.visible = True
+            instance.save()
+            return  Response("Test Published Sucessfully!", status=status.HTTP_201_CREATED)
+        except:
+            raise ParseError("Cannot Publish This Test.")

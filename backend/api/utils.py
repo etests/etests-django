@@ -143,7 +143,7 @@ def generateRanks(sessions):
                 "sectionWise": [sectionTotal/len(sessions) for sectionTotal in sectionWiseTotal]
             },
             "highest": {
-                "overall": marks_list[0],
+                "overall": marks_list[0][0],
                 "sectionWise": [section_marks[0][0] for section_marks in sectionwise_marks_list]
             },
         }
