@@ -183,19 +183,19 @@ class Session(models.Model):
     class Meta:
         ordering = ["-practice","student","test"]
 
-class Buyer(models.Model):
-    id = models.AutoField(primary_key = True)
-    transaction_id = models.CharField(max_length = 200)
-    date_added = models.DateField(auto_now_add = True)
-    user = models.ForeignKey(User, related_name = "buyers", blank = True, null = True, on_delete = models.SET_NULL)
-    amount = models.IntegerField(default = 0)
-    verified = models.BooleanField(default = False)
-    content_type = models.ForeignKey(ContentType, blank = True, null = True, on_delete = models.SET_NULL)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
+# class Buyer(models.Model):
+#     id = models.AutoField(primary_key = True)
+#     transaction_id = models.CharField(max_length = 200)
+#     date_added = models.DateField(auto_now_add = True)
+#     user = models.ForeignKey(User, related_name = "buyers", blank = True, null = True, on_delete = models.SET_NULL)
+#     amount = models.IntegerField(default = 0)
+#     verified = models.BooleanField(default = False)
+#     content_type = models.ForeignKey(ContentType, blank = True, null = True, on_delete = models.SET_NULL)
+#     object_id = models.PositiveIntegerField()
+#     content_object = GenericForeignKey('content_type', 'object_id')
 
-    def __str__(self):
-        return self.user.name
+#     def __str__(self):
+#         return self.user.name
 
 class Payment(models.Model):
     id = models.AutoField(primary_key = True)
@@ -269,3 +269,28 @@ class CreditUse(models.Model):
             institute.current_credits -= self.credits_used
             institute.save()
         super().save(*args, **kwargs)
+
+class ResetCode(models.Model):
+        id = models.AutoField(primary_key = True)
+        user = models.ForeignKey(User, related_name = "codes", blank = True, null = True, on_delete = models.SET_NULL)
+        reset_code = models.CharField(max_length=6)
+        date_added = models.DateField(auto_now_add = True)
+        done = models.BooleanField(default = False)
+
+class AITSTransaction(models.Model):
+    TRANSACTIONS_TYPE_CHOICES = (("CASH", "Cash"), ("UPI", "UPI"), ("NETBANKING", "Netbanking"), ("PAYTM", "PayTM"), ("OTHERS","Others"))
+    id = models.AutoField(primary_key = True)
+    institute = models.ForeignKey(Institute, null = True, on_delete = models.SET_NULL)
+    date_added = models.DateField(auto_now_add = True)
+    transaction_id = models.CharField(max_length = 200 , null = True , blank = True , unique = True)
+    mode = models.CharField(max_length = 10, choices = TRANSACTIONS_TYPE_CHOICES)
+    amount = models.IntegerField(default = 0)
+    remarks = models.CharField(max_length=50,blank=True,null= True)
+    test_series = models.ManyToManyField(TestSeries,related_name="aits_transactions",blank=False)
+    receipt = models.FileField(upload_to = 'static/institute/receipts/', null = True)
+
+
+    def __str__(self):
+        return self.institute.user.name + "/Mode-"+ self.mode + "/TID-" + self.transaction_id
+
+

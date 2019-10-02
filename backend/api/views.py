@@ -16,6 +16,15 @@ from .models import *
 from .forms import *
 from authentication.models import Institute
 from django.contrib.auth.decorators import login_required
+from random import choice
+from string import digits
+import os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
+from datetime import date
+from django.contrib.auth import authenticate
+
+
 
 class ReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -431,6 +440,15 @@ class TransactionListView(generics.ListAPIView):
             return Transaction.objects.filter(institute=self.request.user.institute)
         return None
 
+class AITSTransactionListView(generics.ListAPIView):
+    permission_classes = (ReadOnly, permissions.IsAuthenticated)
+    serializer_class = AITSTransactionSerializer
+    
+    def get_queryset(self):
+        if self.request.user.is_institute:
+            return AITSTransaction.objects.filter(institute=self.request.user.institute)
+        return None
+
 class CreditListView(generics.ListAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
     serializer_class = CreditUseSerializer
@@ -495,5 +513,87 @@ class EnrollmentRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView)
             return Enrollment.objects.filter(institute=self.request.user.student.institute)
         elif self.request.user.is_staff:
             return Enrollment.objects.all()
+        else:
+            return None
+
+
+class ResetCodeCreateView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    def post(self, request):
+        email_id = request.data.get('email', None)
+        user = User.objects.filter(email=email_id)
+        if len(user):
+            user = user[0]
+            instance = ResetCode.objects.filter(user=user,done=False,date_added=date.today())
+            if len(instance) == 0:
+                reset_code=(''.join(choice(digits) for i in range(6)))
+                ResetCode.objects.create(user=user,reset_code=reset_code)
+            else:
+                reset_code = instance[0].reset_code
+            message = Mail(
+                from_email=os.environ.get('EMAIL_ID'),
+                to_emails = email_id,
+                subject='Password Reset',
+                html_content='The Password Reset Code for eTests is '+'<strong>'+reset_code+'</strong>')
+            try:
+                sg = SendGridAPIClient(os.environ.get('EMAIL_API_KEY'))
+                response = sg.send(message)
+                if response.status_code == 202:
+                    return Response("Password reset code sent successfully!",
+                            status=status.HTTP_201_CREATED)
+                else:
+                    raise ParseError("Some error occured.")
+            except Exception as e:
+                print(e)
+                raise ParseError("Some error occured. EXCEPTION")
+        else:
+            raise ParseError("No user with this email id.")
+
+class ResetCodeSuccessView(APIView):    
+    permission_classes = (permissions.AllowAny,)
+    def post(self, request):
+        reset_code = request.data.get("reset_code", None)
+        password = request.data.get("password", None)
+        try:
+            instance =  ResetCode.objects.get(reset_code = reset_code, done=False, date_added=date.today())
+            if password:
+                print(password)
+                instance.user.set_password(password)
+                instance.user.save()
+                instance.done=True
+                instance.save()
+                return  Response("Password changed successfully!", status=status.HTTP_201_CREATED)
+            else:
+                raise ParseError("Password cannot be empty.")
+        except:
+            raise ParseError("Invalid reset code.")
+
+
+class ChangePasswordView(APIView):    
+    permission_classes = (permissions.IsAuthenticated,)
+    def post(self, request):
+        old_password = request.data.get("old_password", None)
+        new_password = request.data.get("new_password",None)
+        if old_password and new_password:
+            user = authenticate(email=request.user.email , password=old_password)
+            if user is not None:
+                # A backend authenticated the credentials
+                user.set_password(new_password)
+                user.save()
+                return  Response("Password changed successfully!", status=status.HTTP_201_CREATED)
+            else:
+                # No backend authenticated the credentials
+                raise ParseError("Incorrect Password")
+        else:
+            raise ParseError("Password Cannot be Empty")
+
+class AITSBuyer(generics.ListAPIView):
+    permission_classes = (ReadOnly, permissions.IsAuthenticated)
+    serializer_class = AITSBuyerSerializer
+    def get_queryset(self):
+        if self.request.user.is_institute:
+            return Payment.objects.filter(test_series__institute=self.request.user.institute,verified=True,show=True)
+        elif self.request.user.is_staff:
+            return Payment.objects.filter(verified=True,show=True)
         else:
             return None

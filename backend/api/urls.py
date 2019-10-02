@@ -34,4 +34,10 @@ urlpatterns = [
     path("transactions/", TransactionListView.as_view(), name="transaction-list"),
     path("payment/", csrf_exempt(PaymentView.as_view()), name="payment"),
     path("credit-used/", CreditListView.as_view(), name="credits-list"),
+    path("forgot-password-request/", ResetCodeCreateView.as_view()),
+    path("forgot-password-success/", ResetCodeSuccessView.as_view()),
+    path("change-password/", ChangePasswordView.as_view()),
+    path("aits-transactions/",AITSTransactionListView.as_view()),
+    path("aits-buyers/",AITSBuyer.as_view()),
+
 ]

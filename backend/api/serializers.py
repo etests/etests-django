@@ -116,6 +116,18 @@ class PaymentSerializer(serializers.ModelSerializer):
         model=Payment
         fields =("transaction_id","receipt","user","amount","test_series")
 
+class AITSBuyerSerializer(serializers.ModelSerializer):
+    test_series = serializers.SerializerMethodField()
+    class Meta:
+        model=Payment
+        fields = ("test_series","date_added")
+    
+    def get_test_series(self, obj):
+        return {
+            "id": obj.test_series.id,
+            "name": obj.test_series.name
+        }
+
 class TestSerializer(serializers.ModelSerializer):
     class Meta:
         model=Test
@@ -199,6 +211,16 @@ class CreditUseSerializer(serializers.ModelSerializer):
 
     def get_test_name(self, obj):
         return obj.test.name
+
+class AITSTransactionSerializer(serializers.ModelSerializer):
+    test_series = serializers.SerializerMethodField()
+    class Meta:
+        model = AITSTransaction
+        fields = ('__all__')
+
+
+    def get_test_series(self, obj):
+        return ", ".join([test_series.name for test_series in obj.test_series.all()])
 
 class EnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
