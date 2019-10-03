@@ -102,7 +102,7 @@ class Test(models.Model):
     corrected = models.BooleanField(default = False)
     finished = models.BooleanField(default = False)
     visible = models.BooleanField(default = True)
-    ranklist = JSONField(blank=True, null=True)
+    marks_list = JSONField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:

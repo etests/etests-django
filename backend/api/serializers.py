@@ -38,7 +38,12 @@ class StudentTestListSerializer(serializers.ModelSerializer):
 class FilteredListSerializer(serializers.ListSerializer):
 
     def to_representation(self, data):
-        data = data.filter(institute__verified = True, visible = True)
+        if self.context["request"].user.is_staff:
+            pass
+        elif self.context["request"].user.is_institute:
+            data = data.filter(institute = self.context["request"].user.institute)
+        else:
+            data = data.filter(institute__verified = True, visible = True)
         return super(FilteredListSerializer, self).to_representation(data)
 
 class TestSeriesSerializer(serializers.ModelSerializer):
@@ -146,7 +151,7 @@ class AITSBuyerSerializer(serializers.ModelSerializer):
 class TestSerializer(serializers.ModelSerializer):
     class Meta:
         model=Test
-        exclude = ("registered_students",)
+        exclude = ("registered_students","marks_list")
 
 class StudentTestSerializer(serializers.ModelSerializer):
     class Meta:
@@ -168,7 +173,9 @@ class PracticeSessionSerializer(serializers.ModelSerializer):
     test = TestSerializer(many=False, read_only=True)
     class Meta:
         model = Session
-        fields = ('id', 'practice', 'response', 'test', 'checkin_time', 'duration', 'current', 'completed', 'result', 'marks')
+        fields = ('id', 'practice', 'response', 'test', 'checkin_time', 'duration', 'current', 'completed', 'result', 'marks', 'ranks')
+        extra_kwargs = {'ranks': {'read_only': True}}
+
 
 
 class TagSerializer(serializers.ModelSerializer):

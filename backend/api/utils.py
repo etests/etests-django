@@ -1,5 +1,8 @@
 from django.utils.text import slugify
 from collections import namedtuple
+import os
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 
 class SessionEvaluation:
     def __init__(self, test, session):
@@ -115,8 +118,6 @@ def generateRanks(sessions):
         sectionwise_marks_list = [[[session.marks['sectionWise'][j], i] for (i,session) in enumerate(sessions)] for j in range(len(sessions[0].marks['sectionWise']))]
         marks_list.sort()
         marks_list.reverse()
-        sectionwise_marks_list.sort()
-        sectionwise_marks_list.reverse()
         for session in sessions:
             session.ranks = {}
             session.ranks['overall'] = 0
@@ -126,27 +127,77 @@ def generateRanks(sessions):
 
         total = 0
         sectionWiseTotal = [0 for i in range(len(sessions[0].marks['sectionWise']))]
+        last_marks = 1000000
+        last_rank = 1
         for (i, marks) in enumerate(marks_list):
-            total += sessions[marks[-1]].marks['total']
-            sessions[marks[-1]].ranks['overall'] = i+1
-            for j in range(len(sessions[i].marks['sectionWise'])):
-                sectionWiseTotal[j] += sessions[i].marks['sectionWise'][j]
+            total += marks[0]
+            if last_marks == marks[0]:
+                sessions[marks[-1]].ranks['overall'] = last_rank
+            else:
+                sessions[marks[-1]].ranks['overall'] = i+1
+                last_marks = marks[0]
+                last_rank = i+1
+            for j in range(len(sessions[marks[-1]].marks['sectionWise'])):
+                sectionWiseTotal[j] += sessions[marks[-1]].marks['sectionWise'][j]
 
         for (i, sectionwise_marks) in enumerate(sectionwise_marks_list):
+            sectionwise_marks.sort()
+            sectionwise_marks.reverse()
+            last_marks = 1000000
+            last_rank = 1
             for (j, section_marks) in enumerate(sectionwise_marks):
-                sessions[marks[-1]].ranks['sectionWise'][i] = j+1
+                if last_marks == section_marks[0]:
+                    sessions[section_marks[-1]].ranks['sectionWise'][i] = last_rank
+                else:
+                    sessions[section_marks[-1]].ranks['sectionWise'][i] = j+1
+                    last_marks = section_marks[0]
+                    last_rank = j+1
 
         return {
             "sessions": sessions,
-            "average": {
-                "overall": total/len(sessions),
-                "sectionWise": [sectionTotal/len(sessions) for sectionTotal in sectionWiseTotal]
+            "stats":{
+                "average": {
+                    "overall": total/len(sessions),
+                    "sectionWise": [sectionTotal/len(sessions) for sectionTotal in sectionWiseTotal]
+                },
+                "highest": {
+                    "overall": marks_list[0][0],
+                    "sectionWise": [section_marks[0][0] for section_marks in sectionwise_marks_list]
+                }
             },
-            "highest": {
-                "overall": marks_list[0][0],
-                "sectionWise": [section_marks[0][0] for section_marks in sectionwise_marks_list]
-            },
+            "marks_list": {
+                "overall": marks_list,
+                "sectionWise": sectionwise_marks_list
+            }
         }
+
+def getRank(l, marks):
+    lo=0
+    hi=len(l)-1
+    rank=len(l)+1
+    while lo<len(l) and hi>=0 and lo<=hi:
+        m = int((lo+hi)/2)
+        if l[m][0] == marks:
+            while m>=0 and l[m][0] == marks:
+                rank = m+1
+                m-=1
+            break
+        elif l[m][0] < marks:
+            rank = m+1
+            hi = m-1
+        else:
+            lo = m+1
+    
+    return rank
+
+def getVirtualRanks(marks_list, marks_obtained):
+    return {
+        "overall": getRank(marks_list["overall"], marks_obtained["total"]),
+        "sectionWise": [getRank(section_marks_list, marks_obtained["sectionWise"][i]) for (i,section_marks_list) in enumerate(marks_list["sectionWise"])]
+    }
+    
+
+
 
 def get_unique_slug(model_instance, slugable_field_name, slug_field_name="slug"):
     """
@@ -173,3 +224,22 @@ def position_to_label(position):
     if position>0 and position<=len(labels):
         return labels[position-1]
     return ''
+
+
+def send_mail(to,subject,body):
+    email_id = to
+    message = Mail(
+        from_email=os.environ.get('EMAIL_ID'),
+        to_emails = email_id,
+        subject=subject,
+        html_content=body)
+    try:
+        sg = SendGridAPIClient(os.environ.get('EMAIL_API_KEY'))
+        response = sg.send(message)
+        if response.status_code == 202:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(e) 
+        return False

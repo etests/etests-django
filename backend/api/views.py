@@ -10,7 +10,7 @@ from rest_framework.authentication import SessionAuthentication
 from rest_framework.exceptions import APIException, MethodNotAllowed, PermissionDenied, NotFound, ParseError
 from rest_framework.parsers import MultiPartParser
 from rest_framework import permissions
-from .utils import SessionEvaluation, generateRanks
+from .utils import SessionEvaluation, generateRanks, getVirtualRanks,send_mail
 from .serializers import *
 from .models import *
 from .forms import *
@@ -19,8 +19,6 @@ from django.contrib.auth.decorators import login_required
 from random import choice
 from string import digits
 import os
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
 from datetime import date
 from django.contrib.auth import authenticate
 
@@ -291,7 +289,7 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
             "questionIndex": 0,
             "sectionIndex": 0
         }    
-        session = Session.objects.create(student=self.request.user.student, test=test, response=response, result=[], current=current, practice=(test.status>1))
+        session = Session.objects.create(student=self.request.user.student, test=test, response=response, result=[], current=current, practice=(test.status>1), duration=test.time_alotted)
         return session
 
     def retrieve(self, *args, **kwargs):
@@ -305,6 +303,8 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         except:
             session = None
         if session:
+            if session.practice:
+                self.serializer_class = PracticeSessionSerializer
             return Response(self.get_serializer(session).data)
         elif self.request.user.is_student:
             if self.request.user.student in test.registered_students.all():
@@ -331,7 +331,11 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         instance = self.get_object()
         session = self.request.data
         if session['practice']:
-            self.serializer_class = PracticeSessionSerializer
+            if instance.completed:
+                raise PermissionDenied("You have already submitted this test.")
+            else:
+                self.serializer_class = PracticeSessionSerializer
+                instance.ranks = getVirtualRanks(instance.test.marks_list, session["marks"])
         elif session['completed']:
             self.serializer_class = ResultSerializer
             if instance.completed:
@@ -341,17 +345,18 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
                 evaluated = SessionEvaluation(test, session).evaluate()
                 instance.marks = evaluated[0]
                 instance.result = {"questionWiseMarks": evaluated[1], "topicWiseMarks": evaluated[2]}
-
         serializer = self.get_serializer(instance, data=self.request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
-
         return Response(serializer.data)
 
 def updateTestRanks(test):
     sessions = Session.objects.filter(test = test)
     generated = generateRanks(sessions)
-    Session.objects.bulk_update(generated.pop("sessions", None), ["ranks"])
+    Session.objects.bulk_update(generated.get("sessions", None), ["ranks"])
+    test.marks_list = generated.get("marks_list", None)
+    test.stats = generated.get("stats", None)
+    test.save()
     return generated
 
 class ResultView(generics.RetrieveAPIView):
@@ -379,9 +384,7 @@ class ResultView(generics.RetrieveAPIView):
         if not instance.practice and instance.ranks==None and instance.test.status > 1:
             instance.test.finished = True
             instance.test.save()
-            test.stats = updateTestRanks(instance.test)
-            instance.test.finished = True
-            instance.test.save()
+            updateTestRanks(instance.test)
         return Response(self.get_serializer(instance).data)
 
 class Review(generics.RetrieveAPIView):
@@ -416,9 +419,7 @@ class GenerateRanks(APIView):
         if test.status <=1:
             raise PermissionDenied("Ranks can be generated only after test closes.")  
         elif test.status in [2,3] or request.user.is_staff:
-            test.stats = updateTestRanks(test)
-            test.finished = True
-            test.save()
+            updateTestRanks(test)
             return Response("Ranks generated.", status=status.HTTP_201_CREATED)
         else:
             raise ParseError("Final ranks are already declared.")                  
@@ -499,6 +500,7 @@ class PaymentView(APIView):
             payment = form.save(commit=False)
             payment.user = request.user
             payment.save()
+            send_mail( payment.user.email, 'Payment Verification in Progress', 'Your payment of Rs.'+str(payment.test_series.price)+ ' for '+payment.test_series.name+' will be verified shortly. The AITS will appear on your dashboard after payment is verified. If you have any query feel free to email us at help@etests.co.in') 
             return Response("Successful", status=status.HTTP_201_CREATED)
         else:
             raise ParseError("Invalid") 
@@ -531,22 +533,10 @@ class ResetCodeCreateView(APIView):
                 ResetCode.objects.create(user=user,reset_code=reset_code)
             else:
                 reset_code = instance[0].reset_code
-            message = Mail(
-                from_email=os.environ.get('EMAIL_ID'),
-                to_emails = email_id,
-                subject='Password Reset',
-                html_content='The Password Reset Code for eTests is '+'<strong>'+reset_code+'</strong>')
-            try:
-                sg = SendGridAPIClient(os.environ.get('EMAIL_API_KEY'))
-                response = sg.send(message)
-                if response.status_code == 202:
-                    return Response("Password reset code sent successfully!",
-                            status=status.HTTP_201_CREATED)
-                else:
-                    raise ParseError("Some error occured.")
-            except Exception as e:
-                print(e)
-                raise ParseError("Some error occured. EXCEPTION")
+            if send_mail( email_id, 'Password Reset', 'The Password Reset Code for eTests is '+'<strong>'+reset_code+'</strong>'):
+                return Response("Password reset code sent successfully!", status=status.HTTP_201_CREATED)
+            else:
+                raise ParseError("Some error occured.")
         else:
             raise ParseError("No user with this email id.")
 
@@ -558,7 +548,6 @@ class ResetCodeSuccessView(APIView):
         try:
             instance =  ResetCode.objects.get(reset_code = reset_code, done=False, date_added=date.today())
             if password:
-                print(password)
                 instance.user.set_password(password)
                 instance.user.save()
                 instance.done=True
@@ -602,12 +591,18 @@ class AITSBuyer(generics.ListAPIView):
 
 
 class PublishTestSeries(APIView):
-    permission_classes = (permissions.IsAuthenticated,IsInstituteOwner)
+    permission_classes = (permissions.IsAdminUser | IsInstituteOwner,)
     def post(self,request):
         try:
-            instance = TestSeries.objects.get(id=request.data['id'])
+            instance = TestSeries.objects.get(id=request.data.get("id"))
             instance.visible = True
             instance.save()
-            return  Response("Test Published Sucessfully!", status=status.HTTP_201_CREATED)
+            return  Response("AITS Published Sucessfully!", status=status.HTTP_201_CREATED)
         except:
-            raise ParseError("Cannot Publish This Test.")
+            raise ParseError("Cannot publish this AITS.")
+
+class GetVirtualRanks(APIView):
+    permissions_calsses = (IsStudentOwner|permissions.IsAdminUser)
+    def get(self,request,id):
+        session = Session.objects.get(id=id)
+        return Response(json.dumps(getVirtualRanks(session)))

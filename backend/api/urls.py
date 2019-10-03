@@ -39,5 +39,6 @@ urlpatterns = [
     path("change-password/", ChangePasswordView.as_view()),
     path("aits-transactions/",AITSTransactionListView.as_view()),
     path("aits-buyers/",AITSBuyer.as_view()),
-
+    path("publish-aits/", PublishTestSeries.as_view()),
+    path("virtual-rank/<int:id>",GetVirtualRanks.as_view()),
 ]
