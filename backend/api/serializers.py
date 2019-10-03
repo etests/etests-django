@@ -38,12 +38,13 @@ class StudentTestListSerializer(serializers.ModelSerializer):
 class FilteredListSerializer(serializers.ListSerializer):
 
     def to_representation(self, data):
-        if self.context["request"].user.is_staff:
+        if not self.context["request"].user.is_authenticated or self.context["request"].user.is_student:
+            data = data.filter(institute__verified = True, visible = True)
+        elif self.context["request"].user.is_staff:
             pass
         elif self.context["request"].user.is_institute:
             data = data.filter(institute = self.context["request"].user.institute)
-        else:
-            data = data.filter(institute__verified = True, visible = True)
+        
         return super(FilteredListSerializer, self).to_representation(data)
 
 class TestSeriesSerializer(serializers.ModelSerializer):
