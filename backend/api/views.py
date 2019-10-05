@@ -600,9 +600,3 @@ class PublishTestSeries(APIView):
             return  Response("AITS Published Sucessfully!", status=status.HTTP_201_CREATED)
         except:
             raise ParseError("Cannot publish this AITS.")
-
-class GetVirtualRanks(APIView):
-    permissions_calsses = (IsStudentOwner|permissions.IsAdminUser)
-    def get(self,request,id):
-        session = Session.objects.get(id=id)
-        return Response(json.dumps(getVirtualRanks(session)))
