@@ -118,16 +118,14 @@ STATIC_URL = "/static/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
 CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ORIGIN_WHITELIST = [
-    "https://etests.co.in"
+    "https://etests.co.in",
+    "https://api.etests.co.in"
 ]
 
 try:
     from local_settings import *
 except:
-    ALLOWED_HOSTS += ["etests.herokuapp.com"]
-    CORS_ORIGIN_WHITELIST += ["https://etests.herokuapp.com"]
+    pass
