@@ -1,7 +1,7 @@
 import json
+from django.http import HttpResponse, JsonResponse
 from django.apps import apps
 from django.shortcuts import get_object_or_404
-from django.core.files.storage import FileSystemStorage
 from rest_framework import viewsets, generics, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -600,3 +600,19 @@ class PublishTestSeries(APIView):
             return  Response("AITS Published Sucessfully!", status=status.HTTP_201_CREATED)
         except:
             raise ParseError("Cannot publish this AITS.")
+
+
+class UploadQuestionImageView(APIView):
+    permission_classes = (permissions.AllowAny,)
+    def post(self, request):
+        request.FILES["file"] = request.FILES.pop("upload")[0]
+        form = QuestionImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.save()
+            return JsonResponse({
+                "uploaded": 1,
+                "fileName": image.file.name,
+                "url": image.file.url
+            })
+        else:
+            raise ParseError("Invalid request")

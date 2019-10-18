@@ -9,7 +9,7 @@ from authentication.models import User, Student, Institute
 import random
 import string
 from .utils import get_unique_slug
-from etests.storage_backends import PrivateMediaStorage
+from etests.storage_backends import *
 
 
 def generateRandomKey(length = 10):
@@ -251,3 +251,7 @@ class AITSTransaction(models.Model):
 
     def __str__(self):
         return self.institute.user.name + "/Mode-"+ self.mode + "/TID-" + self.transaction_id
+
+class QuestionImage(models.Model):
+    id = models.AutoField(primary_key = True)
+    file = models.ImageField(storage=PublicMediaStorage())
