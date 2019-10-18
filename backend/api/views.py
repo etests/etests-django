@@ -615,4 +615,9 @@ class UploadQuestionImageView(APIView):
                 "url": image.file.url
             })
         else:
-            raise ParseError("Invalid request")
+            return JsonResponse({
+                "uploaded": 0,
+                "error": {
+                    "message": form.errors.as_text()
+                }
+            })
