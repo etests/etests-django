@@ -206,7 +206,10 @@ class RankListSerializer(serializers.ModelSerializer):
         fields = ('id', 'roll_number', 'name', 'ranks')
 
     def get_roll_number(self, obj):
-        return Enrollment.objects.filter(student=obj.student, institute=obj.test.institute)[0].roll_number
+        try:
+            return Enrollment.objects.get(student=obj.student, institute=obj.test.institute).roll_number
+        except:
+            return obj.student.id
 
     def get_name(self, obj):
         return obj.student.user.name

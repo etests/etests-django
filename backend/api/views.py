@@ -352,12 +352,19 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
 
 def updateTestRanks(test):
     sessions = Session.objects.filter(test = test)
+    if len(sessions) == 0:
+        test.finished = True
+        test.save()
+        return False
     generated = generateRanks(sessions)
-    Session.objects.bulk_update(generated.get("sessions", None), ["ranks"])
-    test.marks_list = generated.get("marks_list", None)
-    test.stats = generated.get("stats", None)
-    test.save()
-    return generated
+    if generated:
+        Session.objects.bulk_update(generated.get("sessions", None), ["ranks"])
+        test.marks_list = generated.get("marks_list", None)
+        test.stats = generated.get("stats", None)
+        test.finished = True
+        test.save()
+        return True
+    return False
 
 class ResultView(generics.RetrieveAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
@@ -373,7 +380,7 @@ class ResultView(generics.RetrieveAPIView):
         if self.request.user.is_student:
             return Session.objects.filter(student = self.request.user.student)
         elif self.request.user.is_institute:
-            return Session.objects.filter(student__institutes = self.request.user.institute)
+            return Session.objects.filter(test__institute = self.request.user.institute)
         elif self.request.user.is_staff:
             return Session.objects.all()
         return None
@@ -382,8 +389,6 @@ class ResultView(generics.RetrieveAPIView):
         instance = self.get_object()
 
         if not instance.practice and instance.ranks==None and instance.test.status > 1:
-            instance.test.finished = True
-            instance.test.save()
             updateTestRanks(instance.test)
         return Response(self.get_serializer(instance).data)
 

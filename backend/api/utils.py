@@ -114,6 +114,8 @@ class SessionEvaluation:
     
 
 def generateRanks(sessions):
+        if not sessions or len(sessions)==0:
+            return False
         marks_list = [[session.marks['total'], i] for (i,session) in enumerate(sessions)]
         sectionwise_marks_list = [[[session.marks['sectionWise'][j], i] for (i,session) in enumerate(sessions)] for j in range(len(sessions[0].marks['sectionWise']))]
         marks_list.sort()
