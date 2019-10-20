@@ -100,7 +100,7 @@ class InstituteListSerializer(serializers.ModelSerializer):
 
     def get_test_series(self, obj):
         serializer_context = {'request': self.context.get('request') }
-        test_series = obj.test_series
+        test_series = obj.test_series.filter(institute__verified=True, visible=True)
         serializer = TestSeriesSerializer(test_series, many=True, context=serializer_context)
         return serializer.data
 
@@ -113,7 +113,7 @@ class ExamListSerializer(serializers.ModelSerializer):
     
     def get_test_series(self, obj):
         serializer_context = {'request': self.context.get('request') }
-        test_series = obj.test_series
+        test_series = obj.test_series.filter(institute__verified=True, visible=True)
         serializer = TestSeriesSerializer(test_series, many=True, context=serializer_context)
         return serializer.data
 
