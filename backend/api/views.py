@@ -60,12 +60,12 @@ class BatchListView(generics.ListAPIView):
         else:
             return None
 
-class FollowingInstitutesView(generics.ListAPIView):
+class JoinedInstitutesView(generics.ListAPIView):
     permission_classes = (IsStudentOwner,)
-    serializer_class = FollowingInstitutesSerializer
+    serializer_class = JoinedInstitutesSerializer
     def get_queryset(self):
         if self.request.user.is_student:
-            return Institute.objects.filter(following_students=self.request.user.student,verified=True)
+            return Institute.objects.filter(students=self.request.user.student, verified=True)
         else:
             return None
 
@@ -111,6 +111,7 @@ class BatchJoinView(APIView):
             enrollment = Enrollment.objects.get(batch = batch, roll_number=roll_number)
             if enrollment.joining_key == joining_key:
                 enrollment.student = request.user.student
+                enrollment.date_joined = datetime.now()
                 enrollment.save()
                 # Feature required: Register this student to all the previous tests of this batch
                 return Response("Joined Successfully")
@@ -118,21 +119,6 @@ class BatchJoinView(APIView):
                 raise ParseError("Invalid roll number or joining key!")
         except:
             raise ParseError("Invalid roll number or joining key!") 
-
-class FollowInstituteView(APIView):
-    permission_classes = (IsStudentOwner,)
-
-    def post(self, request, id):
-        try:
-            institute = Institute.objects.get(id=id)
-            if institute in request.user.student.following.all():
-                return Response("Already following ;)")
-            else:
-                request.user.student.following.add(institute)
-                return Response("Followed Successfully!")
-        except Exception as e:
-            print(e)
-            raise ParseError("Sorry, you can't follow this institute!") 
 
 class InstitutesListView(viewsets.ViewSet):
     permission_classes = (ReadOnly,)

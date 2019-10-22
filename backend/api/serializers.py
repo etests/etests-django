@@ -85,18 +85,24 @@ class TestSeriesSerializer(serializers.ModelSerializer):
     def get_exams(self, obj):
         return [exam.name for exam in obj.exams.all()]
 
+class BatchListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Batch
+        fields = ("id", "name", "institute")
+
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("name", "email", "phone", "city", "state")
 
 class InstituteListSerializer(serializers.ModelSerializer):
+    batches = BatchListSerializer(many=True, read_only=True)
     user = UserListSerializer()
     test_series = serializers.SerializerMethodField()
 
     class Meta:
         model = Institute
-        fields = ("id", "user", "pincode", "test_series")
+        fields = ("id", "user", "pincode", "test_series", "batches")
 
     def get_test_series(self, obj):
         serializer_context = {"request": self.context.get("request") }
@@ -255,12 +261,7 @@ class InstituteBatchSerializer(serializers.ModelSerializer):
         model = Batch
         fields = ("id", "name", "enrollments")
 
-class BatchListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Batch
-        fields = ("id", "name", "institute")
-
-class FollowingInstitutesSerializer(serializers.ModelSerializer):
+class JoinedInstitutesSerializer(serializers.ModelSerializer):
     batches = BatchListSerializer(many=True, read_only=True)
     user = UserListSerializer()
     enrollments = serializers.SerializerMethodField()
