@@ -339,6 +339,29 @@ class AITSTransaction(models.Model):
         )
 
 
+class Question(models.Model):
+    TYPES = (
+        ("0", "Single Correct"),
+        ("1", "Multiple Correct"),
+        ("2", "Numerical"),
+        ("3", "Matrix Match"),
+    )
+    LEVELS = (
+        ("0", "Very Easy"),
+        ("1", "Easy"),
+        ("2", "Medium"),
+        ("3", "Hard"),
+        ("4", "Very Hard"),
+    )
+    id = models.AutoField(primary_key=True)
+    text = models.CharField(max_length=20000)
+    answer = JSONField()
+    solution = models.CharField(max_length=20000)
+    type = models.CharField(max_length=10, choices=TYPES)
+    subjectIndex = models.IntegerField()
+    topicIndex = models.IntegerField()
+    difficulty = models.CharField(max_length=10, choices=LEVELS)
+
 class QuestionImage(models.Model):
     id = models.AutoField(primary_key=True)
     file = models.ImageField(storage=PublicMediaStorage(), validators=[validate_file_size])

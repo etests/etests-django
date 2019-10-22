@@ -1,27 +1,29 @@
 import json
-from django.http import HttpResponse, JsonResponse
-from django.apps import apps
-from django.shortcuts import get_object_or_404
-from rest_framework import viewsets, generics, status
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from rest_framework.views import APIView
-from rest_framework.authentication import SessionAuthentication
-from rest_framework.exceptions import APIException, MethodNotAllowed, PermissionDenied, NotFound, ParseError
-from rest_framework.parsers import MultiPartParser
-from rest_framework import permissions
-from .utils import SessionEvaluation, generateRanks, getVirtualRanks,send_mail
-from .serializers import *
-from .models import *
-from .forms import *
-from authentication.models import Institute
-from django.contrib.auth.decorators import login_required
-from random import choice
-from string import digits
 import os
 from datetime import date
-from django.contrib.auth import authenticate
+from random import choice, randint
+from string import digits
 
+from django.apps import apps
+from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404
+from rest_framework import generics, permissions, status, viewsets
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.decorators import api_view
+from rest_framework.exceptions import (APIException, MethodNotAllowed,
+                                       NotFound, ParseError, PermissionDenied)
+from rest_framework.parsers import MultiPartParser
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from authentication.models import Institute
+
+from .forms import *
+from .models import *
+from .serializers import *
+from .utils import SessionEvaluation, generateRanks, getVirtualRanks, send_mail
 
 
 class ReadOnly(permissions.BasePermission):
@@ -135,7 +137,7 @@ class FollowInstituteView(APIView):
 class InstitutesListView(viewsets.ViewSet):
     permission_classes = (ReadOnly,)
     def list(self, request):
-        queryset = Institute.objects.filter(verified=True)
+        queryset = Institute.objects.filter(verified=True, show=True)
         serializer = InstituteListSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data)
 
@@ -626,3 +628,42 @@ class UploadQuestionImageView(APIView):
                     "message": form.errors.as_text()
                 }
             })
+
+class AddQuestionAPIView(APIView):
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = QuestionSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data = request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class RetrieveQuestionAPIView(APIView):
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = QuestionSerializer
+    
+    def post(self, request):
+        params = request.data
+        type = params.get("type", None)
+        difficulty = params.get("difficulty", None)
+        subjectIndex = params.get("subjectIndex", None)
+        topicIndex = params.get("topicIndex", None)
+
+        questions = Question.objects.all()
+        if type:
+            questions = questions.filter(type = type)
+        if difficulty:
+            questions = questions.filter(difficulty = difficulty)
+        if subjectIndex:
+            questions = questions.filter(subjectIndex = subjectIndex)
+            if topicIndex:
+                questions = questions.filter(topicIndex = topicIndex)
+
+        try:
+            count = questions.count()
+            serializer = self.serializer_class(questions[randint(0, count - 1)])
+            return Response(serializer.data)
+        except:
+            raise NotFound("No matching question!")

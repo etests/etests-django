@@ -55,6 +55,7 @@ class Institute(models.Model):
     pincode = models.CharField(max_length = 10, null = True, blank=True)
     current_credits = models.IntegerField(default = 0)
     verified = models.BooleanField(default=False)
+    show = models.BooleanField(default=True)
 
     def __str__(self):
         return self.user.name

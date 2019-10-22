@@ -40,5 +40,7 @@ urlpatterns = [
     path("aits-transactions/",AITSTransactionListView.as_view()),
     path("aits-buyers/",AITSBuyer.as_view()),
     path("publish-aits/", PublishTestSeries.as_view()),
-    path("upload-question-image/", csrf_exempt(UploadQuestionImageView.as_view()))
+    path("upload-question-image/", csrf_exempt(UploadQuestionImageView.as_view())),
+    path("add-question/", AddQuestionAPIView.as_view()),
+    path("get-questions/", RetrieveQuestionAPIView.as_view())
 ]
