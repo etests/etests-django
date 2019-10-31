@@ -71,7 +71,7 @@ class Batch(models.Model):
     institute = models.ForeignKey(Institute, related_name = "batches", on_delete = models.CASCADE)
 
     def students(self):
-        return Student.objects.filter(institutes = self.institute)
+        return Student.objects.filter(enrollment__batch = self)
 
     def __str__(self):
         return self.name
