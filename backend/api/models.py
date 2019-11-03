@@ -200,7 +200,7 @@ class Session(models.Model):
 class Payment(models.Model):
     id = models.AutoField(primary_key=True)
     transaction_id = models.CharField(max_length=200)
-    receipt = models.FileField(storage=PrivateMediaStorage(), null=True)
+    receipt = models.FileField(storage=PrivateMediaStorage(), null=True, blank=True)
     date_added = models.DateField(auto_now_add=True)
     user = models.ForeignKey(
         User, related_name="payments", blank=True, null=True, on_delete=models.SET_NULL
