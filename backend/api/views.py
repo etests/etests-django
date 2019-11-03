@@ -210,6 +210,17 @@ class TestListView(generics.ListAPIView):
         else:
             return None
 
+class FreeTestListView(generics.ListAPIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    def get_serializer_class(self):
+        return StudentTestListSerializer
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated and self.request.user.is_student:
+                return Test.objects.filter(free=True, sessions__student = self.request.user.student, visible = True)
+        else:
+            return None
+
 class TestCreateView(generics.CreateAPIView):
     permission_classes = (IsInstituteOwner,)
     serializer_class = TestCreateSerializer

@@ -22,6 +22,7 @@ urlpatterns = [
     path("testseries/", TestSeriesListCreateView.as_view(), name="testseries-list-create"),
     path("testseries/<int:pk>/", TestSeriesRetrieveUpdateDestoryView.as_view(), name="testseries-update-delete"),
     path("tests/", TestListView.as_view(), name="test-list"),
+    path("tests/free/", FreeTestListView.as_view(), name="free-test-list"),
     path("test/create/", TestCreateView.as_view(), name="test-create"),
     path("tests/<int:pk>/", TestRetrieveUpdateDestoryView.as_view(), name="test-update-delete"),
     path("get-session/<int:test_id>/", SessionRetrieveUpdateView.as_view()),
