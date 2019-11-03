@@ -217,12 +217,16 @@ class TestCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         test_series_ids = self.request.data.pop('test_series', None)
         exam_id = self.request.data.get('exam', None)
+        free = self.request.data.get('free', False)
         if exam_id:
             try:
                 exam = Exam.objects.get(id=exam_id)
                 for test_series_id in test_series_ids:
                     try:
-                        TestSeries.objects.get(id=test_series_id).exams.add(exam)
+                        test_series = TestSeries.objects.get(id=test_series_id)
+                        test_series.exams.add(exam)
+                        if test_series.price == 0:
+                            free = True
                     except:
                         pass
             except Exception as e:
@@ -237,7 +241,7 @@ class TestCreateView(generics.CreateAPIView):
                         student_ids += [student.id for student in batch.students()]
                 except Exception as e:
                     pass
-        serializer.save(institute=self.request.user.institute, registered_students=student_ids)
+        serializer.save(institute=self.request.user.institute, registered_students=student_ids, free = free)
         
         
 class TestRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
@@ -295,7 +299,7 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
                 self.serializer_class = PracticeSessionSerializer
             return Response(self.get_serializer(session).data)
         elif self.request.user.is_student:
-            if self.request.user.student in test.registered_students.all():
+            if self.request.user.student in test.registered_students.all() or test.free:
                 sessions = Session.objects.filter(test=test, student=self.request.user.student)
                 if test.status == 0:
                     raise ParseError("This test is not active yet.")

@@ -136,6 +136,7 @@ class Test(models.Model):
     corrected = models.BooleanField(default=False)
     finished = models.BooleanField(default=False)
     visible = models.BooleanField(default=True)
+    free = models.BooleanField(default=False)
     marks_list = JSONField(blank=True, null=True)
 
     def save(self, *args, **kwargs):

@@ -20,7 +20,7 @@ class StudentTestListSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Test
-        fields = ("id","name","institute", "status", "aits", "date_added", "activation_time", "closing_time",  "time_alotted", "sessions")
+        fields = ("id","name","institute", "status", "aits", "date_added", "activation_time", "closing_time",  "time_alotted", "sessions", "free")
     
     def get_institute(self, obj):
         return {"id": obj.institute.id, "name": obj.institute.user.name}
@@ -125,16 +125,20 @@ class ExamListSerializer(serializers.ModelSerializer):
 
 class TestListSerializer(serializers.ModelSerializer):
     institute = InstituteListSerializer()
+    exam = serializers.SerializerMethodField()
 
     class Meta:
         model=Test
-        fields = ("id", "name", "status", "aits", "activation_time", "closing_time", "institute")
+        fields = ("id", "name", "status", "aits", "activation_time", "closing_time", "institute", "exam", "free")
+
+    def get_exam(self, obj):
+        return obj.exam.name
 
 class TestCreateSerializer(serializers.ModelSerializer):        
 
     class Meta:
         model=Test
-        fields = ("id", "name", "aits", "activation_time", "closing_time","time_alotted", "institute", "questions", "answers", "sections", "test_series", "exam", "status")
+        fields = ("id", "name", "aits", "activation_time", "closing_time","time_alotted", "institute", "questions", "answers", "sections", "test_series", "exam", "status", "free")
         extra_kwargs = {"test_series": {"required": False}, "status": {"read_only": True}}
 
 class PaymentSerializer(serializers.ModelSerializer):
@@ -163,12 +167,12 @@ class TestSerializer(serializers.ModelSerializer):
 class StudentTestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test
-        fields = ("id","name","institute", "status","aits","tags","date_added","activation_time", "closing_time", "time_alotted","sections","questions")
+        fields = ("id","name","institute", "status","aits","tags","date_added","activation_time", "closing_time", "time_alotted","sections","questions", "free")
 
 class TestRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test
-        fields = ("id","name","institute","slug","status","aits","tags","date_added","activation_time", "closing_time",  "time_alotted")
+        fields = ("id","name","institute","slug","status","aits","tags","date_added","activation_time", "closing_time",  "time_alotted", "free")
 
 class SessionSerializer(serializers.ModelSerializer):
     test = StudentTestSerializer(many=False, read_only=True)
