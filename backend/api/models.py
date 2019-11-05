@@ -68,6 +68,10 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+class Offer(models.Model):
+    title = models.CharField(max_length=80)
+    description = models.CharField(max_length=1024)
+
 
 class TestSeries(models.Model):
     id = models.AutoField(primary_key=True)
@@ -77,6 +81,8 @@ class TestSeries(models.Model):
     slug = models.SlugField(unique=True, editable=False)
     visible = models.BooleanField(default=False)
     exams = models.ManyToManyField(Exam, related_name="test_series", blank=True)
+    offers = models.ManyToManyField(Offer, related_name="test_series", blank=True)
+    discount = models.IntegerField(default=0)
     institute = models.ForeignKey(
         Institute,
         related_name="test_series",

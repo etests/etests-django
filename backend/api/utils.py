@@ -60,10 +60,10 @@ class SessionEvaluation:
 
     def evaluate(self):
         for i in range(len(self.questions)):
-            if self.isListEmpty(self.session['response'][i]['answer']):
-                continue
             self.maxMarks[-1]+=self.questions[i]['correctMarks']
             self.maxMarks[self.questions[i]['section']]+=self.questions[i]['correctMarks']
+            if self.isListEmpty(self.session['response'][i]['answer']):
+                continue
             if self.questions[i]['type'] ==0:
                 if self.session['response'][i]['answer'] == self.test.answers[i]['answer']:
                     self.markCorrect(i)
@@ -116,16 +116,19 @@ class SessionEvaluation:
 def generateRanks(sessions):
         if not sessions or len(sessions)==0:
             return False
-        marks_list = [[session.marks['total'], i] for (i,session) in enumerate(sessions)]
-        sectionwise_marks_list = [[[session.marks['sectionWise'][j], i] for (i,session) in enumerate(sessions)] for j in range(len(sessions[0].marks['sectionWise']))]
-        marks_list.sort()
-        marks_list.reverse()
+
         for session in sessions:
             session.ranks = {}
             session.ranks['overall'] = 0
             session.ranks['sectionWise'] = []
             for section in range(len(session.marks['sectionWise'])):
                 session.ranks['sectionWise'].append(0)
+
+        marks_list = [[session.marks['total'], i] for (i,session) in enumerate(sessions)]
+        sectionwise_marks_list = [[[session.marks['sectionWise'][j], i] for (i,session) in enumerate(sessions)] for j in range(len(sessions[0].marks['sectionWise']))]
+        marks_list.sort()
+        marks_list.reverse()
+
 
         total = 0
         sectionWiseTotal = [0 for i in range(len(sessions[0].marks['sectionWise']))]
@@ -197,8 +200,25 @@ def getVirtualRanks(marks_list, marks_obtained):
         "overall": getRank(marks_list["overall"], marks_obtained["total"]),
         "sectionWise": [getRank(section_marks_list, marks_obtained["sectionWise"][i]) for (i,section_marks_list) in enumerate(marks_list["sectionWise"])]
     }
-    
 
+
+def send_mail(to,subject,body):
+    email_id = to
+    message = Mail(
+        from_email=os.environ.get('EMAIL_ID'),
+        to_emails = email_id,
+        subject=subject,
+        html_content=body)
+    try:
+        sg = SendGridAPIClient(os.environ.get('EMAIL_API_KEY'))
+        response = sg.send(message)
+        if response.status_code == 202:
+            return True
+        else:
+            return False
+    except Exception as e:
+        print(e) 
+        return False
 
 
 def get_unique_slug(model_instance, slugable_field_name, slug_field_name="slug"):
@@ -226,22 +246,3 @@ def position_to_label(position):
     if position>0 and position<=len(labels):
         return labels[position-1]
     return ''
-
-
-def send_mail(to,subject,body):
-    email_id = to
-    message = Mail(
-        from_email=os.environ.get('EMAIL_ID'),
-        to_emails = email_id,
-        subject=subject,
-        html_content=body)
-    try:
-        sg = SendGridAPIClient(os.environ.get('EMAIL_API_KEY'))
-        response = sg.send(message)
-        if response.status_code == 202:
-            return True
-        else:
-            return False
-    except Exception as e:
-        print(e) 
-        return False

@@ -217,7 +217,7 @@ class FreeTestListView(generics.ListAPIView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated and self.request.user.is_student:
-                return Test.objects.filter(free=True, sessions__student = self.request.user.student, visible = True)
+                return Test.objects.filter(free=True, sessions__student = self.request.user.student, visible = True).distinct()
         else:
             return None
 
@@ -285,7 +285,7 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         for i in range(len(test.questions)):
             response.append({
                 "answer": [],
-                "status": 0,
+                "status": 1,
                 "timeElapsed": 0
             })
         current = {
@@ -303,6 +303,10 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
             raise NotFound("This test does not exist.")
         try:
             session = Session.objects.get(test=test, student=self.request.user.student, completed=False)
+            if test.status >= 2 and not session.practice:
+                session.completed = True
+                session.save()
+                session = None
         except:
             session = None
         if session:
@@ -361,7 +365,7 @@ def updateTestRanks(test):
         return False
     generated = generateRanks(sessions)
     if generated:
-        Session.objects.bulk_update(generated.get("sessions", None), ["ranks"])
+        Session.objects.bulk_update(generated.get("sessions", None), ["ranks", "marks", "result", "completed"])
         test.marks_list = generated.get("marks_list", None)
         test.stats = generated.get("stats", None)
         test.finished = True
@@ -391,8 +395,13 @@ class ResultView(generics.RetrieveAPIView):
     def retrieve(self, *args, **kwargs):
         instance = self.get_object()
 
-        if not instance.practice and instance.ranks==None and instance.test.status > 1:
-            updateTestRanks(instance.test)
+        if instance.marks is None:
+            instance.completed = True
+            evaluated = SessionEvaluation(instance.test, SessionSerializer(instance).data).evaluate()
+            instance.marks = evaluated[0]
+            instance.result = {"questionWiseMarks": evaluated[1], "topicWiseMarks": evaluated[2]}
+            instance.save()
+
         return Response(self.get_serializer(instance).data)
 
 class Review(generics.RetrieveAPIView):
