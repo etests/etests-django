@@ -342,7 +342,8 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
                 raise PermissionDenied("You have already submitted this test.")
             else:
                 self.serializer_class = PracticeSessionSerializer
-                instance.ranks = getVirtualRanks(instance.test.marks_list, session["marks"])
+                if instance.test.marks_list is not None:
+                    instance.ranks = getVirtualRanks(instance.test.marks_list, session["marks"])
         elif session['completed']:
             self.serializer_class = ResultSerializer
             if instance.completed:
