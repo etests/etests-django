@@ -102,7 +102,7 @@ class InstituteListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Institute
-        fields = ("id", "user", "pincode", "test_series", "batches")
+        fields = ("id", "user", "pincode", "test_series", "batches", "rating")
 
     def get_test_series(self, obj):
         serializer_context = {"request": self.context.get("request") }

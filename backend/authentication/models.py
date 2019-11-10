@@ -56,6 +56,7 @@ class Institute(models.Model):
     current_credits = models.IntegerField(default = 0)
     verified = models.BooleanField(default=False)
     show = models.BooleanField(default=True)
+    rating = models.FloatField(default=0)
 
     def __str__(self):
         return self.user.name
