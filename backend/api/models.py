@@ -144,6 +144,7 @@ class Test(models.Model):
     visible = models.BooleanField(default=True)
     free = models.BooleanField(default=False)
     marks_list = JSONField(blank=True, null=True)
+    syllabus = models.CharField(max_length=1024, blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:

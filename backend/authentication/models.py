@@ -57,6 +57,7 @@ class Institute(models.Model):
     verified = models.BooleanField(default=False)
     show = models.BooleanField(default=True)
     rating = models.FloatField(default=0)
+    about = models.CharField(max_length = 1024, null = True, blank=True)
 
     def __str__(self):
         return self.user.name

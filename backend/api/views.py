@@ -229,6 +229,7 @@ class TestCreateView(generics.CreateAPIView):
         test_series_ids = self.request.data.pop('test_series', None)
         exam_id = self.request.data.get('exam', None)
         free = self.request.data.get('free', False)
+        print(self.request.data)
         if exam_id:
             try:
                 exam = Exam.objects.get(id=exam_id)
@@ -364,6 +365,10 @@ def updateTestRanks(test):
         test.finished = True
         test.save()
         return False
+    for session in sessions.filter(marks = None):
+        evaluated = SessionEvaluation(session.test, SessionSerializer(session).data).evaluate()
+        session.marks = evaluated[0]
+        session.result = {"questionWiseMarks": evaluated[1], "topicWiseMarks": evaluated[2]}
     generated = generateRanks(sessions)
     if generated:
         Session.objects.bulk_update(generated.get("sessions", None), ["ranks", "marks", "result", "completed"])

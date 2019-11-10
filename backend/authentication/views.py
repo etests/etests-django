@@ -150,14 +150,17 @@ class ProfileView(RetrieveUpdateAPIView):
 
         birth_date = self.request.data.get('birth_date', None)
         pincode = self.request.data.get('pincode', None)
-
+        about = self.request.data.get('about', None)
 
         if instance.is_student and birth_date:
             instance.student.birth_date = birth_date
             instance.student.save()
 
-        if instance.is_institute and pincode:
-            instance.institute.pincode = pincode
+        if instance.is_institute:
+            if pincode:
+                instance.institute.pincode = pincode
+            if about:
+                instance.institute.about = about
             instance.institute.save()
 
         serializer.save()
