@@ -359,19 +359,32 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
         self.perform_update(serializer)
         return Response(serializer.data)
 
+class EvaluateLeftSessions(APIView):
+    permission_classes = (permissions.IsAdminUser,)
+    
+    def post(self, request, test_id):
+        try:
+            test = Test.objects.get(id = test_id)
+            sessions = Session.objects.filter(test = test, marks__isnull=True)
+            for session in sessions:
+                evaluated = SessionEvaluation(session.test, SessionSerializer(session).data).evaluate()
+                session.marks = evaluated[0]
+                session.result = {"questionWiseMarks": evaluated[1], "topicWiseMarks": evaluated[2]}
+                session.completed = True
+            Session.objects.bulk_update(sessions, ["marks", "result", "completed"])
+            return Response("Done!", status=status.HTTP_201_CREATED)
+        except:
+            raise ParseError("Some error ocurred")
+
 def updateTestRanks(test):
     sessions = Session.objects.filter(test = test)
     if len(sessions) == 0:
         test.finished = True
         test.save()
         return False
-    for session in sessions.filter(marks = None):
-        evaluated = SessionEvaluation(session.test, SessionSerializer(session).data).evaluate()
-        session.marks = evaluated[0]
-        session.result = {"questionWiseMarks": evaluated[1], "topicWiseMarks": evaluated[2]}
     generated = generateRanks(sessions)
     if generated:
-        Session.objects.bulk_update(generated.get("sessions", None), ["ranks", "marks", "result", "completed"])
+        Session.objects.bulk_update(generated.get("sessions", None), ["ranks"])
         test.marks_list = generated.get("marks_list", None)
         test.stats = generated.get("stats", None)
         test.finished = True

@@ -42,5 +42,7 @@ urlpatterns = [
     path("publish-aits/", PublishTestSeries.as_view()),
     path("upload-question-image/", csrf_exempt(UploadQuestionImageView.as_view())),
     path("add-question/", AddQuestionAPIView.as_view()),
-    path("get-questions/", RetrieveQuestionAPIView.as_view())
+    path("get-questions/", RetrieveQuestionAPIView.as_view()),
+    path("evaluate-left-sessions/<int:test_id>", EvaluateLeftSessions.as_view())
+
 ]
