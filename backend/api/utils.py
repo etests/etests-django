@@ -78,7 +78,9 @@ class SessionEvaluation:
                 else:
                     self.markIncorrect(i)
             elif self.questions[i]['type']==2:
-                if( 0.99<=float(self.session['response'][i]['answer'])/float(self.test.answers[i]['answer']) <=1.01 ):
+                given_response = float(self.session['response'][i]['answer'])
+                correct_answer = float(self.test.answers[i]['answer'])
+                if 0.99*correct_answer <= given_response and given_response <= 1.01*correct_answer:
                     self.markCorrect(i)
                 else:
                     self.markIncorrect(i)
