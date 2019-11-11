@@ -461,7 +461,7 @@ class GenerateRanks(APIView):
             raise ParseError("Final ranks are already declared.")                  
 
 class RankListView(APIView):
-    permission_classes = (IsInstituteOwner,)
+    permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
 
     def get(self, request, id):
         sessions = Session.objects.filter(test__id=id, practice=False)

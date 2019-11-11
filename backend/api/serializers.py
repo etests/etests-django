@@ -115,7 +115,7 @@ class ExamListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Exam
-        fields = ("id", "name", "start_date", "test_series", "image")
+        fields = ("id", "name", "start_date", "test_series", "image", "position")
     
     def get_test_series(self, obj):
         serializer_context = {"request": self.context.get("request") }
@@ -124,15 +124,18 @@ class ExamListSerializer(serializers.ModelSerializer):
         return serializer.data
 
 class TestListSerializer(serializers.ModelSerializer):
-    institute = InstituteListSerializer()
+    institute = serializers.SerializerMethodField()
     exam = serializers.SerializerMethodField()
 
     class Meta:
         model=Test
-        fields = ("id", "name", "status", "aits", "activation_time", "closing_time", "institute", "exam", "free", "syllabus")
+        fields = ("id", "name", "status", "aits", "activation_time", "closing_time", "time_alotted", "institute", "exam", "free", "syllabus")
 
     def get_exam(self, obj):
         return obj.exam.name
+
+    def get_institute(self, obj):
+        return {"id": obj.institute.id, "name": obj.institute.user.name}
 
 class TestCreateSerializer(serializers.ModelSerializer):        
 
