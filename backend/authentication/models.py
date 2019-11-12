@@ -5,8 +5,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import BaseUserManager
 from django.contrib.auth.models import AbstractUser
 from datetime import datetime, timedelta
-from .utils import randomKey
 from django.core.exceptions import ValidationError
+from django.db.models.signals import pre_save
+from .utils import randomKey, unique_random_key
 
 class MyUserManager(BaseUserManager):
     def _create_user(self, email, password, **extra_fields):
@@ -68,7 +69,7 @@ class Institute(models.Model):
         super(Institute, self).save(*args, **kwargs)
 
 class Batch(models.Model):
-    joining_key = models.CharField(max_length = 8, default = randomKey)
+    joining_key = models.CharField(max_length = 8, default=randomKey)
     name = models.CharField(max_length = 100)
     institute = models.ForeignKey(Institute, related_name = "batches", on_delete = models.CASCADE)
 
@@ -82,7 +83,7 @@ class Enrollment(models.Model):
     institute = models.ForeignKey(Institute, on_delete = models.CASCADE)
     batch = models.ForeignKey(Batch, blank = True, null = True, related_name = "enrollments", on_delete = models.CASCADE)
     roll_number = models.CharField(max_length = 25)
-    joining_key = models.CharField(max_length = 8, default = randomKey)
+    joining_key = models.CharField(max_length = 8, null=True, blank=True, unique=True)
     student = models.ForeignKey("Student", related_name = "enrollment", null = True, on_delete = models.SET_NULL)
     date_joined = models.DateField(null = True)
 
@@ -104,6 +105,13 @@ class Enrollment(models.Model):
             raise ValidationError(errors)
         else:
             super(Enrollment, self).save(*args, **kwargs)
+
+def pre_save_create_joining_key(sender, instance, *args, **kwargs):
+    if not instance.joining_key:
+        instance.joining_key= unique_random_key(instance)
+
+pre_save.connect(pre_save_create_joining_key, sender=Enrollment)
+
 
 class Student(models.Model):
     GENDERS = (("M", "Male"), ("F", "Female"), ("O", "Others"))

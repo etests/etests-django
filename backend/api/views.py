@@ -99,6 +99,20 @@ class BatchRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
         else:
             return None
 
+class InstituteJoinView(APIView):
+    permission_classes = (IsStudentOwner,)
+
+    def post(self, request):
+        roll_number = request.data['rollNumber']
+        joining_key = request.data['joiningKey']
+        try:
+            enrollment = Enrollment.objects.get(roll_number=roll_number, joining_key = joining_key)
+            enrollment.student = request.user.student
+            enrollment.date_joined = datetime.now()
+            enrollment.save()
+            return Response("Joined Successfully")
+        except:
+            raise ParseError("Invalid roll number or joining key!") 
 
 class BatchJoinView(APIView):
     permission_classes = (IsStudentOwner,)
