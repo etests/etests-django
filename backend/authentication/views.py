@@ -159,8 +159,7 @@ class ProfileView(RetrieveUpdateAPIView):
         if instance.is_institute:
             if pincode:
                 instance.institute.pincode = pincode
-            if about:
-                instance.institute.about = about
+            instance.institute.about = about
             instance.institute.save()
 
         serializer.save()
