@@ -79,6 +79,9 @@ class Batch(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name_plural = "Batches"
+
 class Enrollment(models.Model):
     institute = models.ForeignKey(Institute, on_delete = models.CASCADE)
     batch = models.ForeignKey(Batch, blank = True, null = True, related_name = "enrollments", on_delete = models.CASCADE)

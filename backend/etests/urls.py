@@ -4,6 +4,9 @@ from rest_framework_swagger.views import get_swagger_view
 
 schema_view = get_swagger_view(title="eTests API")
 
+admin.site.site_header = "eTests API Administration"
+admin.site.site_title = "eTests API"
+admin.site.index_title = "Administration Panel"
 
 urlpatterns = [
     path("admin/", admin.site.urls),

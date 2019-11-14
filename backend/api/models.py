@@ -303,6 +303,10 @@ class CreditUse(models.Model):
             institute.current_credits -= self.credits_used
             institute.save()
         super().save(*args, **kwargs)
+    
+
+    class Meta:
+        verbose_name_plural = "Credits Usage"
 
 
 class ResetCode(models.Model):
@@ -345,6 +349,9 @@ class AITSTransaction(models.Model):
             + "/TID-"
             + self.transaction_id
         )
+    
+    class Meta:
+        verbose_name_plural = "AITS Transactions"
 
 
 class Question(models.Model):
