@@ -23,8 +23,7 @@ from authentication.models import Institute
 from .forms import *
 from .models import *
 from .serializers import *
-from .utils import SessionEvaluation, generateRanks, getVirtualRanks, send_mail
-
+from .utils import SessionEvaluation, generateRanks, getVirtualRanks
 
 class ReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
@@ -568,64 +567,6 @@ class EnrollmentRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView)
             return Enrollment.objects.all()
         else:
             return None
-
-
-class ResetCodeCreateView(APIView):
-    permission_classes = (permissions.AllowAny,)
-    def post(self, request):
-        email_id = request.data.get('email', None)
-        user = User.objects.filter(email=email_id)
-        if len(user):
-            user = user[0]
-            instance = ResetCode.objects.filter(user=user,done=False,date_added=date.today())
-            if len(instance) == 0:
-                reset_code=(''.join(choice(digits) for i in range(6)))
-                ResetCode.objects.create(user=user,reset_code=reset_code)
-            else:
-                reset_code = instance[0].reset_code
-            if send_mail( email_id, 'Password Reset', 'The Password Reset Code for eTests is '+'<strong>'+reset_code+'</strong>'):
-                return Response("Password reset code sent successfully!", status=status.HTTP_201_CREATED)
-            else:
-                raise ParseError("Some error occured.")
-        else:
-            raise ParseError("No user with this email id.")
-
-class ResetCodeSuccessView(APIView):    
-    permission_classes = (permissions.AllowAny,)
-    def post(self, request):
-        reset_code = request.data.get("reset_code", None)
-        password = request.data.get("password", None)
-        try:
-            instance =  ResetCode.objects.get(reset_code = reset_code, done=False, date_added=date.today())
-            if password:
-                instance.user.set_password(password)
-                instance.user.save()
-                instance.done=True
-                instance.save()
-                return  Response("Password changed successfully!", status=status.HTTP_201_CREATED)
-            else:
-                raise ParseError("Password cannot be empty.")
-        except:
-            raise ParseError("Invalid reset code.")
-
-
-class ChangePasswordView(APIView):    
-    permission_classes = (permissions.IsAuthenticated,)
-    def post(self, request):
-        old_password = request.data.get("old_password", None)
-        new_password = request.data.get("new_password",None)
-        if old_password and new_password:
-            user = authenticate(email=request.user.email , password=old_password)
-            if user is not None:
-                # A backend authenticated the credentials
-                user.set_password(new_password)
-                user.save()
-                return  Response("Password changed successfully!", status=status.HTTP_201_CREATED)
-            else:
-                # No backend authenticated the credentials
-                raise ParseError("Incorrect Password")
-        else:
-            raise ParseError("Password Cannot be Empty")
 
 class AITSBuyer(generics.ListAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)

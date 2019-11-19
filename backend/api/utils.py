@@ -1,8 +1,6 @@
 from django.utils.text import slugify
 from collections import namedtuple
 import os
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
 
 class SessionEvaluation:
     def __init__(self, test, session):
@@ -202,26 +200,6 @@ def getVirtualRanks(marks_list, marks_obtained):
         "overall": getRank(marks_list["overall"], marks_obtained["total"]),
         "sectionWise": [getRank(section_marks_list, marks_obtained["sectionWise"][i]) for (i,section_marks_list) in enumerate(marks_list["sectionWise"])]
     }
-
-
-def send_mail(to,subject,body):
-    email_id = to
-    message = Mail(
-        from_email=os.environ.get('EMAIL_ID'),
-        to_emails = email_id,
-        subject=subject,
-        html_content=body)
-    try:
-        sg = SendGridAPIClient(os.environ.get('EMAIL_API_KEY'))
-        response = sg.send(message)
-        if response.status_code == 202:
-            return True
-        else:
-            return False
-    except Exception as e:
-        print(e) 
-        return False
-
 
 def get_unique_slug(model_instance, slugable_field_name, slug_field_name="slug"):
     """

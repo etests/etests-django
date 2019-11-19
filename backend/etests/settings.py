@@ -127,6 +127,13 @@ CORS_ORIGIN_WHITELIST = [
     "https://api.etests.co.in"
 ]
 
+# Get env variables
+try:
+    from env import *
+except:
+    pass
+
+# Local settings
 try:
     from local_settings import *
 except:

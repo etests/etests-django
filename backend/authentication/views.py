@@ -1,25 +1,29 @@
-import json 
-from django.contrib.auth import (
-    login as django_login,
-    logout as django_logout
-)
+import json
+from datetime import date
+from random import choice, randint
+from string import digits
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth import login as django_login
+from django.contrib.auth import logout as django_logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
-
 from rest_framework import status
-from rest_framework.views import APIView
+from rest_framework.exceptions import NotFound, ParseError
+from rest_framework.generics import (CreateAPIView, GenericAPIView, ListAPIView, RetrieveUpdateAPIView)
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView, CreateAPIView, ListAPIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework.exceptions import NotFound
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import *
+from api.models import ResetCode
+
 from .models import *
+from .serializers import *
+from .utils import send_mail
 
 sensitive = method_decorator(
     sensitive_post_parameters(
@@ -163,47 +167,61 @@ class ProfileView(RetrieveUpdateAPIView):
             instance.institute.save()
 
         serializer.save()
-    
 
-class PasswordResetView(GenericAPIView):
-    serializer_class = PasswordResetSerializer
+
+class ResetCodeCreateView(APIView):
     permission_classes = (AllowAny,)
+    def post(self, request):
+        email_id = request.data.get('email', None)
+        user = User.objects.filter(email=email_id)
+        if len(user):
+            user = user[0]
+            instance = ResetCode.objects.filter(user=user,done=False,date_added=date.today())
+            if len(instance) == 0:
+                reset_code=(''.join(choice(digits) for i in range(6)))
+                ResetCode.objects.create(user=user,reset_code=reset_code)
+            else:
+                reset_code = instance[0].reset_code
+            if send_mail(email_id, 'Password Reset', 'The Password Reset Code for eTests is '+'<strong>'+reset_code+'</strong>'):
+                return Response("Password reset code sent successfully!", status=status.HTTP_201_CREATED)
+            else:
+                raise ParseError("Some error occured.")
+        else:
+            raise ParseError("No user with this email id.")
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(
-            {"detail": _("Password reset e-mail has been sent.")},
-            status=status.HTTP_200_OK
-        )
-
-class PasswordResetConfirmView(GenericAPIView):
-    serializer_class = PasswordResetConfirmSerializer
+class ResetCodeSuccessView(APIView):    
     permission_classes = (AllowAny,)
+    def post(self, request):
+        reset_code = request.data.get("reset_code", None)
+        password = request.data.get("password", None)
+        try:
+            instance =  ResetCode.objects.get(reset_code = reset_code, done=False, date_added=date.today())
+            if password:
+                instance.user.set_password(password)
+                instance.user.save()
+                instance.done=True
+                instance.save()
+                return  Response("Password changed successfully!", status=status.HTTP_201_CREATED)
+            else:
+                raise ParseError("Password cannot be empty.")
+        except:
+            raise ParseError("Invalid reset code.")
 
-    @sensitive
-    def dispatch(self, *args, **kwargs):
-        return super(PasswordResetConfirmView, self).dispatch(*args, **kwargs)
 
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(
-            {"detail": _("Password has been reset with the new password.")}
-        )
-
-class PasswordChangeView(GenericAPIView):
-    serializer_class = PasswordChangeSerializer
+class ChangePasswordView(APIView):    
     permission_classes = (IsAuthenticated,)
-
-    @sensitive
-    def dispatch(self, *args, **kwargs):
-        return super(PasswordChangeView, self).dispatch(*args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response({"detail": _("New password has been saved.")})
+    def post(self, request):
+        old_password = request.data.get("old_password", None)
+        new_password = request.data.get("new_password",None)
+        if old_password and new_password:
+            user = authenticate(email=request.user.email , password=old_password)
+            if user is not None:
+                # A backend authenticated the credentials
+                user.set_password(new_password)
+                user.save()
+                return  Response("Password changed successfully!", status=status.HTTP_201_CREATED)
+            else:
+                # No backend authenticated the credentials
+                raise ParseError("Incorrect Password")
+        else:
+            raise ParseError("Password Cannot be Empty")
