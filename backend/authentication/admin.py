@@ -3,9 +3,10 @@ from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
 from django.contrib.admin.sites import AlreadyRegistered
 from django.utils.html import mark_safe
-
+from django.contrib.admin.models import LogEntry
 from .models import *
 
+admin.site.register(LogEntry)
 
 class UserTypeFilter(SimpleListFilter):
     title = "User Type"
