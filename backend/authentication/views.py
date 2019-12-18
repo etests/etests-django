@@ -23,7 +23,7 @@ from api.models import ResetCode
 
 from .models import *
 from .serializers import *
-from .utils import send_mail
+from .ses import send_email
 
 sensitive = method_decorator(
     sensitive_post_parameters(
@@ -169,7 +169,7 @@ class ProfileView(RetrieveUpdateAPIView):
         serializer.save()
 
 
-class ResetCodeCreateView(APIView):
+class PasswordResetRequestView(APIView):
     permission_classes = (AllowAny,)
     def post(self, request):
         email_id = request.data.get('email', None)
@@ -182,14 +182,14 @@ class ResetCodeCreateView(APIView):
                 ResetCode.objects.create(user=user,reset_code=reset_code)
             else:
                 reset_code = instance[0].reset_code
-            if send_mail(email_id, 'Password Reset', 'The Password Reset Code for eTests is '+'<strong>'+reset_code+'</strong>'):
+            if send_email(email_id, 'Password Reset', 'Your eTests Password Reset Code is '+'<strong>'+reset_code+'</strong>'):
                 return Response("Password reset code sent successfully!", status=status.HTTP_201_CREATED)
             else:
                 raise ParseError("Some error occured.")
         else:
             raise ParseError("No user with this email id.")
 
-class ResetCodeSuccessView(APIView):    
+class PasswordResetSuccessView(APIView):    
     permission_classes = (AllowAny,)
     def post(self, request):
         reset_code = request.data.get("reset_code", None)

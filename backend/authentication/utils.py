@@ -3,29 +3,7 @@ import random
 import string
 from importlib import import_module
 
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
 from six import string_types
-
-from env import EMAIL_API_KEY, EMAIL_ID
-
-def send_mail(to,subject,body):
-    email_id = to
-    message = Mail(
-        from_email=EMAIL_ID,
-        to_emails = email_id,
-        subject=subject,
-        html_content=body)
-    try:
-        sg = SendGridAPIClient(EMAIL_API_KEY)
-        response = sg.send(message)
-        if response.status_code == 202:
-            return True
-        else:
-            return False
-    except Exception as e:
-        print(e) 
-        return False
 
 def randomKey(stringLength=8):
     lettersAndDigits = string.ascii_letters + string.digits

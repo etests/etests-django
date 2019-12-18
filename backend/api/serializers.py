@@ -132,7 +132,10 @@ class TestListSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "status", "aits", "activation_time", "closing_time", "time_alotted", "institute", "exam", "free", "syllabus")
 
     def get_exam(self, obj):
-        return obj.exam.name
+        if obj.exam is not None:
+            return obj.exam.name
+        else:
+            return ""
 
     def get_institute(self, obj):
         return {"id": obj.institute.id, "name": obj.institute.user.name}
