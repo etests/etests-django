@@ -7,7 +7,7 @@ from django.contrib.auth.models import AbstractUser
 from datetime import datetime, timedelta
 from django.core.exceptions import ValidationError
 from django.db.models.signals import pre_save
-from .utils import randomKey, unique_random_key
+from .utils import random_key, unique_random_key
 
 class MyUserManager(BaseUserManager):
     def _create_user(self, email, password, **extra_fields):
@@ -69,7 +69,7 @@ class Institute(models.Model):
         super(Institute, self).save(*args, **kwargs)
 
 class Batch(models.Model):
-    joining_key = models.CharField(max_length = 8, default=randomKey)
+    joining_key = models.CharField(max_length = 8, default=random_key)
     name = models.CharField(max_length = 100)
     institute = models.ForeignKey(Institute, related_name = "batches", on_delete = models.CASCADE)
 

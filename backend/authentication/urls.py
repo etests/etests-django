@@ -16,6 +16,6 @@ urlpatterns = [
     path("email/verify/confirm/", TemplateView.as_view(), name="confirm_email"),
     path("profile/update/", ProfileView.as_view(), name="profile"),
     path("forgot-password-request/", PasswordResetRequestView.as_view()),
-    path("forgot-password-success/", PasswordResetSuccessView.as_view()),
+    path("forgot-password-success/", PasswordResetConfirmView.as_view()),
     path("change-password/", ChangePasswordView.as_view()),
 ]

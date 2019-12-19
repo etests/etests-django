@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
             name='Batch',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('joining_key', models.CharField(default=authentication.utils.randomKey, max_length=8)),
+                ('joining_key', models.CharField(default=authentication.utils.random_key, max_length=8)),
                 ('name', models.CharField(max_length=100)),
             ],
         ),
@@ -52,7 +52,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('roll_number', models.CharField(max_length=25)),
-                ('joining_key', models.CharField(default=authentication.utils.randomKey, max_length=8)),
+                ('joining_key', models.CharField(default=authentication.utils.random_key, max_length=8)),
                 ('date_joined', models.DateField(null=True)),
                 ('batch', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='enrollments', to='authentication.Batch')),
             ],

@@ -3,33 +3,33 @@ from botocore.exceptions import ClientError
 from env import EMAIL_ID, AWS_REGION
 
 def send_email(
-RECIPIENT,
-SUBJECT,
-BODY_HTML,        
-SENDER = "noreply@etests.co.in",
-CHARSET = "UTF-8"
+to_email,
+subject,
+body_html,        
+from_email = "noreply@etests.co.in",
+charset = "UTF-8"
 ):
     client = boto3.client('ses',region_name=AWS_REGION)
     try:
         response = client.send_email(
             Destination={
                 'ToAddresses': [
-                    RECIPIENT,
+                    to_email,
                 ],
             },
             Message={
                 'Body': {
                     'Html': {
-                        'Charset': CHARSET,
-                        'Data': BODY_HTML,
+                        'Charset': charset,
+                        'Data': body_html,
                     },
                 },
                 'Subject': {
-                    'Charset': CHARSET,
-                    'Data': SUBJECT,
+                    'Charset': charset,
+                    'Data': subject,
                 },
             },
-            Source=SENDER,
+            Source=from_email,
         )
     except ClientError as e:
         print(e.response['Error']['Message'])

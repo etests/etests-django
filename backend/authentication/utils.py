@@ -5,18 +5,18 @@ from importlib import import_module
 
 from six import string_types
 
-def randomKey(stringLength=8):
+def random_key(length=8):
     lettersAndDigits = string.ascii_letters + string.digits
-    return ''.join(random.choice(lettersAndDigits) for i in range(stringLength))
+    return ''.join(random.choice(lettersAndDigits) for i in range(length))
 
 def unique_random_key(instance):
-    new_key= randomKey()
+    new_key= random_key()
 
     Klass= instance.__class__
 
     qs_exists= Klass.objects.filter(joining_key= new_key).exists()
     if qs_exists:
-        return randomKey(instance)
+        return random_key(instance)
     return new_key
 
 

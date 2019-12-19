@@ -27,7 +27,7 @@ from .ses import send_email
 
 sensitive = method_decorator(
     sensitive_post_parameters(
-        'password', 'old_password', 'new_password1', 'new_password2'
+        'password', 'old_password', 'new_password'
     )
 )
 
@@ -108,9 +108,7 @@ class LoginView(GenericAPIView):
 
         serializer = serializer_class(instance=data, context={'request': self.request})
 
-        response = Response(serializer.data, status=status.HTTP_200_OK)
-
-        return response
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
         self.request = request
@@ -137,7 +135,7 @@ class LogoutView(APIView):
         if getattr(settings, 'REST_SESSION_LOGIN', True):
             django_logout(request)
 
-        return Response({"detail": _("Successfully logged out.")}, status=status.HTTP_200_OK)
+        return Response({"detail": _("Logged out successfully.")}, status=status.HTTP_200_OK)
 
 class ProfileView(RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
@@ -171,57 +169,42 @@ class ProfileView(RetrieveUpdateAPIView):
 
 class PasswordResetRequestView(APIView):
     permission_classes = (AllowAny,)
+
+    def get_serializer(self, *args, **kwargs):
+        return PasswordResetSerializer(*args, **kwargs)
+
     def post(self, request):
-        email_id = request.data.get('email', None)
-        user = User.objects.filter(email=email_id)
-        if len(user):
-            user = user[0]
-            instance = ResetCode.objects.filter(user=user,done=False,date_added=date.today())
-            if len(instance) == 0:
-                reset_code=(''.join(choice(digits) for i in range(6)))
-                ResetCode.objects.create(user=user,reset_code=reset_code)
-            else:
-                reset_code = instance[0].reset_code
-            if send_email(email_id, 'Password Reset', 'Your eTests Password Reset Code is '+'<strong>'+reset_code+'</strong>'):
-                return Response("Password reset code sent successfully!", status=status.HTTP_201_CREATED)
-            else:
-                raise ParseError("Some error occured.")
+        serializer = self.get_serializer(data = request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response("Password reset code sent.", status=status.HTTP_200_OK)
         else:
-            raise ParseError("No user with this email id.")
+            return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-class PasswordResetSuccessView(APIView):    
+class PasswordResetConfirmView(APIView):    
     permission_classes = (AllowAny,)
-    def post(self, request):
-        reset_code = request.data.get("reset_code", None)
-        password = request.data.get("password", None)
-        try:
-            instance =  ResetCode.objects.get(reset_code = reset_code, done=False, date_added=date.today())
-            if password:
-                instance.user.set_password(password)
-                instance.user.save()
-                instance.done=True
-                instance.save()
-                return  Response("Password changed successfully!", status=status.HTTP_201_CREATED)
-            else:
-                raise ParseError("Password cannot be empty.")
-        except:
-            raise ParseError("Invalid reset code.")
 
+    def get_serializer(self, *args, **kwargs):
+        return PasswordResetConfirmSerializer(*args, **kwargs)
+
+    def post(self, request):
+        serializer = self.get_serializer(data = request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response("Password reset successful", status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 class ChangePasswordView(APIView):    
     permission_classes = (IsAuthenticated,)
+
+    def get_serializer(self, *args, **kwargs):
+        return PasswordChangeSerializer(*args, **kwargs)
+
     def post(self, request):
-        old_password = request.data.get("old_password", None)
-        new_password = request.data.get("new_password",None)
-        if old_password and new_password:
-            user = authenticate(email=request.user.email , password=old_password)
-            if user is not None:
-                # A backend authenticated the credentials
-                user.set_password(new_password)
-                user.save()
-                return  Response("Password changed successfully!", status=status.HTTP_201_CREATED)
-            else:
-                # No backend authenticated the credentials
-                raise ParseError("Incorrect Password")
+        serializer = self.get_serializer(data = request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response("Password changed successfully", status=status.HTTP_200_OK)
         else:
-            raise ParseError("Password Cannot be Empty")
+            return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
