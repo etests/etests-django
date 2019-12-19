@@ -219,7 +219,7 @@ class RankListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Session
-        fields = ("id", "roll_number", "name", "ranks")
+        fields = ("id", "roll_number", "name", "marks", "ranks")
 
     def get_roll_number(self, obj):
         try:
