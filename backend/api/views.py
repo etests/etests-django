@@ -242,7 +242,6 @@ class TestCreateView(generics.CreateAPIView):
         test_series_ids = self.request.data.pop('test_series', None)
         exam_id = self.request.data.get('exam', None)
         free = self.request.data.get('free', False)
-        print(self.request.data)
         if exam_id:
             try:
                 exam = Exam.objects.get(id=exam_id)
