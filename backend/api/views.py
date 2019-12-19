@@ -299,7 +299,7 @@ class FreeTestListView(generics.ListAPIView):
 
 
 class TestCreateView(generics.CreateAPIView):
-    permission_classes = (IsInstituteOwner,)
+    permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
     serializer_class = TestCreateSerializer
 
     def perform_create(self, serializer):
