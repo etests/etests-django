@@ -12,8 +12,13 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import api_view
-from rest_framework.exceptions import (APIException, MethodNotAllowed,
-                                       NotFound, ParseError, PermissionDenied)
+from rest_framework.exceptions import (
+    APIException,
+    MethodNotAllowed,
+    NotFound,
+    ParseError,
+    PermissionDenied,
+)
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -25,33 +30,50 @@ from .models import *
 from .serializers import *
 from .utils import SessionEvaluation, generateRanks, getVirtualRanks
 
+
 class ReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.method in permissions.SAFE_METHODS
+
 
 class IsInstituteOwner(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.is_institute
 
     def has_object_permission(self, request, view, obj):
-        return request.user.is_authenticated and request.user.is_institute and (not obj.institute or obj.institute == request.user.institute)
+        return (
+            request.user.is_authenticated
+            and request.user.is_institute
+            and (not obj.institute or obj.institute == request.user.institute)
+        )
+
 
 class IsStudentOwner(permissions.BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and request.user.is_student
+
     def has_object_permission(self, request, view, obj):
-        return request.user.is_authenticated and request.user.is_student and (not obj.student or obj.student == request.user.student)
+        return (
+            request.user.is_authenticated
+            and request.user.is_student
+            and (not obj.student or obj.student == request.user.student)
+        )
+
 
 class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        return request.user.is_authenticated and  obj.user == request.user
+        return request.user.is_authenticated and obj.user == request.user
+
 
 class BatchListView(generics.ListAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
     serializer_class = BatchListSerializer
+
     def get_queryset(self):
         if self.request.user.is_student:
-            return Batch.objects.filter(institute__in=self.request.user.student.institutes)
+            return Batch.objects.filter(
+                institute__in=self.request.user.student.institutes
+            )
         elif self.request.user.is_institute:
             return Batch.objects.filter(institute=self.request.user.institute)
         elif self.request.user.is_staff:
@@ -59,18 +81,24 @@ class BatchListView(generics.ListAPIView):
         else:
             return None
 
+
 class JoinedInstitutesView(generics.ListAPIView):
     permission_classes = (IsStudentOwner,)
     serializer_class = JoinedInstitutesSerializer
+
     def get_queryset(self):
         if self.request.user.is_student:
-            return Institute.objects.filter(students=self.request.user.student, verified=True)
+            return Institute.objects.filter(
+                students=self.request.user.student, verified=True
+            )
         else:
             return None
+
 
 class BatchListCreateView(generics.ListCreateAPIView):
     permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
     serializer_class = InstituteBatchSerializer
+
     def get_queryset(self):
         if self.request.user.is_authenticated:
             if self.request.user.is_institute:
@@ -79,10 +107,10 @@ class BatchListCreateView(generics.ListCreateAPIView):
                 return Batch.objects.all()
         else:
             return None
-    
+
     def perform_create(self, serializer):
         serializer.save(institute=self.request.user.institute)
-    
+
 
 class BatchRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
@@ -98,30 +126,34 @@ class BatchRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
         else:
             return None
 
+
 class InstituteJoinView(APIView):
     permission_classes = (IsStudentOwner,)
 
     def post(self, request):
-        roll_number = request.data['rollNumber']
-        joining_key = request.data['joiningKey']
+        roll_number = request.data["rollNumber"]
+        joining_key = request.data["joiningKey"]
         try:
-            enrollment = Enrollment.objects.get(roll_number=roll_number, joining_key = joining_key)
+            enrollment = Enrollment.objects.get(
+                roll_number=roll_number, joining_key=joining_key
+            )
             enrollment.student = request.user.student
             enrollment.date_joined = datetime.now()
             enrollment.save()
             return Response("Joined Successfully")
         except:
-            raise ParseError("Invalid roll number or joining key!") 
+            raise ParseError("Invalid roll number or joining key!")
+
 
 class BatchJoinView(APIView):
     permission_classes = (IsStudentOwner,)
 
     def post(self, request):
-        roll_number = request.data['rollNumber']
-        joining_key = request.data['joiningKey']
+        roll_number = request.data["rollNumber"]
+        joining_key = request.data["joiningKey"]
         try:
-            batch = Batch.objects.get(id=self.request.data['batch'])
-            enrollment = Enrollment.objects.get(batch = batch, roll_number=roll_number)
+            batch = Batch.objects.get(id=self.request.data["batch"])
+            enrollment = Enrollment.objects.get(batch=batch, roll_number=roll_number)
             if enrollment.joining_key == joining_key:
                 enrollment.student = request.user.student
                 enrollment.date_joined = datetime.now()
@@ -131,47 +163,63 @@ class BatchJoinView(APIView):
             else:
                 raise ParseError("Invalid roll number or joining key!")
         except:
-            raise ParseError("Invalid roll number or joining key!") 
+            raise ParseError("Invalid roll number or joining key!")
+
 
 class InstitutesListView(viewsets.ViewSet):
     permission_classes = (ReadOnly,)
+
     def list(self, request):
         queryset = Institute.objects.filter(verified=True, show=True)
-        serializer = InstituteListSerializer(queryset, many=True, context={"request": request})
+        serializer = InstituteListSerializer(
+            queryset, many=True, context={"request": request}
+        )
         return Response(serializer.data)
+
 
 class ExamListView(viewsets.ViewSet):
     permission_classes = (ReadOnly,)
+
     def list(self, request):
         queryset = Exam.objects.filter()
-        serializer = ExamListSerializer(queryset, many=True, context={"request": request})
+        serializer = ExamListSerializer(
+            queryset, many=True, context={"request": request}
+        )
         return Response(serializer.data)
-        
+
+
 class SubjectListView(viewsets.ViewSet):
     permission_classes = (ReadOnly,)
+
     def list(self, request):
         queryset = Subject.objects.filter()
         serializer = SubjectSerializer(queryset, many=True)
         return Response(serializer.data)
-        
+
+
 class TopicListView(viewsets.ViewSet):
     permission_classes = (ReadOnly,)
+
     def list(self, request):
         queryset = Topic.objects.filter()
         serializer = TopicSerializer(queryset, many=True)
         return Response(serializer.data)
-        
+
+
 class TagListView(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = TagSerializer
     queryset = Tag.objects.all()
 
+
 class TestSeriesListView(generics.ListAPIView):
     permission_classes = (ReadOnly,)
     serializer_class = TestSeriesSerializer
+
     def get_queryset(self):
         return TestSeries.objects.filter(institute__verified=True, visible=True)
-        
+
+
 class TestSeriesListCreateView(generics.ListCreateAPIView):
     permission_classes = (ReadOnly | IsInstituteOwner | permissions.IsAdminUser,)
     serializer_class = TestSeriesSerializer
@@ -180,14 +228,18 @@ class TestSeriesListCreateView(generics.ListCreateAPIView):
         if self.request.user.is_institute:
             return TestSeries.objects.filter(institute=self.request.user.institute)
         elif self.request.user.is_student:
-            return TestSeries.objects.filter(registered_students = self.request.user.student,visible=True,institute__verified=True)
+            return TestSeries.objects.filter(
+                registered_students=self.request.user.student,
+                visible=True,
+                institute__verified=True,
+            )
         elif self.request.user.is_staff:
             return TestSeries.objects.all()
         return None
-    
+
     def perform_create(self, serializer):
         serializer.save(institute=self.request.user.institute)
-    
+
 
 class TestSeriesRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
@@ -206,6 +258,7 @@ class TestSeriesRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView)
 
 class TestListView(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
+
     def get_serializer_class(self):
         if self.request.user.is_student:
             return StudentTestListSerializer
@@ -215,33 +268,44 @@ class TestListView(generics.ListAPIView):
     def get_queryset(self):
         if self.request.user.is_authenticated:
             if self.request.user.is_institute:
-                return Test.objects.filter(aits = False, institute = self.request.user.institute)
+                return Test.objects.filter(
+                    aits=False, institute=self.request.user.institute
+                )
             elif self.request.user.is_student:
-                return Test.objects.filter(aits = False, registered_students = self.request.user.student, visible = True)
+                return Test.objects.filter(
+                    aits=False,
+                    registered_students=self.request.user.student,
+                    visible=True,
+                )
             elif self.request.user.is_staff:
                 return Test.objects.all()
         else:
             return None
 
+
 class FreeTestListView(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
+
     def get_serializer_class(self):
         return StudentTestListSerializer
 
     def get_queryset(self):
         if self.request.user.is_authenticated and self.request.user.is_student:
-                return Test.objects.filter(free=True, sessions__student = self.request.user.student, visible = True).distinct()
+            return Test.objects.filter(
+                free=True, sessions__student=self.request.user.student, visible=True
+            ).distinct()
         else:
             return None
+
 
 class TestCreateView(generics.CreateAPIView):
     permission_classes = (IsInstituteOwner,)
     serializer_class = TestCreateSerializer
 
     def perform_create(self, serializer):
-        test_series_ids = self.request.data.pop('test_series', None)
-        exam_id = self.request.data.get('exam', None)
-        free = self.request.data.get('free', False)
+        test_series_ids = self.request.data.pop("test_series", None)
+        exam_id = self.request.data.get("exam", None)
+        free = self.request.data.get("free", False)
         if exam_id:
             try:
                 exam = Exam.objects.get(id=exam_id)
@@ -255,19 +319,23 @@ class TestCreateView(generics.CreateAPIView):
                         pass
             except Exception as e:
                 pass
-        batches = self.request.data.pop('batches', None)
+        batches = self.request.data.pop("batches", None)
         student_ids = []
         if batches:
             for batch_id in batches:
                 try:
-                    batch = Batch.objects.get(id = batch_id)
+                    batch = Batch.objects.get(id=batch_id)
                     if batch.institute == self.request.user.institute:
                         student_ids += [student.id for student in batch.students()]
                 except Exception as e:
                     pass
-        serializer.save(institute=self.request.user.institute, registered_students=student_ids, free = free)
-        
-        
+        serializer.save(
+            institute=self.request.user.institute,
+            registered_students=student_ids,
+            free=free,
+        )
+
+
 class TestRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
     serializer_class = TestSerializer
@@ -281,9 +349,13 @@ class TestRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
         else:
             return None
 
+
 class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
-    permission_classes = (permissions.IsAuthenticated, IsStudentOwner | permissions.IsAdminUser,)
-    
+    permission_classes = (
+        permissions.IsAuthenticated,
+        IsStudentOwner | permissions.IsAdminUser,
+    )
+
     serializer_class = SessionSerializer
 
     def get_queryset(self):
@@ -296,26 +368,29 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     def create_session(self, test):
         response = []
         for i in range(len(test.questions)):
-            response.append({
-                "answer": [],
-                "status": 1,
-                "timeElapsed": 0
-            })
-        current = {
-            "questionIndex": 0,
-            "sectionIndex": 0
-        }    
-        session = Session.objects.create(student=self.request.user.student, test=test, response=response, result=[], current=current, practice=(test.status>1), duration=test.time_alotted)
+            response.append({"answer": [], "status": 1, "timeElapsed": 0})
+        current = {"questionIndex": 0, "sectionIndex": 0}
+        session = Session.objects.create(
+            student=self.request.user.student,
+            test=test,
+            response=response,
+            result=[],
+            current=current,
+            practice=(test.status > 1),
+            duration=test.time_alotted,
+        )
         return session
 
     def retrieve(self, *args, **kwargs):
-        test_id = kwargs['test_id']
+        test_id = kwargs["test_id"]
         try:
-            test=Test.objects.get(id=test_id)
+            test = Test.objects.get(id=test_id)
         except:
             raise NotFound("This test does not exist.")
         try:
-            session = Session.objects.get(test=test, student=self.request.user.student, completed=False)
+            session = Session.objects.get(
+                test=test, student=self.request.user.student, completed=False
+            )
             if test.status >= 2 and not session.practice:
                 session.completed = True
                 session.save()
@@ -328,13 +403,17 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
             return Response(self.get_serializer(session).data)
         elif self.request.user.is_student:
             if self.request.user.student in test.registered_students.all() or test.free:
-                sessions = Session.objects.filter(test=test, student=self.request.user.student)
+                sessions = Session.objects.filter(
+                    test=test, student=self.request.user.student
+                )
                 if test.status == 0:
                     raise ParseError("This test is not active yet.")
-                elif test.status == 1 and len(sessions) == 0 or test.status>1:
+                elif test.status == 1 and len(sessions) == 0 or test.status > 1:
                     session = self.create_session(test)
                 elif test.status == 1 and len(sessions):
-                    raise ParseError("You have already attempted this test. You can attempt this test in practice mode after result declaration.")
+                    raise ParseError(
+                        "You have already attempted this test. You can attempt this test in practice mode after result declaration."
+                    )
             else:
                 raise ParseError("You are not registered for this test.")
         else:
@@ -345,51 +424,65 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
             return Response(self.get_serializer(session).data)
         else:
             raise NotFound("Invalid Request.")
-        
 
-    def partial_update(self,*args,**kwargs):
+    def partial_update(self, *args, **kwargs):
         instance = self.get_object()
         session = self.request.data
-        if session['practice']:
+        if session["practice"]:
             if instance.completed:
                 raise PermissionDenied("You have already submitted this test.")
             else:
                 self.serializer_class = PracticeSessionSerializer
                 if instance.test.marks_list is not None:
-                    instance.ranks = getVirtualRanks(instance.test.marks_list, session["marks"])
-        elif session['completed']:
+                    instance.ranks = getVirtualRanks(
+                        instance.test.marks_list, session["marks"]
+                    )
+        elif session["completed"]:
             self.serializer_class = ResultSerializer
             if instance.completed:
                 raise PermissionDenied("You have already submitted this test.")
-            else: 
+            else:
                 test = Test.objects.get(id=instance.test.id)
                 evaluated = SessionEvaluation(test, session).evaluate()
                 instance.marks = evaluated[0]
-                instance.result = {"questionWiseMarks": evaluated[1], "topicWiseMarks": evaluated[2]}
+                instance.result = {
+                    "questionWiseMarks": evaluated[1],
+                    "topicWiseMarks": evaluated[2],
+                }
         serializer = self.get_serializer(instance, data=self.request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data)
 
+
+def evaluateLeftSessions(test):
+    sessions = Session.objects.filter(test=test, practice=False, marks__isnull=True)
+    for session in sessions:
+        evaluated = SessionEvaluation(
+            session.test, SessionSerializer(session).data
+        ).evaluate()
+        session.marks = evaluated[0]
+        session.result = {
+            "questionWiseMarks": evaluated[1],
+            "topicWiseMarks": evaluated[2],
+        }
+        session.completed = True
+    Session.objects.bulk_update(sessions, ["marks", "result", "completed"])
+
 class EvaluateLeftSessions(APIView):
     permission_classes = (permissions.IsAdminUser,)
-    
+
     def post(self, request, test_id):
         try:
-            test = Test.objects.get(id = test_id)
-            sessions = Session.objects.filter(test = test, marks__isnull=True)
-            for session in sessions:
-                evaluated = SessionEvaluation(session.test, SessionSerializer(session).data).evaluate()
-                session.marks = evaluated[0]
-                session.result = {"questionWiseMarks": evaluated[1], "topicWiseMarks": evaluated[2]}
-                session.completed = True
-            Session.objects.bulk_update(sessions, ["marks", "result", "completed"])
+            test = Test.objects.get(id=test_id)
+            evaluateLeftSessions(test)
             return Response("Done!", status=status.HTTP_201_CREATED)
         except:
             raise ParseError("Some error ocurred")
 
+
 def updateTestRanks(test):
-    sessions = Session.objects.filter(test = test)
+    sessions = Session.objects.filter(test=test, practice=False)
     if len(sessions) == 0:
         test.finished = True
         test.save()
@@ -404,8 +497,10 @@ def updateTestRanks(test):
         return True
     return False
 
+
 class ResultView(generics.RetrieveAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
+
     def get_serializer_class(self):
         session = self.get_object()
         test = session.test
@@ -416,9 +511,9 @@ class ResultView(generics.RetrieveAPIView):
 
     def get_queryset(self):
         if self.request.user.is_student:
-            return Session.objects.filter(student = self.request.user.student)
+            return Session.objects.filter(student=self.request.user.student)
         elif self.request.user.is_institute:
-            return Session.objects.filter(test__institute = self.request.user.institute)
+            return Session.objects.filter(test__institute=self.request.user.institute)
         elif self.request.user.is_staff:
             return Session.objects.all()
         return None
@@ -428,34 +523,45 @@ class ResultView(generics.RetrieveAPIView):
 
         if instance.marks is None:
             instance.completed = True
-            evaluated = SessionEvaluation(instance.test, SessionSerializer(instance).data).evaluate()
+            evaluated = SessionEvaluation(
+                instance.test, SessionSerializer(instance).data
+            ).evaluate()
             instance.marks = evaluated[0]
-            instance.result = {"questionWiseMarks": evaluated[1], "topicWiseMarks": evaluated[2]}
+            instance.result = {
+                "questionWiseMarks": evaluated[1],
+                "topicWiseMarks": evaluated[2],
+            }
             instance.save()
 
         return Response(self.get_serializer(instance).data)
 
+
 class Review(generics.RetrieveAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
     serializer_class = ReviewSerializer
+
     def get_queryset(self):
         if self.request.user.is_institute:
-            return Session.objects.filter(student__institutes = self.request.user.institute)
+            return Session.objects.filter(
+                student__institutes=self.request.user.institute
+            )
         if self.request.user.is_student:
-            return Session.objects.filter(student = self.request.user.student)
+            return Session.objects.filter(student=self.request.user.student)
         elif self.request.user.is_staff:
             return Session.objects.all()
         return None
 
     def retrieve(self, *args, **kwargs):
         instance = self.get_object()
-        if instance.result or (instance.result and len(instance.result)!=0):
+        if instance.result or (instance.result and len(instance.result) != 0):
             return Response(self.get_serializer(instance).data)
         else:
             raise ParseError("You cannot review this test yet.")
 
+
 class GenerateRanks(APIView):
-    permission_classes = (IsInstituteOwner|permissions.IsAdminUser,)
+    permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
+
     def post(self, request, id):
         try:
             test = Test.objects.get(id=id)
@@ -463,50 +569,54 @@ class GenerateRanks(APIView):
             print(e)
             raise NotFound("No such Test!")
         if (test.practice or test.aits) and not request.user.is_staff:
-            raise PermissionDenied("Ranks cannot be generated for this test.")  
-        if test.status <=1:
-            raise PermissionDenied("Ranks can be generated only after test closes.")  
-        elif test.status in [2,3] or request.user.is_staff:
+            raise PermissionDenied("Ranks cannot be generated for this test.")
+        if test.status <= 1:
+            raise PermissionDenied("Ranks can be generated only after test closes.")
+        elif test.status in [2, 3] or request.user.is_staff:
+            evaluateLeftSessions(test)
             updateTestRanks(test)
             return Response("Ranks generated.", status=status.HTTP_201_CREATED)
         else:
-            raise ParseError("Final ranks are already declared.")                  
+            raise ParseError("Final ranks are already declared.")
+
 
 class RankListView(APIView):
     permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
 
     def get(self, request, id):
         sessions = Session.objects.filter(test__id=id, practice=False)
-        serializer = RankListSerializer(sessions, many = True)
+        serializer = RankListSerializer(sessions, many=True)
         return Response(serializer.data)
-    
+
 
 class TransactionListView(generics.ListAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
     serializer_class = TransactionSerializer
-    
+
     def get_queryset(self):
         if self.request.user.is_institute:
             return Transaction.objects.filter(institute=self.request.user.institute)
         return None
 
+
 class AITSTransactionListView(generics.ListAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
     serializer_class = AITSTransactionSerializer
-    
+
     def get_queryset(self):
         if self.request.user.is_institute:
             return AITSTransaction.objects.filter(institute=self.request.user.institute)
         return None
 
+
 class CreditListView(generics.ListAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
     serializer_class = CreditUseSerializer
+
     def get_queryset(self):
         if self.request.user.is_institute:
             return CreditUse.objects.filter(institute=self.request.user.institute)
         return None
-
 
 
 class EnrollmentView(generics.ListCreateAPIView):
@@ -523,35 +633,47 @@ class EnrollmentView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         enrollments = []
         headers = []
-        data=[{
-                'institute': request.user.institute.id,
-                'batch':  request.data['batch'],
-                'roll_number': roll_number 
+        data = [
+            {
+                "institute": request.user.institute.id,
+                "batch": request.data["batch"],
+                "roll_number": roll_number,
             }
-            for roll_number in request.data['rollNumbers']
-            ]
-            
-        serializer = self.get_serializer(data = data, many = True)
+            for roll_number in request.data["rollNumbers"]
+        ]
+
+        serializer = self.get_serializer(data=data, many=True)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
-        return Response(serializer.data,
-                        status=status.HTTP_201_CREATED,
-                        headers=headers)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
+
 
 class PaymentView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
+
     def post(self, request):
         form = PaymentForm(request.POST, request.FILES)
         if form.is_valid():
             payment = form.save(commit=False)
             payment.user = request.user
             payment.save()
-            send_mail( payment.user.email, 'Payment Verification in Progress', 'Your payment of Rs.'+str(payment.test_series.price)+ ' for '+payment.test_series.name+' will be verified shortly. The AITS will appear on your dashboard after payment is verified. If you have any query feel free to email us at help@etests.co.in') 
+            send_mail(
+                payment.user.email,
+                "Payment Verification in Progress",
+                "Your payment of Rs."
+                + str(payment.test_series.price)
+                + " for "
+                + payment.test_series.name
+                + " will be verified shortly. The AITS will appear on your dashboard after payment is verified. If you have any query feel free to email us at help@etests.co.in",
+            )
             return Response("Successful", status=status.HTTP_201_CREATED)
         else:
-            raise ParseError("Invalid") 
+            raise ParseError("Invalid")
+
 
 class EnrollmentRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (ReadOnly | IsInstituteOwner | permissions.IsAdminUser,)
@@ -561,72 +683,80 @@ class EnrollmentRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView)
         if self.request.user.is_institute:
             return Enrollment.objects.filter(institute=self.request.user.institute)
         elif self.request.user.is_student:
-            return Enrollment.objects.filter(institute=self.request.user.student.institute)
+            return Enrollment.objects.filter(
+                institute=self.request.user.student.institute
+            )
         elif self.request.user.is_staff:
             return Enrollment.objects.all()
         else:
             return None
 
+
 class AITSBuyer(generics.ListAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
     serializer_class = AITSBuyerSerializer
+
     def get_queryset(self):
         if self.request.user.is_institute:
-            return Payment.objects.filter(test_series__institute=self.request.user.institute,verified=True,show=True)
+            return Payment.objects.filter(
+                test_series__institute=self.request.user.institute,
+                verified=True,
+                show=True,
+            )
         elif self.request.user.is_staff:
-            return Payment.objects.filter(verified=True,show=True)
+            return Payment.objects.filter(verified=True, show=True)
         else:
             return None
 
 
-
 class PublishTestSeries(APIView):
     permission_classes = (permissions.IsAdminUser | IsInstituteOwner,)
-    def post(self,request):
+
+    def post(self, request):
         try:
             instance = TestSeries.objects.get(id=request.data.get("id"))
             instance.visible = True
             instance.save()
-            return  Response("AITS Published Sucessfully!", status=status.HTTP_201_CREATED)
+            return Response(
+                "AITS Published Sucessfully!", status=status.HTTP_201_CREATED
+            )
         except:
             raise ParseError("Cannot publish this AITS.")
 
 
 class UploadQuestionImageView(APIView):
     permission_classes = (permissions.AllowAny,)
+
     def post(self, request):
         request.FILES["file"] = request.FILES.pop("upload")[0]
         form = QuestionImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
             image = form.save()
-            return JsonResponse({
-                "uploaded": 1,
-                "fileName": image.file.name,
-                "url": image.file.url
-            })
+            return JsonResponse(
+                {"uploaded": 1, "fileName": image.file.name, "url": image.file.url}
+            )
         else:
-            return JsonResponse({
-                "uploaded": 0,
-                "error": {
-                    "message": form.errors.as_text()
-                }
-            })
+            return JsonResponse(
+                {"uploaded": 0, "error": {"message": form.errors.as_text()}}
+            )
+
 
 class AddQuestionAPIView(APIView):
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = QuestionSerializer
 
     def post(self, request):
-        serializer = self.serializer_class(data = request.data)
+        serializer = self.serializer_class(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class RetrieveQuestionAPIView(APIView):
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = QuestionSerializer
-    
+
     def post(self, request):
         params = request.data
         type = params.get("type", None)
@@ -636,13 +766,13 @@ class RetrieveQuestionAPIView(APIView):
 
         questions = Question.objects.all()
         if type:
-            questions = questions.filter(type = type)
+            questions = questions.filter(type=type)
         if difficulty:
-            questions = questions.filter(difficulty = difficulty)
+            questions = questions.filter(difficulty=difficulty)
         if subjectIndex:
-            questions = questions.filter(subjectIndex = subjectIndex)
+            questions = questions.filter(subjectIndex=subjectIndex)
             if topicIndex:
-                questions = questions.filter(topicIndex = topicIndex)
+                questions = questions.filter(topicIndex=topicIndex)
 
         try:
             count = questions.count()
