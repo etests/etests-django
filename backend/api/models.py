@@ -14,8 +14,8 @@ from etests.storage_backends import *
 
 def validate_file_size(file):
 
-    if file.size > 153600:
-        raise ValidationError("The maximum image size is 150 KB.")
+    if file.size > 256000:
+        raise ValidationError("The maximum image size is 250 KB.")
     else:
         return file
 
