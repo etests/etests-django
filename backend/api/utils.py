@@ -147,6 +147,12 @@ class SessionEvaluation:
             else:
                 currentTopic[self.questions[i]["topicIndex"]] = marks
 
+        self.totalMarks = round(self.totalMarks, 2)
+        self.sectionwiseMarks = [round(marks, 2) for marks in self.sectionwiseMarks]
+        self.topicWiseMarks = [
+            {topic: round(self.topicWiseMarks[i][topic], 2) for topic in self.topicWiseMarks[i].keys()}
+            for i in range(len(self.test.sections))
+        ]
         return [
             {
                 "total": self.totalMarks,
