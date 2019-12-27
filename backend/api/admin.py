@@ -67,7 +67,7 @@ class SessionAdmin(admin.ModelAdmin):
 
     def _marks(self, obj):
         if obj.marks and "total" in obj.marks and "maxMarks" in obj.marks:
-            return "%d / %d" % (obj.marks["total"], obj.marks["maxMarks"][-1])
+            return str(obj.marks["total"]) + "/" + str(obj.marks["maxMarks"][-1])
 
     def _rank(self, obj):
         if obj.ranks and "overall" in obj.ranks:
