@@ -121,8 +121,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ORIGIN_WHITELIST = [
+    "www.etests.co.in",
     "etests.co.in",
     "api.etests.co.in",
+    "https://www.etests.co.in",
     "https://etests.co.in",
     "https://api.etests.co.in"
 ]
