@@ -571,7 +571,7 @@ class GenerateRanks(APIView):
         except Exception as e:
             print(e)
             raise NotFound("No such Test!")
-        if (test.practice or test.aits) and not request.user.is_staff:
+        if test.practice:
             raise PermissionDenied("Ranks cannot be generated for this test.")
         if test.status <= 1:
             raise PermissionDenied("Ranks can be generated only after test closes.")
