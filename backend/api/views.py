@@ -367,8 +367,10 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
 
     def create_session(self, test):
         response = []
-        for i in range(len(test.questions)):
-            response.append({"answer": [], "status": 1, "timeElapsed": 0})
+        for i, question in enumerate(test.questions):
+            answer = [[], [], [], []] if question["type"] == 3 else []
+            status = 1 if i == 0 else 0
+            response.append({"answer": answer, "status": status, "timeElapsed": 0})
         current = {"questionIndex": 0, "sectionIndex": 0}
         session = Session.objects.create(
             student=self.request.user.student,
@@ -469,6 +471,7 @@ def evaluateLeftSessions(test):
         session.completed = True
     Session.objects.bulk_update(sessions, ["marks", "result", "completed"])
 
+
 class EvaluateLeftSessions(APIView):
     permission_classes = (permissions.IsAdminUser,)
 
@@ -504,7 +507,7 @@ class ResultView(generics.RetrieveAPIView):
     def get_serializer_class(self):
         session = self.get_object()
         test = session.test
-        if session.practice or test.status == 4:
+        if session.practice or test.status > 1:
             return ReviewSerializer
         else:
             return ResultSerializer
@@ -553,7 +556,7 @@ class Review(generics.RetrieveAPIView):
 
     def retrieve(self, *args, **kwargs):
         instance = self.get_object()
-        if instance.result or (instance.result and len(instance.result) != 0):
+        if instance.test.status > 1 and instance.result and len(instance.result) != 0:
             return Response(self.get_serializer(instance).data)
         else:
             raise ParseError("You cannot review this test yet.")
