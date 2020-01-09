@@ -1,9 +1,14 @@
 import json
 import os
+import sys
+
 from datetime import date
 from random import choice, randint
 from string import digits
+from io import BytesIO
 
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.files.base import ContentFile
 from django.apps import apps
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
@@ -29,6 +34,10 @@ from .forms import *
 from .models import *
 from .serializers import *
 from .utils import SessionEvaluation, generateRanks, getVirtualRanks
+
+from ml.preprocessing import clean
+import numpy as np
+import cv2
 
 
 class ReadOnly(permissions.BasePermission):
@@ -351,9 +360,7 @@ class TestRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class SessionListView(generics.ListAPIView):
-    permission_classes = (
-        IsStudentOwner | permissions.IsAdminUser,
-    )
+    permission_classes = (IsStudentOwner | permissions.IsAdminUser,)
 
     serializer_class = SessionSerializer
 
@@ -361,7 +368,9 @@ class SessionListView(generics.ListAPIView):
         if self.request.user.is_staff:
             return Session.objects.filter(completed=True)
         elif self.request.user.is_student:
-            return Session.objects.filter(student=self.request.user.student, completed=True)
+            return Session.objects.filter(
+                student=self.request.user.student, completed=True
+            )
         return None
 
 
@@ -748,7 +757,24 @@ class UploadQuestionImageView(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        request.FILES["file"] = request.FILES.pop("upload")[0]
+        uploaded_image = request.FILES.get("upload")
+        raw_image = cv2.imdecode(
+            np.fromstring(uploaded_image.read(), np.uint8), cv2.IMREAD_UNCHANGED
+        )
+        cleaned_image = clean(raw_image)
+
+        encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),60]
+        _, image_buffer = cv2.imencode(".jpg", cleaned_image, encode_param)
+
+        processed_image = SimpleUploadedFile(
+            "question.jpg", BytesIO(image_buffer).getvalue()
+        )
+
+        if processed_image.size < uploaded_image.size:
+            request.FILES["file"] = processed_image
+        else:
+            request.FILES["file"] = uploaded_image
+
         form = QuestionImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
             image = form.save()

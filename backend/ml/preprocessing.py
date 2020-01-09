@@ -3,7 +3,7 @@ import sys
 import numpy as np
 
 
-def remove_mark(img, alpha=2.2, beta=-160):
+def clean(img, alpha=2.2, beta=-160):
     return np.clip(alpha * img + beta, 0, 255).astype(np.uint8)
 
 def binarize(img):
