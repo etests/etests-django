@@ -219,13 +219,13 @@ class RankListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Session
-        fields = ("id", "roll_number", "name", "marks", "ranks")
+        fields = ("id", "roll_number", "name", "marks", "ranks", "practice")
 
     def get_roll_number(self, obj):
         try:
             return Enrollment.objects.get(student=obj.student, institute=obj.test.institute).roll_number
         except:
-            return obj.student.id
+            return "-"
 
     def get_name(self, obj):
         return obj.student.user.name

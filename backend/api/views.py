@@ -350,6 +350,21 @@ class TestRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
             return None
 
 
+class SessionListView(generics.ListAPIView):
+    permission_classes = (
+        IsStudentOwner | permissions.IsAdminUser,
+    )
+
+    serializer_class = SessionSerializer
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Session.objects.filter(completed=True)
+        elif self.request.user.is_student:
+            return Session.objects.filter(student=self.request.user.student, completed=True)
+        return None
+
+
 class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
     permission_classes = (
         permissions.IsAuthenticated,
@@ -587,7 +602,9 @@ class RankListView(APIView):
     permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
 
     def get(self, request, id):
-        sessions = Session.objects.filter(test__id=id, practice=False)
+        sessions = Session.objects.filter(
+            test__id=id, completed=True, marks__isnull=False
+        )
         serializer = RankListSerializer(sessions, many=True)
         return Response(serializer.data)
 
