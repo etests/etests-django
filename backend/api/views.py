@@ -612,7 +612,7 @@ class RankListView(APIView):
 
     def get(self, request, id):
         sessions = Session.objects.filter(
-            test__id=id, completed=True, marks__isnull=False
+            test__id=id, completed=True, marks__isnull=False, ranks__isnull=False
         )
         serializer = RankListSerializer(sessions, many=True)
         return Response(serializer.data)
@@ -763,7 +763,7 @@ class UploadQuestionImageView(APIView):
         )
         cleaned_image = clean(raw_image)
 
-        encode_param=[int(cv2.IMWRITE_JPEG_QUALITY),60]
+        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 60]
         _, image_buffer = cv2.imencode(".jpg", cleaned_image, encode_param)
 
         processed_image = SimpleUploadedFile(
