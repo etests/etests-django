@@ -283,6 +283,7 @@ class TestSeries(models.Model):
 class Test(models.Model):
     id = models.AutoField(primary_key=True)
     registered_students = models.ManyToManyField(Student, blank=True)
+    registered_batches = models.ManyToManyField(Batch, blank=True)
     name = models.CharField(max_length=200)
     institute = models.ForeignKey(
         Institute, blank=True, null=True, on_delete=models.CASCADE
@@ -292,7 +293,6 @@ class Test(models.Model):
         Exam, related_name="tests", blank=True, null=True, on_delete=models.SET_NULL
     )
     aits = models.BooleanField(default=False)
-    practice = models.BooleanField(default=False)
     tags = models.ManyToManyField(Tag, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
     activation_time = models.DateTimeField(blank=True, null=True)
