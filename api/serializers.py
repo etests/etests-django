@@ -668,17 +668,45 @@ class AITSTransactionSerializer(serializers.ModelSerializer):
 class EnrollmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enrollment
-        fields = ("id", "institute", "batch", "roll_number", "joining_key")
+        fields = (
+            "id",
+            "institute",
+            "batch",
+            "roll_number",
+            "joining_key",
+            "student",
+            "date_joined",
+        )
+        read_only_fields = ("student", "date_joined")
 
 
-class BatchSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Enrollment
-        fields = ("id", "batch", "roll_number", "joining_key", "student")
+class BatchJoinSerializer(serializers.Serializer):
+    roll_number = serializers.CharField()
+    joining_key = serializers.CharField()
+
+    def validate(self, attrs):
+        try:
+            enrollment = self.instance.enrollments.get(
+                roll_number=attrs["roll_number"], joining_key=attrs["joining_key"]
+            )
+        except Enrollment.DoesNotExist:
+            raise serializers.ValidationError("Invalid roll number or joining key")
+
+        if enrollment.student is not None:
+            raise serializers.ValidationError("This joining key has been already used")
+        else:
+            self.enrollment = enrollment
+
+        return attrs
+
+    def save(self):
+        self.enrollment.student = self.context.get("request").user.student
+        self.enrollment.date_joined = datetime.now()
+        self.enrollment.save()
 
 
 class InstituteBatchSerializer(serializers.ModelSerializer):
-    enrollments = BatchSerializer(many=True, required=False)
+    enrollments = EnrollmentSerializer(many=True, required=False)
 
     class Meta:
         model = Batch

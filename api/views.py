@@ -25,19 +25,10 @@ from django.views.decorators.debug import sensitive_post_parameters
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import api_view
-from rest_framework.exceptions import (
-    APIException,
-    MethodNotAllowed,
-    NotFound,
-    ParseError,
-    PermissionDenied,
-)
-from rest_framework.generics import (
-    CreateAPIView,
-    GenericAPIView,
-    ListAPIView,
-    RetrieveUpdateAPIView,
-)
+from rest_framework.exceptions import (APIException, MethodNotAllowed,
+                                       NotFound, ParseError, PermissionDenied)
+from rest_framework.generics import (CreateAPIView, GenericAPIView,
+                                     ListAPIView, RetrieveUpdateAPIView)
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -45,11 +36,12 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from api.models import ResetCode
-from .models import Institute
 from ml.preprocessing import clean
 
 from .forms import *
 from .models import *
+from .models import Institute
+from .permissions import *
 from .serializers import *
 from .ses import send_email
 from .utils import SessionEvaluation, generateRanks, getVirtualRanks
@@ -254,40 +246,6 @@ class ChangePasswordView(APIView):
             return Response(serializer.errors, status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
-class ReadOnly(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        return request.method in permissions.SAFE_METHODS
-
-
-class IsInstituteOwner(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.is_institute
-
-    def has_object_permission(self, request, view, obj):
-        return (
-            request.user.is_authenticated
-            and request.user.is_institute
-            and (not obj.institute or obj.institute == request.user.institute)
-        )
-
-
-class IsStudentOwner(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.is_student
-
-    def has_object_permission(self, request, view, obj):
-        return (
-            request.user.is_authenticated
-            and request.user.is_student
-            and (not obj.student or obj.student == request.user.student)
-        )
-
-
-class IsOwner(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        return request.user.is_authenticated and obj.user == request.user
-
-
 class BatchListView(generics.ListAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
     serializer_class = BatchListSerializer
@@ -350,52 +308,18 @@ class BatchRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
             return None
 
 
-class InstituteJoinView(APIView):
-    permission_classes = (IsStudentOwner,)
+class BatchJoinView(generics.GenericAPIView):
+    permission_classes = (IsStudent,)
+    serializer_class = BatchJoinSerializer
 
-    def post(self, request):
-        roll_number = request.data["rollNumber"]
-        joining_key = request.data["joiningKey"]
-        try:
-            enrollment = Enrollment.objects.get(
-                roll_number=roll_number, joining_key=joining_key
-            )
-            if enrollment.student is None:
-                enrollment.student = request.user.student
-                enrollment.date_joined = datetime.now()
-                enrollment.save()
-                return Response("Joined Successfully!")
-            else:
-                return PermissionDenied(
-                    "Some other student is enrolled with this joining key!"
-                )
-        except:
-            raise ParseError("Invalid roll number or joining key!")
+    def get_queryset(self):
+        return Batch.objects.all()
 
-
-class BatchJoinView(APIView):
-    permission_classes = (IsStudentOwner,)
-
-    def post(self, request):
-        roll_number = request.data["rollNumber"]
-        joining_key = request.data["joiningKey"]
-        try:
-            batch = Batch.objects.get(id=self.request.data["batch"])
-            enrollment = Enrollment.objects.get(batch=batch, roll_number=roll_number)
-            if enrollment.joining_key == joining_key:
-                if enrollment.student is None:
-                    enrollment.student = request.user.student
-                    enrollment.date_joined = datetime.now()
-                    enrollment.save()
-                    return Response("Joined Successfully!")
-                else:
-                    raise PermissionDenied(
-                        "Some other student is already enrolled with this joining key!"
-                    )
-            else:
-                raise ParseError("Invalid roll number or joining key!")
-        except:
-            raise ParseError("Invalid roll number or joining key!")
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(instance=self.get_object(), data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response("Batch Joined Successfully", status=status.HTTP_200_OK)
 
 
 class InstitutesListView(viewsets.ViewSet):
