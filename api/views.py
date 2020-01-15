@@ -360,10 +360,15 @@ class InstituteJoinView(APIView):
             enrollment = Enrollment.objects.get(
                 roll_number=roll_number, joining_key=joining_key
             )
-            enrollment.student = request.user.student
-            enrollment.date_joined = datetime.now()
-            enrollment.save()
-            return Response("Joined Successfully")
+            if enrollment.student is None:
+                enrollment.student = request.user.student
+                enrollment.date_joined = datetime.now()
+                enrollment.save()
+                return Response("Joined Successfully!")
+            else:
+                return PermissionDenied(
+                    "Some other student is enrolled with this joining key!"
+                )
         except:
             raise ParseError("Invalid roll number or joining key!")
 
@@ -378,11 +383,15 @@ class BatchJoinView(APIView):
             batch = Batch.objects.get(id=self.request.data["batch"])
             enrollment = Enrollment.objects.get(batch=batch, roll_number=roll_number)
             if enrollment.joining_key == joining_key:
-                enrollment.student = request.user.student
-                enrollment.date_joined = datetime.now()
-                enrollment.save()
-                # Feature required: Register this student to all the previous tests of this batch
-                return Response("Joined Successfully")
+                if enrollment.student is None:
+                    enrollment.student = request.user.student
+                    enrollment.date_joined = datetime.now()
+                    enrollment.save()
+                    return Response("Joined Successfully!")
+                else:
+                    raise PermissionDenied(
+                        "Some other student is already enrolled with this joining key!"
+                    )
             else:
                 raise ParseError("Invalid roll number or joining key!")
         except:
