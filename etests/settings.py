@@ -30,7 +30,6 @@ INSTALLED_APPS = [
     "rest_framework_swagger",
 
     "corsheaders",
-    "authentication",
     "api"
 ]
 
@@ -88,7 +87,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "etests.wsgi.application"
 
-AUTH_USER_MODEL = "authentication.User"
+AUTH_USER_MODEL = "api.User"
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

@@ -1,6 +1,36 @@
-from django.utils.text import slugify
-from collections import namedtuple
 import os
+import random
+import string
+from collections import namedtuple
+from importlib import import_module
+
+from django.utils.text import slugify
+from six import string_types
+
+
+def random_key(length=8):
+    lettersAndDigits = string.ascii_letters + string.digits
+    return "".join(random.choice(lettersAndDigits) for i in range(length))
+
+
+def unique_random_key(instance):
+    new_key = random_key()
+
+    Klass = instance.__class__
+
+    qs_exists = Klass.objects.filter(joining_key=new_key).exists()
+    if qs_exists:
+        return random_key(instance)
+    return new_key
+
+
+def import_callable(path_or_callable):
+    if hasattr(path_or_callable, "__call__"):
+        return path_or_callable
+    else:
+        assert isinstance(path_or_callable, string_types)
+        package, attr = path_or_callable.rsplit(".", 1)
+        return getattr(import_module(package), attr)
 
 
 class SessionEvaluation:
@@ -150,7 +180,10 @@ class SessionEvaluation:
         self.totalMarks = round(self.totalMarks, 2)
         self.sectionwiseMarks = [round(marks, 2) for marks in self.sectionwiseMarks]
         self.topicWiseMarks = [
-            {topic: round(self.topicWiseMarks[i][topic], 2) for topic in self.topicWiseMarks[i].keys()}
+            {
+                topic: round(self.topicWiseMarks[i][topic], 2)
+                for topic in self.topicWiseMarks[i].keys()
+            }
             for i in range(len(self.test.sections))
         ]
         return [
@@ -284,4 +317,3 @@ def position_to_label(position):
     if position > 0 and position <= len(labels):
         return labels[position - 1]
     return ""
-
