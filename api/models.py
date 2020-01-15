@@ -349,22 +349,36 @@ class Session(models.Model):
     duration = models.DurationField(default=timedelta(hours=3))
     completed = models.BooleanField(default=False)
     response = JSONField(blank=True, null=True)
-    result = JSONField(blank=True, null=True)
+    result = JSONField(default=list, blank=True, null=True)
     current = JSONField(blank=True, null=True)
     marks = JSONField(blank=True, null=True)
     ranks = JSONField(blank=True, null=True)
+    class Meta:
+        ordering = ["practice", "checkin_time", "test", "student"]
 
     def __str__(self):
         return self.student.user.name + " " + self.test.name
 
     def expired(self):
-        if self.practice:
-            return self.duration <= timedelta(seconds=0) or self.status == 3
-        else:
-            return self.test.start_time + self.test.time_alotted <= timezone.now()
+        return self.checkin_time + self.test.time_alotted <= timezone.now()
 
-    class Meta:
-        ordering = ["-practice", "student", "test"]
+
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            self.current = {"question_index": 0, "section_index": 0}
+            response = list()
+            for i, question in enumerate(test.questions):
+                response.append(
+                    {
+                        "answer": [[], [], [], []] if question["type"] == 3 else [],
+                        "status": 1 if i == 0 else 0,
+                        "time_elapsed": 0,
+                    }
+                )
+            self.response = response
+            self.practice = self.test.status > 1
+
+        super(Session, self).save(*args, **kwargs)
 
 
 class Payment(models.Model):
