@@ -27,13 +27,18 @@
         font-weight: 700;
         color: #28cc9e;
       }
+      #social img{
+        width: 40px;
+        margin: 5px;
+      }
       #content {
         margin: auto;
         min-height: 200px;
         color: #666;
-        text-align: justify;
+        text-align: left;
         line-height: 25px;
         padding: 40px;
+        font-size: 12pt;
       }
       #contact {
         background-color: #28cc9e;
@@ -45,40 +50,33 @@
       }
 
       #logo,
+      #social,
       #contact {
         padding: 20px 10px;
         text-align: center;
         margin: auto;
       }
-      a {
+      #content a{
+        text-decoration: none; 
+        color:#28cc9e;
+      }
+      #contact a {
         text-decoration: none;
         color: #fff;
       }
     </style>
   </head>
   <body>
-    <div id="fb-root"></div>
-    <script
-      async
-      defer
-      crossorigin="anonymous"
-      src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v5.0"
-    ></script>
-
     <div id="logo">
       <img src="https://etests.co.in/img/etests.65141f79.png" />
       eTests
     </div>
-    <div
-      style="margin-top: 10px;"
-      class="fb-like"
-      data-href="https://www.facebook.com/etests.co.in/"
-      data-layout="button"
-      data-action="like"
-      data-size="large"
-      data-show-faces="true"
-      data-share="true"
-    ></div>
+    <div id="social">
+      <a href="https://facebook.com/etests.co.in/"><img src="https://etests.co.in/img/fb.png"></a>
+      <a href="https://www.youtube.com/channel/UCfl33j58ZmnoOh4VW01yz4w"><img src="https://etests.co.in/img/youtube.png"></a>
+      <a href="https://twitter.com/etests"><img src="https://etests.co.in/img/twitter.png"></a>
+
+    </div>
 
     <div id="content">
       {% block content %} {% endblock %}

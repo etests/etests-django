@@ -1053,3 +1053,15 @@ class RetrieveQuestionAPIView(APIView):
             return Response(serializer.data)
         except:
             raise NotFound("No matching question!")
+
+
+class BulkEmailView(generics.GenericAPIView):
+    permission_classes = (permissions.IsAdminUser,)
+    serializer_class = BulkEmailSerializer
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response("Success")
+

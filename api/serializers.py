@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import password_validation as validators
 from django.contrib.auth.tokens import default_token_generator
 from django.http import HttpRequest
+from django.template.loader import render_to_string
 from django.utils.encoding import force_text
 from django.utils.http import urlsafe_base64_decode as uid_decoder
 from django.utils.translation import ugettext_lazy as _
@@ -14,6 +15,7 @@ from rest_framework.exceptions import ValidationError
 
 from .forms import PasswordResetForm, SetPasswordForm
 from .models import *
+from .ses import send_email
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -709,3 +711,20 @@ class QuestionSerializer(serializers.ModelSerializer):
         model = Question
         fields = "__all__"
         extra_kwargs = {"id": {"read_only": True}}
+
+
+class BulkEmailSerializer(serializers.Serializer):
+    subject_file = serializers.CharField()
+    body_file = serializers.CharField()
+    is_student = serializers.BooleanField(default=True)
+    is_institute = serializers.BooleanField(default=False)
+
+    def save(self, **kwargs):
+        subject = render_to_string(self.validated_data.get("subject_file"))
+        body_html = self.validated_data.get("body_file")
+        is_student = self.validated_data.get("is_student")
+        is_institute = self.validated_data.get("is_institute")
+
+        for user in User.objects.filter(is_student=is_student, is_institute=is_institute):
+            body = render_to_string(body_html, context={"name": user.name})
+            send_email(user.email.lower(), subject, body)

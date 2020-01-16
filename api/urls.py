@@ -69,5 +69,6 @@ urlpatterns = [
     path("add-question/", AddQuestionAPIView.as_view()),
     path("get-questions/", RetrieveQuestionAPIView.as_view()),
     path("evaluate-left-sessions/<int:test_id>", EvaluateLeftSessions.as_view()),
+    path("send-emails/", BulkEmailView.as_view())
 ]
 
