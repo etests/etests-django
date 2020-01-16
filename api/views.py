@@ -77,7 +77,11 @@ class RegisterView(CreateAPIView):
         user = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
-        send_email(user.email, "eTests Registration Successful", "Welcome to eTests.")
+        send_email(
+            user.email,
+            render_to_string("registration/subject.txt"),
+            render_to_string("registration/body.html", context={"name": user.name, "title": "eTests"}),
+        )
 
         return Response(
             self.get_response_data(user),

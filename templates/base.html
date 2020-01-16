@@ -1,0 +1,105 @@
+<html>
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ title }}</title>
+    <style>
+      body {
+        text-align: center;
+        font-family: "Open Sans", sans-serif;
+        padding: 0;
+        margin: 0;
+      }
+      .icon {
+        width: 40px;
+        height: 40px;
+      }
+      #logo img {
+        width: 45px;
+        display: inline;
+      }
+      #logo {
+        line-height: 40px;
+        font-size: 40pt;
+        font-weight: 700;
+        color: #28cc9e;
+      }
+      #content {
+        margin: auto;
+        min-height: 200px;
+        color: #666;
+        text-align: justify;
+        line-height: 25px;
+        padding: 40px;
+      }
+      #contact {
+        background-color: #28cc9e;
+        color: #fff;
+      }
+
+      #contact img {
+        margin: 5px;
+      }
+
+      #logo,
+      #contact {
+        padding: 20px 10px;
+        text-align: center;
+        margin: auto;
+      }
+      a {
+        text-decoration: none;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="fb-root"></div>
+    <script
+      async
+      defer
+      crossorigin="anonymous"
+      src="https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v5.0"
+    ></script>
+
+    <div id="logo">
+      <img src="https://etests.co.in/img/etests.65141f79.png" />
+      eTests
+    </div>
+    <div
+      style="margin-top: 10px;"
+      class="fb-like"
+      data-href="https://www.facebook.com/etests.co.in/"
+      data-layout="button"
+      data-action="like"
+      data-size="large"
+      data-show-faces="true"
+      data-share="true"
+    ></div>
+
+    <div id="content">
+      {% block content %} {% endblock %}
+    </div>
+    <div id="contact">
+      Call us at
+      <a href="tel:+917822986293"><strong>+91 7822986293</strong></a>
+      <br /><br />
+      Chat with us on <br />
+      <br />
+      <a href="tel:+917822986293">
+        <img src="https://etests.co.in/img/phone_light.png" class="icon" />
+      </a>
+      <a href="https://wa.me/917822986293">
+        <img src="https://etests.co.in/img/whatsapp_light.png" class="icon" />
+      </a>
+      <a href="http://m.me/etests.co.in">
+        <img src="https://etests.co.in/img/messenger_light.png" class="icon" />
+      </a>
+      <br />
+      <strong>&copy; eTests</strong>
+    </div>
+  </body>
+</html>
