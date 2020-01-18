@@ -25,10 +25,19 @@ from django.views.decorators.debug import sensitive_post_parameters
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import api_view
-from rest_framework.exceptions import (APIException, MethodNotAllowed,
-                                       NotFound, ParseError, PermissionDenied)
-from rest_framework.generics import (CreateAPIView, GenericAPIView,
-                                     ListAPIView, RetrieveUpdateAPIView)
+from rest_framework.exceptions import (
+    APIException,
+    MethodNotAllowed,
+    NotFound,
+    ParseError,
+    PermissionDenied,
+)
+from rest_framework.generics import (
+    CreateAPIView,
+    GenericAPIView,
+    ListAPIView,
+    RetrieveUpdateAPIView,
+)
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -521,111 +530,22 @@ class SessionListView(generics.ListAPIView):
         return None
 
 
-class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
-    permission_classes = (
-        permissions.IsAuthenticated,
-        IsStudentOwner | permissions.IsAdminUser,
-    )
-
+class SessionCreateUpdateView(generics.CreateAPIView, generics.RetrieveUpdateAPIView):
+    permission_classes = (IsRegisteredForTest,)
     serializer_class = SessionSerializer
+    lookup_field = "test_id"
+    http_method_names = ["get", "post", "patch"]
 
     def get_queryset(self):
-        if self.request.user.is_staff:
-            return Session.objects.all()
-        elif self.request.user.is_student:
-            return Session.objects.filter(student=self.request.user.student)
-        return None
+        return Session.objects.filter(
+            completed=False, student=self.request.user.student
+        ).prefetch_related("test")
 
-    def create_session(self, test):
-        response = []
-        for i, question in enumerate(test.questions):
-            answer = [[], [], [], []] if question["type"] == 3 else []
-            status = 1 if i == 0 else 0
-            response.append({"answer": answer, "status": status, "timeElapsed": 0})
-        current = {"questionIndex": 0, "sectionIndex": 0}
-        session = Session.objects.create(
+    def perform_create(self, serializer):
+        serializer.save(
             student=self.request.user.student,
-            test=test,
-            response=response,
-            result=[],
-            current=current,
-            practice=(test.status > 1),
-            duration=test.time_alotted,
+            test_id=self.kwargs.get("test_id"),
         )
-        return session
-
-    def retrieve(self, *args, **kwargs):
-        test_id = kwargs["test_id"]
-        try:
-            test = Test.objects.get(id=test_id)
-        except:
-            raise NotFound("This test does not exist.")
-        try:
-            session = Session.objects.get(
-                test=test, student=self.request.user.student, completed=False
-            )
-            if test.status >= 2 and not session.practice:
-                session.completed = True
-                session.save()
-                session = None
-        except:
-            session = None
-        if session:
-            if session.practice:
-                self.serializer_class = PracticeSessionSerializer
-            return Response(self.get_serializer(session).data)
-        elif self.request.user.is_student:
-            if self.request.user.student in test.registered_students.all() or test.free:
-                sessions = Session.objects.filter(
-                    test=test, student=self.request.user.student
-                )
-                if test.status == 0:
-                    raise ParseError("This test is not active yet.")
-                elif test.status == 1 and len(sessions) == 0 or test.status > 1:
-                    session = self.create_session(test)
-                elif test.status == 1 and len(sessions):
-                    raise ParseError(
-                        "You have already attempted this test. You can attempt this test in practice mode after result declaration."
-                    )
-            else:
-                raise ParseError("You are not registered for this test.")
-        else:
-            raise PermissionDenied("You cannot attempt this test.")
-        if session:
-            if session.practice:
-                self.serializer_class = PracticeSessionSerializer
-            return Response(self.get_serializer(session).data)
-        else:
-            raise NotFound("Invalid Request.")
-
-    def partial_update(self, *args, **kwargs):
-        instance = self.get_object()
-        session = self.request.data
-        if session["practice"]:
-            if instance.completed:
-                raise PermissionDenied("You have already submitted this test.")
-            else:
-                self.serializer_class = PracticeSessionSerializer
-                if instance.test.marks_list is not None:
-                    instance.ranks = getVirtualRanks(
-                        instance.test.marks_list, session["marks"]
-                    )
-        elif session["completed"]:
-            self.serializer_class = ResultSerializer
-            if instance.completed:
-                raise PermissionDenied("You have already submitted this test.")
-            else:
-                test = Test.objects.get(id=instance.test.id)
-                evaluated = SessionEvaluation(test, session).evaluate()
-                instance.marks = evaluated[0]
-                instance.result = {
-                    "questionWiseMarks": evaluated[1],
-                    "topicWiseMarks": evaluated[2],
-                }
-        serializer = self.get_serializer(instance, data=self.request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-        return Response(serializer.data)
 
 
 def evaluateLeftSessions(test):

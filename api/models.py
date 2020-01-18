@@ -283,7 +283,7 @@ class TestSeries(models.Model):
 class Test(models.Model):
     id = models.AutoField(primary_key=True)
     registered_students = models.ManyToManyField(Student, blank=True)
-    registered_batches = models.ManyToManyField(Batch, blank=True)
+    # registered_batches = models.ManyToManyField(Batch, blank=True)
     name = models.CharField(max_length=200)
     institute = models.ForeignKey(
         Institute, blank=True, null=True, on_delete=models.CASCADE
@@ -353,6 +353,7 @@ class Session(models.Model):
     current = JSONField(blank=True, null=True)
     marks = JSONField(blank=True, null=True)
     ranks = JSONField(blank=True, null=True)
+
     class Meta:
         ordering = ["practice", "checkin_time", "test", "student"]
 
@@ -362,12 +363,12 @@ class Session(models.Model):
     def expired(self):
         return self.checkin_time + self.test.time_alotted <= timezone.now()
 
-
     def save(self, *args, **kwargs):
         if self.pk is None:
+            self.completed = False
             self.current = {"question_index": 0, "section_index": 0}
             response = list()
-            for i, question in enumerate(test.questions):
+            for i, question in enumerate(self.test.questions):
                 response.append(
                     {
                         "answer": [[], [], [], []] if question["type"] == 3 else [],

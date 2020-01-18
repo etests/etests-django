@@ -10,7 +10,8 @@ from django.utils.http import urlsafe_base64_decode as uid_decoder
 from django.utils.translation import ugettext_lazy as _
 from requests.exceptions import HTTPError
 from rest_framework import exceptions, serializers
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import (NotFound, PermissionDenied,
+                                       ValidationError)
 
 from .forms import PasswordResetForm, SetPasswordForm
 from .models import *
@@ -537,41 +538,51 @@ class StudentTestSerializer(serializers.ModelSerializer):
         )
 
 
-class TestRegisterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Test
-        fields = (
-            "id",
-            "name",
-            "institute",
-            "slug",
-            "status",
-            "aits",
-            "tags",
-            "date_added",
-            "activation_time",
-            "closing_time",
-            "time_alotted",
-            "free",
-            "syllabus",
-        )
-
-
 class SessionSerializer(serializers.ModelSerializer):
-    test = StudentTestSerializer(many=False, read_only=True)
+    id = serializers.IntegerField(read_only=True)
+    test = StudentTestSerializer(read_only=True)
+    completed = serializers.BooleanField(default=False)
+    practice = serializers.BooleanField(read_only=True)
+    checkin_time = serializers.DateTimeField(read_only=True)
+    duration = serializers.DurationField(read_only=True)
+    current = serializers.JSONField(required=False)
+    response = serializers.JSONField(required=False)
 
     class Meta:
         model = Session
         fields = (
             "id",
-            "practice",
-            "response",
             "test",
+            "completed",
+            "practice",
             "checkin_time",
             "duration",
             "current",
-            "completed",
+            "response",
         )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if self.context.get("request").method == "POST":
+            self.fields.get("response").read_only = True
+            self.fields.get("current").read_only = True
+            self.fields.get("completed").read_only = True
+
+    def create(self, validated_data):
+        test = Test.objects.get(id=validated_data.get("test_id"))
+        sessions = Session.objects.filter(**validated_data)
+        if sessions.filter(completed=False).count() > 0:
+            return sessions.filter(completed=False)[0]
+        elif (
+            test.status == 1
+            and sessions.filter(completed=True, practice=False).count() > 0
+        ):
+            raise PermissionDenied(
+                "You have already attempted the test. You can practice after the live test ends."
+            )
+        else:
+            return super().create(validated_data)
 
 
 class PracticeSessionSerializer(serializers.ModelSerializer):

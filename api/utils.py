@@ -36,15 +36,15 @@ def import_callable(path_or_callable):
 class SessionEvaluation:
     def __init__(self, test, session):
         self.totalMarks = 0
-        self.sectionwiseMarks = [0 for i in range(len(test.sections))]
+        self.section_wise_marks = [0 for i in range(len(test.sections))]
         self.test = test
         self.questions = test.questions
         self.session = session
         self.maxMarks = [0 for i in range(len(test.sections) + 1)]
-        self.questionWiseMarks = [
+        self.question_wise_marks = [
             {"marks": 0, "status": 0} for i in range(len(test.questions))
         ]
-        self.topicWiseMarks = [{} for i in range(len(test.sections))]
+        self.topic_wise_marks = [{} for i in range(len(test.sections))]
 
     def isListEmpty(self, l):
         if isinstance(l, list):
@@ -53,12 +53,12 @@ class SessionEvaluation:
 
     def markCorrect(self, i, curMarks=[]):
         if self.questions[i]["type"] in [0, 2]:
-            self.sectionwiseMarks[self.questions[i]["section"]] += self.questions[i][
+            self.section_wise_marks[self.questions[i]["section"]] += self.questions[i][
                 "correctMarks"
             ]
             self.totalMarks += self.questions[i]["correctMarks"]
-            self.questionWiseMarks[i]["marks"] = self.questions[i]["correctMarks"]
-            self.questionWiseMarks[i]["status"] = 2
+            self.question_wise_marks[i]["marks"] = self.questions[i]["correctMarks"]
+            self.question_wise_marks[i]["status"] = 2
         elif self.questions[i]["type"] == 1:
             if len(self.session["response"][i]["answer"]) < len(
                 self.test.answers[i]["answer"]
@@ -66,17 +66,17 @@ class SessionEvaluation:
                 marks = self.questions[i]["partialMarks"] * len(
                     self.session["response"][i]["answer"]
                 )
-                self.sectionwiseMarks[self.questions[i]["section"]] += marks
+                self.section_wise_marks[self.questions[i]["section"]] += marks
                 self.totalMarks += marks
-                self.questionWiseMarks[i]["marks"] = marks
-                self.questionWiseMarks[i]["status"] = 3
+                self.question_wise_marks[i]["marks"] = marks
+                self.question_wise_marks[i]["status"] = 3
             else:
-                self.sectionwiseMarks[self.questions[i]["section"]] += self.questions[
+                self.section_wise_marks[self.questions[i]["section"]] += self.questions[
                     i
                 ]["correctMarks"]
                 self.totalMarks += self.questions[i]["correctMarks"]
-                self.questionWiseMarks[i]["marks"] = self.questions[i]["correctMarks"]
-                self.questionWiseMarks[i]["status"] = 2
+                self.question_wise_marks[i]["marks"] = self.questions[i]["correctMarks"]
+                self.question_wise_marks[i]["status"] = 2
         elif self.questions[i]["type"] == 3:
             totalMatrixMarks = 0
             marks = []
@@ -85,18 +85,18 @@ class SessionEvaluation:
                 totalMatrixMarks += curMarks[j]["marks"]
                 marks.append(curMarks[j]["marks"])
                 status.append(curMarks[j]["status"])
-            self.sectionwiseMarks[self.questions[i]["section"]] += totalMatrixMarks
+            self.section_wise_marks[self.questions[i]["section"]] += totalMatrixMarks
             self.totalMarks += totalMatrixMarks
-            self.questionWiseMarks[i]["marks"] = marks
-            self.questionWiseMarks[i]["status"] = status
+            self.question_wise_marks[i]["marks"] = marks
+            self.question_wise_marks[i]["status"] = status
 
     def markIncorrect(self, i):
-        self.sectionwiseMarks[self.questions[i]["section"]] -= self.questions[i][
+        self.section_wise_marks[self.questions[i]["section"]] -= self.questions[i][
             "incorrectMarks"
         ]
         self.totalMarks -= self.questions[i]["incorrectMarks"]
-        self.questionWiseMarks[i]["marks"] = self.questions[i]["incorrectMarks"] * (-1)
-        self.questionWiseMarks[i]["status"] = 1
+        self.question_wise_marks[i]["marks"] = self.questions[i]["incorrectMarks"] * (-1)
+        self.question_wise_marks[i]["status"] = 1
 
     def evaluate(self):
         for i in range(len(self.questions)):
@@ -167,33 +167,33 @@ class SessionEvaluation:
                         curMarks[j]["status"] = 1
                 self.markCorrect(i, curMarks)
 
-            currentTopic = self.topicWiseMarks[self.questions[i]["section"]]
-            if isinstance(self.questionWiseMarks[i]["marks"], list):
-                marks = sum(self.questionWiseMarks[i]["marks"])
+            currentTopic = self.topic_wise_marks[self.questions[i]["section"]]
+            if isinstance(self.question_wise_marks[i]["marks"], list):
+                marks = sum(self.question_wise_marks[i]["marks"])
             else:
-                marks = self.questionWiseMarks[i]["marks"]
+                marks = self.question_wise_marks[i]["marks"]
             if self.questions[i]["topicIndex"] in currentTopic:
                 currentTopic[self.questions[i]["topicIndex"]] += marks
             else:
                 currentTopic[self.questions[i]["topicIndex"]] = marks
 
         self.totalMarks = round(self.totalMarks, 2)
-        self.sectionwiseMarks = [round(marks, 2) for marks in self.sectionwiseMarks]
-        self.topicWiseMarks = [
+        self.section_wise_marks = [round(marks, 2) for marks in self.section_wise_marks]
+        self.topic_wise_marks = [
             {
-                topic: round(self.topicWiseMarks[i][topic], 2)
-                for topic in self.topicWiseMarks[i].keys()
+                topic: round(self.topic_wise_marks[i][topic], 2)
+                for topic in self.topic_wise_marks[i].keys()
             }
             for i in range(len(self.test.sections))
         ]
         return [
             {
                 "total": self.totalMarks,
-                "sectionWise": self.sectionwiseMarks,
+                "sectionWise": self.section_wise_marks,
                 "maxMarks": self.maxMarks,
             },
-            self.questionWiseMarks,
-            self.topicWiseMarks,
+            self.question_wise_marks,
+            self.topic_wise_marks,
         ]
 
 

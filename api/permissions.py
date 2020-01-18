@@ -1,4 +1,5 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
+from .models import Test, Enrollment
 
 
 class ReadOnly(BasePermission):
@@ -23,16 +24,30 @@ class IsStudent(BasePermission):
         return request.user.is_authenticated and request.user.is_student
 
 
-class IsStudentOwner(BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.is_student
-
+class IsStudentOwner(IsStudent):
     def has_object_permission(self, request, view, obj):
         return (
-            request.user.is_authenticated
-            and request.user.is_student
-            and (not obj.student or obj.student == request.user.student)
+            self.has_permission(request, view)
+            and not obj.student
+            or obj.student == request.user.student
         )
+
+
+class IsRegisteredForTest(IsStudentOwner):
+    def has_permission(self, request, view):
+        try:
+            test_id = view.kwargs.get("test_id", None)
+            test = Test.objects.get(id=test_id)
+            return super().has_permission(request, view) and (
+                request.user.student
+                in test.registered_students.all()
+                # or Enrollment.objects.filter(
+                #     batch__in=test.registered_batches.all(), student=request.user.student
+                # ).count()
+                # != 0
+            )
+        except:
+            return False
 
 
 class IsOwner(BasePermission):
