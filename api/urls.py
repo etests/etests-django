@@ -53,7 +53,7 @@ urlpatterns = [
     path("test/create/", TestCreateView.as_view()),
     path("tests/<int:pk>/", TestRetrieveUpdateDestoryView.as_view()),
     path("sessions/", SessionListView.as_view()),
-    path("sessions/<int:test_id>/", SessionCreateUpdateView.as_view()),
+    path("sessions/<int:test_id>/", SessionCreateRetrieveUpdateView.as_view()),
     path("generate-ranks/<int:id>/", GenerateRanks.as_view()),
     path("ranklist/<int:id>/", RankListView.as_view()),
     path("result/<int:pk>/", ResultView.as_view()),

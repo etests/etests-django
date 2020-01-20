@@ -9,8 +9,9 @@ from six import string_types
 
 
 def random_key(length=8):
-    lettersAndDigits = string.ascii_letters + string.digits
-    return "".join(random.choice(lettersAndDigits) for i in range(length))
+    return "".join(
+        random.choice(string.ascii_letters + string.digits) for i in range(length)
+    )
 
 
 def unique_random_key(instance):
@@ -95,7 +96,9 @@ class SessionEvaluation:
             "incorrectMarks"
         ]
         self.totalMarks -= self.questions[i]["incorrectMarks"]
-        self.question_wise_marks[i]["marks"] = self.questions[i]["incorrectMarks"] * (-1)
+        self.question_wise_marks[i]["marks"] = self.questions[i]["incorrectMarks"] * (
+            -1
+        )
         self.question_wise_marks[i]["status"] = 1
 
     def evaluate(self):
@@ -197,7 +200,7 @@ class SessionEvaluation:
         ]
 
 
-def generateRanks(sessions):
+def generate_ranks(sessions):
     if not sessions or len(sessions) == 0:
         return False
 
@@ -264,7 +267,7 @@ def generateRanks(sessions):
     }
 
 
-def getRank(l, marks):
+def get_rank(l, marks):
     lo = 0
     hi = len(l) - 1
     rank = len(l) + 1
@@ -284,11 +287,11 @@ def getRank(l, marks):
     return rank
 
 
-def getVirtualRanks(marks_list, marks_obtained):
+def virtual_rank(marks_list, marks_obtained):
     return {
-        "overall": getRank(marks_list["overall"], marks_obtained["total"]),
+        "overall": get_rank(marks_list["overall"], marks_obtained["total"]),
         "sectionWise": [
-            getRank(section_marks_list, marks_obtained["sectionWise"][i])
+            get_rank(section_marks_list, marks_obtained["sectionWise"][i])
             for (i, section_marks_list) in enumerate(marks_list["sectionWise"])
         ],
     }

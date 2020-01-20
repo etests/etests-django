@@ -53,7 +53,7 @@ from .models import Institute
 from .permissions import *
 from .serializers import *
 from .ses import send_email
-from .utils import SessionEvaluation, generateRanks, getVirtualRanks
+from .utils import SessionEvaluation, generate_ranks, virtual_rank
 
 sensitive = method_decorator(
     sensitive_post_parameters("password", "old_password", "new_password")
@@ -77,8 +77,6 @@ class RegisterView(CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
-
-        send_email(user.email, "eTests Registration Successful", "Welcome to eTests.")
 
         return Response(
             self.get_response_data(user),
@@ -153,15 +151,7 @@ class LoginView(GenericAPIView):
 
 class LogoutView(APIView):
     permission_classes = (AllowAny,)
-
-    def get(self, request, *args, **kwargs):
-        if getattr(settings, "ACCOUNT_LOGOUT_ON_GET", False):
-            response = self.logout(request)
-        else:
-            response = self.http_method_not_allowed(request, *args, **kwargs)
-
-        return self.finalize_response(request, response, *args, **kwargs)
-
+    
     def post(self, request, *args, **kwargs):
         return self.logout(request)
 
@@ -423,6 +413,7 @@ class TestSeriesRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView)
 
 class TestListView(generics.ListAPIView):
     permission_classes = (permissions.IsAuthenticated,)
+    filterset_fields = ["institute"]
 
     def get_serializer_class(self):
         if self.request.user.is_student:
@@ -530,7 +521,9 @@ class SessionListView(generics.ListAPIView):
         return None
 
 
-class SessionCreateUpdateView(generics.CreateAPIView, generics.RetrieveUpdateAPIView):
+class SessionCreateRetrieveUpdateView(
+    generics.CreateAPIView, generics.RetrieveUpdateAPIView
+):
     permission_classes = (IsRegisteredForTest,)
     serializer_class = SessionSerializer
     lookup_field = "test_id"
@@ -543,8 +536,7 @@ class SessionCreateUpdateView(generics.CreateAPIView, generics.RetrieveUpdateAPI
 
     def perform_create(self, serializer):
         serializer.save(
-            student=self.request.user.student,
-            test_id=self.kwargs.get("test_id"),
+            student=self.request.user.student, test_id=self.kwargs.get("test_id")
         )
 
 
@@ -581,7 +573,7 @@ def updateTestRanks(test):
         test.finished = True
         test.save()
         return False
-    generated = generateRanks(sessions)
+    generated = generate_ranks(sessions)
     if generated:
         Session.objects.bulk_update(generated.get("sessions", None), ["ranks"])
         test.marks_list = generated.get("marks_list", None)
@@ -760,11 +752,7 @@ class PaymentView(APIView):
             send_mail(
                 payment.user.email,
                 "Payment Verification in Progress",
-                "Your payment of Rs."
-                + str(payment.test_series.price)
-                + " for "
-                + payment.test_series.name
-                + " will be verified shortly. The AITS will appear on your dashboard after payment is verified. If you have any query feel free to email us at help@etests.co.in",
+                f"Your payment of Rs. {str(payment.test_series.price)} for {payment.test_series.name}  will be verified shortly. The AITS will appear on your dashboard after payment is verified. If you have any query feel free to email us at help@etests.co.in",
             )
             return Response("Successful", status=status.HTTP_201_CREATED)
         else:

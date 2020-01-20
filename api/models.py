@@ -22,21 +22,6 @@ from etests.storage_backends import *
 
 from .utils import get_unique_slug, random_key, unique_random_key
 
-
-def validate_file_size(file):
-
-    if file.size > 256000:
-        raise ValidationError("The maximum image size is 250 KB.")
-    else:
-        return file
-
-
-def generateRandomKey(length=10):
-    return "".join(
-        random.choice(string.ascii_letters + string.digits) for i in range(length)
-    )
-
-
 class MyUserManager(BaseUserManager):
     def _create_user(self, email, password, **extra_fields):
         if not email:
@@ -214,7 +199,7 @@ class Exam(models.Model):
 class AccessCode(models.Model):
     id = models.AutoField(primary_key=True)
     limit = models.IntegerField()
-    key = models.CharField(default=generateRandomKey, max_length=10, unique=True)
+    key = models.CharField(default=random_key, max_length=10, unique=True)
     use_count = models.IntegerField(default=0)
 
     def __str__(self):
@@ -560,4 +545,10 @@ class QuestionImage(models.Model):
     file = models.ImageField(
         storage=PublicMediaStorage(), validators=[validate_file_size]
     )
+
+    def validate_file_size(self, file):
+        if file.size > 256000:
+            raise ValidationError("The maximum image size is 250 KB.")
+        else:
+            return file
 
