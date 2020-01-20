@@ -80,7 +80,10 @@ class RegisterView(CreateAPIView):
         send_email(
             user.email,
             render_to_string("registration/subject.txt"),
-            render_to_string("registration/body.html", context={"name": user.name, "title": "eTests"}),
+            render_to_string(
+                f"registration/{'student' if user.is_student else 'institute'}.html",
+                context={"name": user.name, "title": "eTests"},
+            ),
         )
 
         return Response(

@@ -1,0 +1,25 @@
+{% extends 'base.html' %} 
+
+{% block content %} 
+
+Hi {{name}}, <br />
+Welcome to eTests. <br /><br />
+Create and view your test series at<br />
+<a href="https://etests.co.in/testseries" target="_blank"
+  >https://etests.co.in/testseries</a
+>
+<br />
+Create tests for your batches at<br />
+<a href="https://etests.co.in/tests" target="_blank"
+  >https://etests.co.in/tests</a
+>
+<br />
+
+<button
+  class="btn"
+  onclick="document.location='https://docs.google.com/presentation/d/1IGc7AAcnFbrjmlRuii7fGDBvn_6tUy1sp-NHGL2hZ7o/edit?usp=sharing'"
+>
+  Know Our Features
+</button>
+
+{% endblock %}

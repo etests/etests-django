@@ -24,19 +24,17 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
-
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_swagger",
-
     "corsheaders",
-    "api"
+    "api",
 ]
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
-    'AUTH_HEADER_TYPES': ('Bearer',),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
 LOGIN_URL = "rest/login/"
@@ -63,11 +61,12 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAdminUser"],
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
 }
 
 ROOT_URLCONF = "etests.urls"
 
-SITE_ID = '1'
+SITE_ID = "1"
 
 TEMPLATES = [
     {
@@ -115,17 +114,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 CORS_ORIGIN_ALLOW_ALL = False
 
 CORS_ORIGIN_WHITELIST = [
-    "www.etests.co.in",
-    "etests.co.in",
-    "api.etests.co.in",
     "https://www.etests.co.in",
     "https://etests.co.in",
-    "https://api.etests.co.in"
+    "https://api.etests.co.in",
 ]
 
 # Get env variables
