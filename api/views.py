@@ -77,14 +77,25 @@ class RegisterView(CreateAPIView):
         user = self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
-        send_email(
-            user.email,
-            render_to_string("registration/subject.txt"),
-            render_to_string(
-                f"registration/{'student' if user.is_student else 'institute'}.html",
-                context={"name": user.name, "title": "eTests"},
-            ),
-        )
+        if user.is_student:
+            send_email(
+                user.email,
+                render_to_string("registration/subject.txt"),
+                render_to_string(
+                    "registration/student.html",
+                    context={"name": user.name, "title": "eTests"},
+                ),
+            )
+
+        if user.is_institute:
+            send_email(
+                user.email,
+                render_to_string("registration/subject.txt"),
+                render_to_string(
+                    "registration/institute.html",
+                    context={"name": user.name, "title": "eTests"},
+                ),
+            )
 
         return Response(
             self.get_response_data(user),
