@@ -694,28 +694,44 @@ class SessionRetrieveUpdateView(generics.RetrieveUpdateAPIView):
 
     def partial_update(self, *args, **kwargs):
         instance = self.get_object()
+        test = instance.test
         session = self.request.data
         if session["practice"]:
             if instance.completed:
                 raise PermissionDenied("You have already submitted this test.")
             else:
                 self.serializer_class = PracticeSessionSerializer
-                if instance.test.marks_list is not None:
+                instance.marks = session["marks"]
+                if test.marks_list is not None:
                     instance.ranks = getVirtualRanks(
-                        instance.test.marks_list, session["marks"]
+                        test.marks_list, session["marks"]
                     )
         elif session["completed"]:
             self.serializer_class = ResultSerializer
             if instance.completed:
                 raise PermissionDenied("You have already submitted this test.")
             else:
-                test = Test.objects.get(id=instance.test.id)
                 evaluated = SessionEvaluation(test, session).evaluate()
                 instance.marks = evaluated[0]
                 instance.result = {
                     "questionWiseMarks": evaluated[1],
                     "topicWiseMarks": evaluated[2],
                 }
+        send_email(
+            self.request.user.email,
+            render_to_string("student_results/subject.txt", {"test_name": test.name}),
+            render_to_string(
+                "student_results/body.html",
+                {
+                    "name": self.request.user.name,
+                    "test_name": test.name,
+                    "date_time": instance.checkin_time,
+                    "marks_obtained": instance.marks["total"],
+                    "max_marks": instance.marks["maxMarks"][-1],
+                    "result_id": instance.id,
+                },
+            ),
+        )
         serializer = self.get_serializer(instance, data=self.request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)

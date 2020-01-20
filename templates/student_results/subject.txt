@@ -1,1 +1,1 @@
-eTests Password Reset
+{{test_name}} results - eTests

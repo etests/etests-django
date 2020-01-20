@@ -1,7 +1,14 @@
-<html>
-    <head>
-        <body>
-            Hi {{name}}! <br/> Your eTests password reset code is <strong>{{code}}</strong>
-        </body>
-    </head>
-</html>
+{% extends 'base.html' %} 
+{% block content %} 
+Hi {{name}}, <br/>
+Marks obtained in {{test_name}} attempted at {{date_time}} <br />
+<h2>{{marks_obtained}} / {{max_marks}}</h2>
+<a class="btn" href="https://etests.co.in/result/{{result_id}}">See complete analysis</a>
+<br/>
+Attempt <a href="https://etests.co.in/testseries">more tests</a> and enhance your result.
+<style>
+h2{
+    color: #28cc9e;
+}
+</style>
+{% endblock %}
