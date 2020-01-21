@@ -19,25 +19,17 @@ from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import api_view
-from rest_framework.exceptions import (
-    APIException,
-    MethodNotAllowed,
-    NotFound,
-    ParseError,
-    PermissionDenied,
-)
-from rest_framework.generics import (
-    CreateAPIView,
-    GenericAPIView,
-    ListAPIView,
-    RetrieveUpdateAPIView,
-)
+from rest_framework.exceptions import (APIException, MethodNotAllowed,
+                                       NotFound, ParseError, PermissionDenied)
+from rest_framework.generics import (CreateAPIView, GenericAPIView,
+                                     ListAPIView, RetrieveUpdateAPIView)
 from rest_framework.parsers import MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -45,11 +37,11 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from api.models import ResetCode
-from .models import Institute
 from ml.preprocessing import clean
 
 from .forms import *
 from .models import *
+from .models import Institute
 from .serializers import *
 from .ses import send_email
 from .utils import SessionEvaluation, generateRanks, getVirtualRanks
@@ -1094,4 +1086,3 @@ class BulkEmailView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response("Success")
-

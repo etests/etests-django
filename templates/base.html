@@ -28,7 +28,7 @@
         color: #28cc9e;
       }
       #social img {
-        width: 40px;
+        width: 25px;
         margin: 5px;
       }
       #content {
@@ -81,6 +81,22 @@
         color: #fff !important;
         display: inline-block;
       }
+      table {
+        border-collapse: collapse;
+        padding: 0;
+        margin: 10px 2px;
+      }
+      th {
+        background-color: #2dcc9e;
+        color: #fff;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        text-align: center;
+        padding: 5px;
+        min-width: 150px;
+      }
     </style>
   </head>
   <body>
@@ -88,24 +104,23 @@
       <img src="https://etests.co.in/img/etests.65141f79.png" />
       eTests
     </div>
-    <div id="social">
-      <a href="https://facebook.com/etests.co.in/"
-        ><img src="https://etests.co.in/img/fb.png"
-      /></a>
-      <a href="https://www.youtube.com/channel/UCfl33j58ZmnoOh4VW01yz4w"
-        ><img src="https://etests.co.in/img/youtube.png"
-      /></a>
-      <a href="https://twitter.com/etests"
-        ><img src="https://etests.co.in/img/twitter.png"
-      /></a>
-    </div>
 
     <div id="content">
-      {% block content %} 
-      
-      {% endblock %}
+      {% block content %} {% endblock %}
     </div>
+
     <div id="contact">
+      <div id="social">
+        <a href="https://facebook.com/etests.co.in/"
+          ><img src="https://etests.co.in/img/fb.png"
+        /></a>
+        <a href="https://www.youtube.com/channel/UCfl33j58ZmnoOh4VW01yz4w"
+          ><img src="https://etests.co.in/img/youtube.png"
+        /></a>
+        <a href="https://twitter.com/etests"
+          ><img src="https://etests.co.in/img/twitter.png"
+        /></a>
+      </div>
       Call us at
       <a href="tel:+917822986293"><strong>+91 7822986293</strong></a>
       <br /><br />

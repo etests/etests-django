@@ -1,0 +1,39 @@
+{% extends 'base.html' %} {% block content %} Hi {{name}}, <br />
+
+{% if tests_count > 0 %} Here is the report of the tests created by you in last
+{{n}} days: <br />
+
+You created {{tests_count}} test{%if tests_count > 1%}s{%endif%} <br />
+
+<table>
+  <thead>
+    <tr>
+      <th>
+        Test
+      </th>
+      <th>
+        Number of attempts
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for test in tests_sessions_counts %}
+    <tr>
+      <td>
+        {{test.name}}
+      </td>
+      <td>
+        {{test.session_count}}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<br/>
+Go to your <a href="https://etests.co.in/institute/dashboard">Dashboard</a> to create more tests.
+</table>
+
+{% else %} We are missing you out. You have not created any tests in last {{n}}
+days. Go to your
+<a href="https://etests.co.in/institute/dashboard">Dashboard</a> and start
+creating tests now. {% endif %} {% endblock %}
