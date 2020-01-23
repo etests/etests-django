@@ -10,9 +10,7 @@ schema_view = get_schema_view(
         title="eTests API",
         default_version="v1",
         description="Test description",
-        terms_of_service="https://www.google.com/policies/terms/",
-        contact=openapi.Contact(email="contact@snippets.local"),
-        license=openapi.License(name="BSD License"),
+        contact=openapi.Contact(email="etests.service@gmail.com"),
     ),
     public=True,
     permission_classes=(AllowAny,),
@@ -24,11 +22,7 @@ admin.site.index_title = "Administration Panel"
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
-    path(
-        "",
-        schema_view.with_ui("swagger", cache_timeout=0),
-        name="schema-swagger-ui",
-    ),
+    path("", schema_view.with_ui("swagger", cache_timeout=0), name="swagger"),
     path("rest/", include("rest_framework.urls", namespace="rest_framework")),
     path("", include("api.urls")),
 ]

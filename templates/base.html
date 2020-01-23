@@ -1,0 +1,142 @@
+<html>
+  <head>
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ title }}</title>
+    <style>
+      body {
+        text-align: center;
+        font-family: "Open Sans", sans-serif;
+        padding: 0;
+        margin: 0;
+      }
+      .icon {
+        width: 40px;
+        height: 40px;
+      }
+      #logo img {
+        width: 45px;
+        display: inline;
+      }
+      #logo {
+        line-height: 40px;
+        font-size: 40pt;
+        font-weight: 700;
+        color: #28cc9e;
+      }
+      #social img {
+        width: 25px;
+        margin: 5px;
+      }
+      #content {
+        margin: auto;
+        min-height: 200px;
+        color: #666;
+        text-align: left;
+        line-height: 25px;
+        padding: 40px;
+        font-size: 12pt;
+      }
+      #contact {
+        background-color: #28cc9e;
+        color: #fff;
+      }
+
+      #contact img {
+        margin: 5px;
+      }
+
+      #logo,
+      #social,
+      #contact {
+        padding: 20px 10px;
+        text-align: center;
+        margin: auto;
+      }
+      #content a {
+        text-decoration: none;
+        color: #28cc9e;
+      }
+      #contact a {
+        text-decoration: none;
+        color: #fff;
+      }
+      .btn {
+        background-color: #28cc9e;
+        color: white;
+        border: 0;
+        border-radius: 50px;
+        min-width: 100px;
+        padding: 10px;
+        margin: 20px 0;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background-color: #1faf86;
+      }
+      a.btn {
+        color: #fff !important;
+        display: inline-block;
+      }
+      table {
+        border-collapse: collapse;
+        padding: 0;
+        margin: 10px 2px;
+      }
+      th {
+        background-color: #2dcc9e;
+        color: #fff;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        text-align: center;
+        padding: 5px;
+        min-width: 150px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="logo">
+      <img src="https://etests.co.in/img/etests.65141f79.png" />
+      eTests
+    </div>
+
+    <div id="content">
+      {% block content %} {% endblock %}
+    </div>
+
+    <div id="contact">
+      <div id="social">
+        <a href="https://facebook.com/etests.co.in/"
+          ><img src="https://etests.co.in/img/fb.png"
+        /></a>
+        <a href="https://www.youtube.com/channel/UCfl33j58ZmnoOh4VW01yz4w"
+          ><img src="https://etests.co.in/img/youtube.png"
+        /></a>
+        <a href="https://twitter.com/etests"
+          ><img src="https://etests.co.in/img/twitter.png"
+        /></a>
+      </div>
+      Call us at
+      <a href="tel:+917822986293"><strong>+91 7822986293</strong></a>
+      <br /><br />
+      Chat with us on <br />
+      <br />
+      <a href="tel:+917822986293">
+        <img src="https://etests.co.in/img/phone_light.png" class="icon" />
+      </a>
+      <a href="https://wa.me/917822986293">
+        <img src="https://etests.co.in/img/whatsapp_light.png" class="icon" />
+      </a>
+      <a href="http://m.me/etests.co.in">
+        <img src="https://etests.co.in/img/messenger_light.png" class="icon" />
+      </a>
+      <br />
+      <strong>&copy; eTests</strong>
+    </div>
+  </body>
+</html>
