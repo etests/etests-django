@@ -1,40 +1,53 @@
-from django.views.generic import TemplateView
 from django.conf.urls import url
 from django.urls import include, path
 from django.views.decorators.csrf import csrf_exempt
-from .views import *
 from django.views.generic import TemplateView
-from django.urls import path
-from .views import *
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
+from api.views import (
+    auth,
+    batch,
+    common,
+    enrollment,
+    exam,
+    institute,
+    password,
+    question,
+    session,
+    test,
+    testseries,
+)
 
 urlpatterns = [
     path("token/", TokenObtainPairView.as_view()),
     path("refresh/", TokenRefreshView.as_view()),
-    path("login/", LoginView.as_view()),
-    path("logout/", LogoutView.as_view()),
-    path("register/", RegisterView.as_view()),
-    path("email/verify", VerifyEmailView.as_view()),
-    path("email/verify/confirm/", TemplateView.as_view()),
-    path("profile/update/", ProfileView.as_view()),
-    path("forgot-password-request/", PasswordResetRequestView.as_view()),
-    path("forgot-password-success/", PasswordResetConfirmView.as_view()),
-    path("change-password/", ChangePasswordView.as_view()),
-    path("batches/simple/", BatchListView.as_view()),
-    path("batches/", BatchListCreateView.as_view()),
-    path("batch/join/<int:pk>/", BatchJoinView.as_view()),
-    path("batches/<int:pk>/", BatchRetrieveUpdateDestoryView.as_view()),
-    path("batch/enroll/", EnrollmentView.as_view()),
-    path("enrollments/", EnrollmentView.as_view()),
-    path("enrollments/<int:pk>/", EnrollmentRetrieveUpdateDestoryView.as_view()),
-    path("institutes/joined/", JoinedInstitutesView.as_view()),
-    path("institutes/", InstitutesListView.as_view({"get": "list"})),
-    path("exams/", ExamListView.as_view({"get": "list"})),
-    path("subjects/", SubjectListView.as_view({"get": "list"})),
-    path("topics/", TopicListView.as_view({"get": "list"})),
+    path("login/", auth.LoginView.as_view()),
+    path("logout/", auth.LogoutView.as_view()),
+    path("register/", auth.RegisterView.as_view()),
+    path("email/verify/", auth.VerifyEmailView.as_view()),
+    path("email/confirm/", TemplateView.as_view()),
+    path("profile/update/", auth.ProfileView.as_view()),
+    path("password/request/", password.PasswordResetRequestView.as_view()),
+    path("password/reset/", password.PasswordResetConfirmView.as_view()),
+    path("password/change/", password.ChangePasswordView.as_view()),
+    path("batches/simple/", batch.BatchListView.as_view()), #REMOVE
+    path("batches/", batch.BatchListCreateView.as_view()),
+    path("batch/join/<int:pk>/", batch.BatchJoinView.as_view()),
+    path("batches/<int:pk>/", batch.BatchRetrieveUpdateDestoryView.as_view()),
+    path("batch/enroll/", enrollment.EnrollmentView.as_view()),
+    path("enrollments/", enrollment.EnrollmentView.as_view()),
+    path(
+        "enrollments/<int:pk>/",
+        enrollment.EnrollmentRetrieveUpdateDestoryView.as_view(),
+    ),
+    path("institutes/joined/", institute.JoinedInstitutesView.as_view()),
+    path("institutes/", institute.InstitutesListView.as_view({"get": "list"})),
+    path("exams/", common.ExamListView.as_view({"get": "list"})),
+    path("subjects/", common.SubjectListView.as_view({"get": "list"})),
+    path("topics/", common.TopicListView.as_view({"get": "list"})),
     path(
         "tags/",
-        TagListView.as_view(
+        common.TagListView.as_view(
             {
                 "get": "list",
                 "post": "create",
@@ -45,28 +58,33 @@ urlpatterns = [
         ),
         name="tags-list",
     ),
-    path("testseries/all/", TestSeriesListView.as_view()),
-    path("testseries/", TestSeriesListCreateView.as_view()),
-    path("testseries/<int:pk>/", TestSeriesRetrieveUpdateDestoryView.as_view()),
-    path("tests/", TestListView.as_view()),
-    path("tests/free/", FreeTestListView.as_view()),
-    path("test/create/", TestCreateView.as_view()),
-    path("tests/<int:pk>/", TestRetrieveUpdateDestoryView.as_view()),
-    path("sessions/", SessionListView.as_view()),
-    path("sessions/<int:test_id>/", SessionCreateRetrieveUpdateView.as_view()),
-    path("generate-ranks/<int:id>/", GenerateRanks.as_view()),
-    path("ranklist/<int:id>/", RankListView.as_view()),
-    path("result/<int:pk>/", ResultView.as_view()),
-    path("review/<int:pk>/", Review.as_view()),
-    path("transactions/", TransactionListView.as_view()),
-    path("payment/", csrf_exempt(PaymentView.as_view())),
-    path("credit-used/", CreditListView.as_view()),
-    path("aits-transactions/", AITSTransactionListView.as_view()),
-    path("aits-buyers/", AITSBuyer.as_view()),
-    path("publish-aits/", PublishTestSeries.as_view()),
-    path("upload-question-image/", csrf_exempt(UploadQuestionImageView.as_view())),
-    path("add-question/", AddQuestionAPIView.as_view()),
-    path("get-questions/", RetrieveQuestionAPIView.as_view()),
-    path("evaluate-left-sessions/<int:test_id>", EvaluateLeftSessions.as_view()),
+    path("testseries/all/", testseries.TestSeriesListView.as_view()),
+    path("testseries/", testseries.TestSeriesListCreateView.as_view()),
+    path(
+        "testseries/<int:pk>/", testseries.TestSeriesRetrieveUpdateDestoryView.as_view()
+    ),
+    path("tests/", test.TestListView.as_view()),
+    path("tests/free/", test.FreeTestListView.as_view()),
+    path("test/create/", test.TestCreateView.as_view()),
+    path("tests/<int:pk>/", test.TestRetrieveUpdateDestoryView.as_view()),
+    path("sessions/", session.SessionListView.as_view()),
+    path("sessions/<int:test_id>/", session.SessionCreateRetrieveUpdateView.as_view()),
+    path("generate-ranks/<int:id>/", session.GenerateRanks.as_view()),
+    path("ranklist/<int:id>/", session.RankListView.as_view()),
+    path("result/<int:pk>/", session.ResultView.as_view()),
+    path("review/<int:pk>/", session.Review.as_view()),
+    path("transactions/", common.TransactionListView.as_view()),
+    path("payment/", csrf_exempt(common.PaymentView.as_view())),
+    path("credit-used/", common.CreditListView.as_view()),
+    path("aits-transactions/", common.AITSTransactionListView.as_view()),
+    path("aits-buyers/", common.AITSBuyer.as_view()),
+    path("publish-aits/", testseries.PublishTestSeries.as_view()),
+    path(
+        "upload-question-image/", csrf_exempt(common.UploadQuestionImageView.as_view())
+    ),
+    path("add-question/", question.AddQuestionAPIView.as_view()),
+    path("get-questions/", question.RetrieveQuestionAPIView.as_view()),
+    path(
+        "evaluate-left-sessions/<int:test_id>", session.EvaluateLeftSessions.as_view()
+    ),
 ]
-
