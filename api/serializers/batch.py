@@ -1,17 +1,30 @@
+from datetime import datetime
+
 from rest_framework.serializers import (
     CharField,
     ModelSerializer,
     Serializer,
     SerializerMethodField,
+    ValidationError
 )
 
-from api.models import Batch
+from api.models import Batch, Enrollment
+
+from .enrollment import EnrollmentSerializer
 
 
-class BatchListSerializer(ModelSerializer):
+class BatchSerializer(ModelSerializer):
     class Meta:
         model = Batch
         fields = ("id", "name", "institute")
+
+
+class BatchEnrollmentsSerializer(ModelSerializer):
+    enrollments = EnrollmentSerializer(many=True, required=False)
+
+    class Meta:
+        model = Batch
+        fields = ("id", "name", "enrollments")
 
 
 class BatchJoinSerializer(Serializer):

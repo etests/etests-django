@@ -6,7 +6,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import JsonResponse
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -16,12 +16,10 @@ from api.forms import PaymentForm, QuestionImageUploadForm
 from api.models import (
     AITSTransaction,
     Exam,
-    Payment,
+    Payment,  # Subject,; Topic,
     QuestionImage,
     ResetCode,
-    Subject,
     Tag,
-    Topic,
     Transaction,
 )
 from api.permissions import IsInstituteOwner, ReadOnly
@@ -35,34 +33,26 @@ class ExamListView(ViewSet):
 
     def list(self, request):
         queryset = Exam.objects.filter()
-        serializer = ExamListSerializer(
-            queryset, many=True, context={"request": request}
-        )
+        serializer = ExamSerializer(queryset, many=True, context={"request": request})
         return Response(serializer.data)
 
 
-class SubjectListView(ViewSet):
-    permission_classes = (ReadOnly,)
+# class SubjectListView(ViewSet):
+#     permission_classes = (ReadOnly,)
 
-    def list(self, request):
-        queryset = Subject.objects.filter()
-        serializer = SubjectSerializer(queryset, many=True)
-        return Response(serializer.data)
-
-
-class TopicListView(ViewSet):
-    permission_classes = (ReadOnly,)
-
-    def list(self, request):
-        queryset = Topic.objects.filter()
-        serializer = TopicSerializer(queryset, many=True)
-        return Response(serializer.data)
+#     def list(self, request):
+#         queryset = Subject.objects.filter()
+#         serializer = SubjectSerializer(queryset, many=True)
+#         return Response(serializer.data)
 
 
-class TagListView(ModelViewSet):
-    permission_classes = (ReadOnly | IsAuthenticated,)
-    serializer_class = TagSerializer
-    queryset = Tag.objects.all()
+# class TopicListView(ViewSet):
+#     permission_classes = (ReadOnly,)
+
+#     def list(self, request):
+#         queryset = Topic.objects.filter()
+#         serializer = TopicSerializer(queryset, many=True)
+#         return Response(serializer.data)
 
 
 class TransactionListView(ListAPIView):
@@ -75,9 +65,9 @@ class TransactionListView(ListAPIView):
         return None
 
 
-class AITSTransactionListView(ListAPIView):
+class TestSeriesTransactionListView(ListAPIView):
     permission_classes = (ReadOnly, IsAuthenticated)
-    serializer_class = AITSTransactionSerializer
+    serializer_class = TestSeriesTransactionSerializer
 
     def get_queryset(self):
         if self.request.user.is_institute:
@@ -95,28 +85,17 @@ class CreditListView(ListAPIView):
         return None
 
 
-class PaymentView(APIView):
+class PaymentView(CreateAPIView):
     permission_classes = (IsAuthenticated,)
+    serializer_class = PaymentSerializer
 
-    def post(self, request):
-        form = PaymentForm(request.POST, request.FILES)
-        if form.is_valid():
-            payment = form.save(commit=False)
-            payment.user = request.user
-            payment.save()
-            send_mail(
-                payment.user.email,
-                "Payment Verification in Progress",
-                f"Your payment of Rs. {str(payment.test_series.price)} for {payment.test_series.name}  will be verified shortly. The AITS will appear on your dashboard after payment is verified. If you have any query feel free to email us at help@etests.co.in",
-            )
-            return Response("Successful", status=status.HTTP_201_CREATED)
-        else:
-            raise ParseError("Invalid")
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
-class AITSBuyer(ListAPIView):
+class TestSeriesBuyersView(ListAPIView):
     permission_classes = (ReadOnly, IsAuthenticated)
-    serializer_class = AITSBuyerSerializer
+    serializer_class = PaymentListSerializer
 
     def get_queryset(self):
         if self.request.user.is_institute:

@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 class BatchListView(generics.ListAPIView):
     permission_classes = (ReadOnly, permissions.IsAuthenticated)
-    serializer_class = BatchListSerializer
+    serializer_class = BatchSerializer
 
     def get_queryset(self):
         if self.request.user.is_student:
@@ -27,7 +27,7 @@ class BatchListView(generics.ListAPIView):
 
 class BatchListCreateView(generics.ListCreateAPIView):
     permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
-    serializer_class = InstituteBatchSerializer
+    serializer_class = BatchEnrollmentsSerializer
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
@@ -44,7 +44,7 @@ class BatchListCreateView(generics.ListCreateAPIView):
 
 class BatchRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
-    serializer_class = InstituteBatchSerializer
+    serializer_class = BatchSerializer
 
     def get_queryset(self):
 

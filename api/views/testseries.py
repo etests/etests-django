@@ -50,21 +50,4 @@ class TestSeriesRetrieveUpdateDestoryView(RetrieveUpdateDestroyAPIView):
                 return TestSeries.objects.filter(institute=self.request.user.institute)
             elif self.request.user.is_staff:
                 return TestSeries.objects.all()
-        else:
-            return None
-
-
-class PublishTestSeries(APIView):
-    permission_classes = (IsAdminUser | IsInstituteOwner,)
-
-    def post(self, request):
-        try:
-            instance = TestSeries.objects.get(id=request.data.get("id"))
-            instance.visible = True
-            instance.save()
-            return Response(
-                "AITS Published Sucessfully!", status=status.HTTP_201_CREATED
-            )
-        except:
-            raise ParseError("Cannot publish this AITS.")
-
+        return None

@@ -2,8 +2,11 @@ from rest_framework.serializers import (
     ModelSerializer,
     ListSerializer,
     SerializerMethodField,
+    StringRelatedField,
 )
 from api.models import TestSeries, Payment
+
+from .test import TestListSerializer
 
 
 class FilteredListSerializer(ListSerializer):
@@ -22,9 +25,9 @@ class FilteredListSerializer(ListSerializer):
 
 
 class TestSeriesSerializer(ModelSerializer):
-    tests = SerializerMethodField()
+    tests = TestListSerializer(many=True, read_only=True)
     institute = SerializerMethodField()
-    exams = SerializerMethodField()
+    exams = StringRelatedField(many=True)
     status = SerializerMethodField()
 
     class Meta:
@@ -41,14 +44,6 @@ class TestSeriesSerializer(ModelSerializer):
             "status",
         )
 
-    def get_tests(self, obj):
-        serializer_context = {"request": self.context.get("request")}
-        tests = obj.tests
-        serializer = StudentTestListSerializer(
-            tests, many=True, read_only=True, context=serializer_context
-        )
-        return serializer.data
-
     def get_status(self, obj):
         if not self.context["request"].user.is_authenticated:
             return 0
@@ -58,17 +53,11 @@ class TestSeriesSerializer(ModelSerializer):
             payments = Payment.objects.filter(
                 user=self.context["request"].user, test_series=obj
             )
-            if len(payments) > 0:
-                if payments[0].verified:
-                    return 4
-                else:
-                    return 3
-            else:
-                return 2
+            if payments:
+                return 4 if payments[0].verified else 3
+            
+            return 2
 
     def get_institute(self, obj):
         return {"id": obj.institute.id, "name": obj.institute.user.name}
-
-    def get_exams(self, obj):
-        return [exam.name for exam in obj.exams.all()]
 

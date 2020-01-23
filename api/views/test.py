@@ -1,12 +1,13 @@
-from api.serializers.test import *
 from rest_framework.generics import (
-    ListAPIView,
     CreateAPIView,
+    ListAPIView,
     RetrieveUpdateDestroyAPIView,
 )
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
+
+from api.models import Batch, Exam, Test
 from api.permissions import *
-from api.models import Test, Batch, Exam
+from api.serializers.test import *
 
 
 class TestListView(ListAPIView):
@@ -14,10 +15,7 @@ class TestListView(ListAPIView):
     filterset_fields = ["institute"]
 
     def get_serializer_class(self):
-        if self.request.user.is_student:
-            return StudentTestListSerializer
-        else:
-            return TestListSerializer
+        return TestListSerializer
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
@@ -33,15 +31,14 @@ class TestListView(ListAPIView):
                 )
             elif self.request.user.is_staff:
                 return Test.objects.all()
-        else:
-            return None
+        return None
 
 
 class FreeTestListView(ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_serializer_class(self):
-        return StudentTestListSerializer
+        return TestListSerializer
 
     def get_queryset(self):
         if self.request.user.is_authenticated and self.request.user.is_student:
@@ -57,37 +54,9 @@ class TestCreateView(CreateAPIView):
     serializer_class = TestCreateSerializer
 
     def perform_create(self, serializer):
-        test_series_ids = self.request.data.pop("test_series", None)
-        exam_id = self.request.data.get("exam", None)
-        free = self.request.data.get("free", False)
-        if exam_id:
-            try:
-                exam = Exam.objects.get(id=exam_id)
-                for test_series_id in test_series_ids:
-                    try:
-                        test_series = TestSeries.objects.get(id=test_series_id)
-                        test_series.exams.add(exam)
-                        if test_series.price == 0:
-                            free = True
-                    except:
-                        pass
-            except Exception as e:
-                pass
-        batches = self.request.data.pop("batches", None)
-        student_ids = []
-        if batches:
-            for batch_id in batches:
-                try:
-                    batch = Batch.objects.get(id=batch_id)
-                    if batch.institute == self.request.user.institute:
-                        student_ids += [student.id for student in batch.students()]
-                except Exception as e:
-                    pass
-        serializer.save(
-            institute=self.request.user.institute,
-            registered_students=student_ids,
-            free=free,
-        )
+        # TODO: Add exams property to TestSeries
+        # TODO: Add registered_batches field to Test
+        serializer.save(institute=self.request.user.institute)
 
 
 class TestRetrieveUpdateDestoryView(RetrieveUpdateDestroyAPIView):
@@ -100,6 +69,4 @@ class TestRetrieveUpdateDestoryView(RetrieveUpdateDestroyAPIView):
                 return Test.objects.filter(institute=self.request.user.institute)
             elif self.request.user.is_staff:
                 return Test.objects.all()
-        else:
-            return None
-
+        return None

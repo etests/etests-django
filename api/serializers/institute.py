@@ -1,35 +1,22 @@
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
-from api.models import Institute
+
+from api.models import Enrollment, Institute
+
+from .batch import BatchSerializer
+from .user import UserSerializer
 
 
 class InstituteListSerializer(ModelSerializer):
-    batches = BatchListSerializer(many=True, read_only=True)
+    batches = BatchSerializer(many=True, read_only=True)
     user = UserSerializer()
-    test_series = SerializerMethodField()
 
     class Meta:
         model = Institute
         fields = ("id", "user", "pincode", "test_series", "batches", "rating", "about")
 
-    def get_test_series(self, obj):
-        serializer_context = {"request": self.context.get("request")}
-        test_series = obj.test_series.filter(institute__verified=True, visible=True)
-        serializer = TestSeriesSerializer(
-            test_series, many=True, context=serializer_context
-        )
-        return serializer.data
-
-
-class InstituteBatchSerializer(ModelSerializer):
-    enrollments = EnrollmentSerializer(many=True, required=False)
-
-    class Meta:
-        model = Batch
-        fields = ("id", "name", "enrollments")
-
 
 class JoinedInstitutesSerializer(ModelSerializer):
-    batches = BatchListSerializer(many=True, read_only=True)
+    batches = BatchSerializer(many=True, read_only=True)
     user = UserSerializer()
     enrollments = SerializerMethodField()
 

@@ -1,4 +1,9 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.serializers import (
+    ModelSerializer,
+    SerializerMethodField,
+    StringRelatedField,
+    ValidationError
+)
 from api.models import Payment, AITSTransaction, Transaction, CreditUse, Tag, Question
 
 
@@ -7,8 +12,13 @@ class PaymentSerializer(ModelSerializer):
         model = Payment
         fields = ("transaction_id", "receipt", "user", "amount", "test_series")
 
+    def validate_test_series(self, test_series):
+        if Payment.objects.filter(user=self.context.get("request").user, test_series=test_series):
+            raise ValidationError("You have already made a payment")
+        return test_series
 
-class AITSBuyerSerializer(ModelSerializer):
+
+class PaymentListSerializer(ModelSerializer):
     test_series = SerializerMethodField()
 
     class Meta:
@@ -17,12 +27,6 @@ class AITSBuyerSerializer(ModelSerializer):
 
     def get_test_series(self, obj):
         return {"id": obj.test_series.id, "name": obj.test_series.name}
-
-
-class TagSerializer(ModelSerializer):
-    class Meta:
-        model = Tag
-        fields = "__all__"
 
 
 class TransactionSerializer(ModelSerializer):
@@ -42,15 +46,12 @@ class CreditUseSerializer(ModelSerializer):
         return obj.test.name
 
 
-class AITSTransactionSerializer(ModelSerializer):
-    test_series = SerializerMethodField()
+class TestSeriesTransactionSerializer(ModelSerializer):
+    test_series = StringRelatedField(many=True)
 
     class Meta:
         model = AITSTransaction
         fields = "__all__"
-
-    def get_test_series(self, obj):
-        return ", ".join([test_series.name for test_series in obj.test_series.all()])
 
 
 class QuestionSerializer(ModelSerializer):

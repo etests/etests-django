@@ -1,23 +1,18 @@
 from rest_framework import status
 from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
-from rest_framework.viewsets import ViewSet
 
 from api.models import Institute
 from api.permissions import IsStudentOwner, ReadOnly
 from api.serializers.institute import *
 
 
-class InstitutesListView(ViewSet):
+class InstitutesListView(ListAPIView):
     permission_classes = (ReadOnly,)
+    serializer_class = InstituteListSerializer
 
-    def list(self, request):
-        queryset = Institute.objects.filter(verified=True, show=True)
-        serializer = InstituteListSerializer(
-            queryset, many=True, context={"request": request}
-        )
-        return Response(serializer.data)
-
+    def get_queryset(self):
+        return Institute.objects.filter(verified=True, show=True)
 
 # DEPRECATE
 class JoinedInstitutesView(ListAPIView):

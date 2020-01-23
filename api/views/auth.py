@@ -13,6 +13,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from api.serializers.auth import *
 
+from api.serializers.user import ProfileSerializer
+
 sensitive = method_decorator(
     sensitive_post_parameters("password", "old_password", "new_password")
 )

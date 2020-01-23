@@ -20,7 +20,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from etests.storage_backends import *
 
-from .utils import get_unique_slug, random_key, unique_random_key
+from api.utils import *
+
 
 class MyUserManager(BaseUserManager):
     def _create_user(self, email, password, **extra_fields):
@@ -320,6 +321,23 @@ class Test(models.Model):
     def __str__(self):
         return self.name
 
+    def evaluate_sessions(self):
+        sessions = self.sessions.filter(practice=False, marks__isnull=True)
+        for session in sessions:
+            session.evaluate(commit=False)
+        Session.objects.bulk_update(sessions, ["marks", "result", "completed"])
+
+    def generate_ranks(self):
+        sessions = self.sessions.filter(practice=False, completed=True)
+        if len(sessions) > 0:
+            generated = generate_ranks(sessions)
+            if generated:
+                Session.objects.bulk_update(generated.get("sessions", None), ["ranks"])
+                self.marks_list = generated.get("marks_list", None)
+                self.stats = generated.get("stats", None)
+        self.finished = True
+        self.save()
+
 
 class Session(models.Model):
     id = models.AutoField(primary_key=True)
@@ -348,6 +366,11 @@ class Session(models.Model):
     def expired(self):
         return self.checkin_time + self.test.time_alotted <= timezone.now()
 
+    def evaluate(self, commit=True):
+        SessionEvaluation(self).evaluate()
+        if commit:
+            self.save()
+
     def save(self, *args, **kwargs):
         if self.pk is None:
             self.completed = False
@@ -365,6 +388,8 @@ class Session(models.Model):
             self.practice = self.test.status > 1
 
         super(Session, self).save(*args, **kwargs)
+
+
 
 
 class Payment(models.Model):
@@ -540,15 +565,16 @@ class Question(models.Model):
     difficulty = models.CharField(max_length=10, choices=LEVELS)
 
 
+def validate_file_size(self, file):
+    if file.size > 256000:
+        raise ValidationError("The maximum image size is 250 KB.")
+    else:
+        return file
+
+
 class QuestionImage(models.Model):
     id = models.AutoField(primary_key=True)
     file = models.ImageField(
         storage=PublicMediaStorage(), validators=[validate_file_size]
     )
-
-    def validate_file_size(self, file):
-        if file.size > 256000:
-            raise ValidationError("The maximum image size is 250 KB.")
-        else:
-            return file
 

@@ -15,311 +15,736 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-        ('auth', '0011_update_proxy_permissions'),
-    ]
+    dependencies = [("auth", "0011_update_proxy_permissions")]
 
     operations = [
         migrations.CreateModel(
-            name='User',
+            name="User",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('password', models.CharField(max_length=128, verbose_name='password')),
-                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
-                ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
-                ('name', models.CharField(max_length=100)),
-                ('email', models.EmailField(blank=True, max_length=254, null=True, unique=True)),
-                ('phone', models.CharField(blank=True, max_length=15, null=True, unique=True)),
-                ('state', models.CharField(max_length=100)),
-                ('city', models.CharField(max_length=100)),
-                ('date_joined', models.DateField(auto_now_add=True)),
-                ('is_staff', models.BooleanField(default=False, verbose_name='staff status')),
-                ('is_active', models.BooleanField(default=True, verbose_name='active')),
-                ('is_student', models.BooleanField(default=False)),
-                ('is_institute', models.BooleanField(default=False)),
-                ('groups', models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.Group', verbose_name='groups')),
-                ('user_permissions', models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.Permission', verbose_name='user permissions')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("password", models.CharField(max_length=128, verbose_name="password")),
+                (
+                    "last_login",
+                    models.DateTimeField(
+                        blank=True, null=True, verbose_name="last login"
+                    ),
+                ),
+                (
+                    "is_superuser",
+                    models.BooleanField(
+                        default=False,
+                        help_text="Designates that this user has all permissions without explicitly assigning them.",
+                        verbose_name="superuser status",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                (
+                    "email",
+                    models.EmailField(
+                        blank=True, max_length=254, null=True, unique=True
+                    ),
+                ),
+                (
+                    "phone",
+                    models.CharField(blank=True, max_length=15, null=True, unique=True),
+                ),
+                ("state", models.CharField(max_length=100)),
+                ("city", models.CharField(max_length=100)),
+                ("date_joined", models.DateField(auto_now_add=True)),
+                (
+                    "is_staff",
+                    models.BooleanField(default=False, verbose_name="staff status"),
+                ),
+                ("is_active", models.BooleanField(default=True, verbose_name="active")),
+                ("is_student", models.BooleanField(default=False)),
+                ("is_institute", models.BooleanField(default=False)),
+                (
+                    "groups",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="The groups this user belongs to. A user will get all permissions granted to each of their groups.",
+                        related_name="user_set",
+                        related_query_name="user",
+                        to="auth.Group",
+                        verbose_name="groups",
+                    ),
+                ),
+                (
+                    "user_permissions",
+                    models.ManyToManyField(
+                        blank=True,
+                        help_text="Specific permissions for this user.",
+                        related_name="user_set",
+                        related_query_name="user",
+                        to="auth.Permission",
+                        verbose_name="user permissions",
+                    ),
+                ),
+            ],
+            options={"db_table": "api_user"},
+        ),
+        migrations.CreateModel(
+            name="AccessCode",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("limit", models.IntegerField()),
+                (
+                    "key",
+                    models.CharField(
+                        default=api.utils.random_key, max_length=10, unique=True
+                    ),
+                ),
+                ("use_count", models.IntegerField(default=0)),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Batch",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "joining_key",
+                    models.CharField(default=api.utils.random_key, max_length=8),
+                ),
+                ("name", models.CharField(max_length=100)),
+            ],
+            options={"verbose_name_plural": "Batches", "db_table": "api_batch"},
+        ),
+        migrations.CreateModel(
+            name="Enrollment",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("roll_number", models.CharField(max_length=25)),
+                (
+                    "joining_key",
+                    models.CharField(blank=True, max_length=8, null=True, unique=True),
+                ),
+                ("date_joined", models.DateField(null=True)),
+                (
+                    "batch",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="enrollments",
+                        to="api.Batch",
+                    ),
+                ),
+            ],
+            options={"db_table": "api_enrollment"},
+        ),
+        migrations.CreateModel(
+            name="Exam",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("position", models.IntegerField(verbose_name="position")),
+                ("name", models.CharField(max_length=200)),
+                ("slug", models.SlugField(editable=False)),
+                (
+                    "image",
+                    models.CharField(
+                        blank=True, default="exam.png", max_length=20480, null=True
+                    ),
+                ),
+                ("start_date", models.DateField(blank=True, null=True)),
+                ("end_date", models.DateField(blank=True, null=True)),
+            ],
+            options={"ordering": ["position"]},
+        ),
+        migrations.CreateModel(
+            name="Institute",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("pincode", models.CharField(blank=True, max_length=10, null=True)),
+                ("current_credits", models.IntegerField(default=0)),
+                ("verified", models.BooleanField(default=False)),
+                ("show", models.BooleanField(default=True)),
+                ("rating", models.FloatField(default=0)),
+                ("about", models.CharField(blank=True, max_length=1024, null=True)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+            ],
+            options={"db_table": "api_institute"},
+        ),
+        migrations.CreateModel(
+            name="Offer",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("title", models.CharField(max_length=80)),
+                ("description", models.CharField(max_length=1024)),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Question",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("text", models.CharField(max_length=20000)),
+                ("answer", django.contrib.postgres.fields.jsonb.JSONField()),
+                ("solution", models.CharField(max_length=20000)),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("0", "Single Correct"),
+                            ("1", "Multiple Correct"),
+                            ("2", "Numerical"),
+                            ("3", "Matrix Match"),
+                        ],
+                        max_length=10,
+                    ),
+                ),
+                ("subjectIndex", models.IntegerField()),
+                ("topicIndex", models.IntegerField()),
+                (
+                    "difficulty",
+                    models.CharField(
+                        choices=[
+                            ("0", "Very Easy"),
+                            ("1", "Easy"),
+                            ("2", "Medium"),
+                            ("3", "Hard"),
+                            ("4", "Very Hard"),
+                        ],
+                        max_length=10,
+                    ),
+                ),
+            ],
+        ),
+        migrations.CreateModel(
+            name="QuestionImage",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                (
+                    "file",
+                    models.ImageField(
+                        storage=etests.storage_backends.PublicMediaStorage(),
+                        upload_to="",
+                        validators=[api.models.validate_file_size],
+                    ),
+                ),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Student",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "gender",
+                    models.CharField(
+                        blank=True,
+                        choices=[("M", "Male"), ("F", "Female"), ("O", "Others")],
+                        max_length=1,
+                        null=True,
+                    ),
+                ),
+                ("birth_date", models.DateField(blank=True, null=True)),
+                (
+                    "institutes",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="students",
+                        through="api.Enrollment",
+                        to="api.Institute",
+                    ),
+                ),
+                (
+                    "user",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+            ],
+            options={"db_table": "api_student"},
+        ),
+        migrations.CreateModel(
+            name="Tag",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("name", models.CharField(max_length=50)),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("EXAM", "Exam"),
+                            ("TOPIC", "Topic"),
+                            ("OTHER", "Others"),
+                        ],
+                        max_length=10,
+                    ),
+                ),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Test",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("name", models.CharField(max_length=200)),
+                ("slug", models.SlugField(editable=False, unique=True)),
+                ("aits", models.BooleanField(default=False)),
+                ("practice", models.BooleanField(default=False)),
+                ("date_added", models.DateTimeField(auto_now_add=True)),
+                ("activation_time", models.DateTimeField(blank=True, null=True)),
+                ("closing_time", models.DateTimeField(blank=True, null=True)),
+                (
+                    "time_alotted",
+                    models.DurationField(default=datetime.timedelta(seconds=10800)),
+                ),
+                (
+                    "sections",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True, null=True
+                    ),
+                ),
+                (
+                    "questions",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True, null=True
+                    ),
+                ),
+                (
+                    "answers",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True, null=True
+                    ),
+                ),
+                (
+                    "stats",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True, null=True
+                    ),
+                ),
+                ("corrected", models.BooleanField(default=False)),
+                ("finished", models.BooleanField(default=False)),
+                ("visible", models.BooleanField(default=True)),
+                ("free", models.BooleanField(default=False)),
+                (
+                    "marks_list",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True, null=True
+                    ),
+                ),
+                ("syllabus", models.CharField(blank=True, max_length=1024, null=True)),
+                (
+                    "exam",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="tests",
+                        to="api.Exam",
+                    ),
+                ),
+                (
+                    "institute",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="api.Institute",
+                    ),
+                ),
+                (
+                    "registered_students",
+                    models.ManyToManyField(blank=True, to="api.Student"),
+                ),
+                ("tags", models.ManyToManyField(blank=True, to="api.Tag")),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Variable",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("value", models.IntegerField(default=0)),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Transaction",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("date_added", models.DateField(auto_now_add=True)),
+                ("credits_added", models.IntegerField(default=0)),
+                (
+                    "transaction_id",
+                    models.CharField(
+                        blank=True, max_length=200, null=True, unique=True
+                    ),
+                ),
+                (
+                    "mode",
+                    models.CharField(
+                        choices=[
+                            ("CASH", "Cash"),
+                            ("UPI", "UPI"),
+                            ("NETBANKING", "Netbanking"),
+                            ("PAYTM", "PayTM"),
+                            ("OTHERS", "Others"),
+                        ],
+                        max_length=10,
+                    ),
+                ),
+                ("amount", models.IntegerField(default=0)),
+                (
+                    "institute",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="api.Institute",
+                    ),
+                ),
+            ],
+        ),
+        migrations.CreateModel(
+            name="TestSeries",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("name", models.CharField(max_length=200)),
+                ("price", models.IntegerField()),
+                ("date_added", models.DateField(auto_now_add=True)),
+                ("slug", models.SlugField(editable=False, unique=True)),
+                ("visible", models.BooleanField(default=False)),
+                ("discount", models.IntegerField(default=0)),
+                (
+                    "access_code",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="test_series",
+                        to="api.AccessCode",
+                    ),
+                ),
+                (
+                    "exams",
+                    models.ManyToManyField(
+                        blank=True, related_name="test_series", to="api.Exam"
+                    ),
+                ),
+                (
+                    "institute",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="test_series",
+                        to="api.Institute",
+                    ),
+                ),
+                (
+                    "offers",
+                    models.ManyToManyField(
+                        blank=True, related_name="test_series", to="api.Offer"
+                    ),
+                ),
+                (
+                    "registered_students",
+                    models.ManyToManyField(blank=True, to="api.Student"),
+                ),
+                (
+                    "tags",
+                    models.ManyToManyField(
+                        blank=True, related_name="test_series", to="api.Tag"
+                    ),
+                ),
+                (
+                    "tests",
+                    models.ManyToManyField(
+                        blank=True, related_name="test_series", to="api.Test"
+                    ),
+                ),
             ],
             options={
-                'db_table': 'api_user',
+                "verbose_name": "Test Series",
+                "verbose_name_plural": "Test Series",
             },
         ),
         migrations.CreateModel(
-            name='AccessCode',
+            name="Session",
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('limit', models.IntegerField()),
-                ('key', models.CharField(default=api.models.generateRandomKey, max_length=10, unique=True)),
-                ('use_count', models.IntegerField(default=0)),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("practice", models.BooleanField(default=False)),
+                (
+                    "checkin_time",
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
+                (
+                    "duration",
+                    models.DurationField(default=datetime.timedelta(seconds=10800)),
+                ),
+                ("completed", models.BooleanField(default=False)),
+                (
+                    "response",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True, null=True
+                    ),
+                ),
+                (
+                    "result",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True, null=True
+                    ),
+                ),
+                (
+                    "current",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True, null=True
+                    ),
+                ),
+                (
+                    "marks",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True, null=True
+                    ),
+                ),
+                (
+                    "ranks",
+                    django.contrib.postgres.fields.jsonb.JSONField(
+                        blank=True, null=True
+                    ),
+                ),
+                (
+                    "student",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="sessions",
+                        to="api.Student",
+                    ),
+                ),
+                (
+                    "test",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="sessions",
+                        to="api.Test",
+                    ),
+                ),
+            ],
+            options={"ordering": ["-practice", "student", "test"]},
+        ),
+        migrations.CreateModel(
+            name="ResetCode",
+            fields=[
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("reset_code", models.CharField(max_length=6)),
+                ("date_added", models.DateField(auto_now_add=True)),
+                ("done", models.BooleanField(default=False)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="codes",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='Batch',
+            name="Payment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('joining_key', models.CharField(default=api.utils.random_key, max_length=8)),
-                ('name', models.CharField(max_length=100)),
-            ],
-            options={
-                'verbose_name_plural': 'Batches',
-                'db_table': 'api_batch',
-            },
-        ),
-        migrations.CreateModel(
-            name='Enrollment',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('roll_number', models.CharField(max_length=25)),
-                ('joining_key', models.CharField(blank=True, max_length=8, null=True, unique=True)),
-                ('date_joined', models.DateField(null=True)),
-                ('batch', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='enrollments', to='api.Batch')),
-            ],
-            options={
-                'db_table': 'api_enrollment',
-            },
-        ),
-        migrations.CreateModel(
-            name='Exam',
-            fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('position', models.IntegerField(verbose_name='position')),
-                ('name', models.CharField(max_length=200)),
-                ('slug', models.SlugField(editable=False)),
-                ('image', models.CharField(blank=True, default='exam.png', max_length=20480, null=True)),
-                ('start_date', models.DateField(blank=True, null=True)),
-                ('end_date', models.DateField(blank=True, null=True)),
-            ],
-            options={
-                'ordering': ['position'],
-            },
-        ),
-        migrations.CreateModel(
-            name='Institute',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('pincode', models.CharField(blank=True, max_length=10, null=True)),
-                ('current_credits', models.IntegerField(default=0)),
-                ('verified', models.BooleanField(default=False)),
-                ('show', models.BooleanField(default=True)),
-                ('rating', models.FloatField(default=0)),
-                ('about', models.CharField(blank=True, max_length=1024, null=True)),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-            ],
-            options={
-                'db_table': 'api_institute',
-            },
-        ),
-        migrations.CreateModel(
-            name='Offer',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=80)),
-                ('description', models.CharField(max_length=1024)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Question',
-            fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('text', models.CharField(max_length=20000)),
-                ('answer', django.contrib.postgres.fields.jsonb.JSONField()),
-                ('solution', models.CharField(max_length=20000)),
-                ('type', models.CharField(choices=[('0', 'Single Correct'), ('1', 'Multiple Correct'), ('2', 'Numerical'), ('3', 'Matrix Match')], max_length=10)),
-                ('subjectIndex', models.IntegerField()),
-                ('topicIndex', models.IntegerField()),
-                ('difficulty', models.CharField(choices=[('0', 'Very Easy'), ('1', 'Easy'), ('2', 'Medium'), ('3', 'Hard'), ('4', 'Very Hard')], max_length=10)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='QuestionImage',
-            fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('file', models.ImageField(storage=etests.storage_backends.PublicMediaStorage(), upload_to='', validators=[api.models.validate_file_size])),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Student',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('gender', models.CharField(blank=True, choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Others')], max_length=1, null=True)),
-                ('birth_date', models.DateField(blank=True, null=True)),
-                ('institutes', models.ManyToManyField(blank=True, related_name='students', through='api.Enrollment', to='api.Institute')),
-                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-            ],
-            options={
-                'db_table': 'api_student',
-            },
-        ),
-        migrations.CreateModel(
-            name='Tag',
-            fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=50)),
-                ('type', models.CharField(choices=[('EXAM', 'Exam'), ('TOPIC', 'Topic'), ('OTHER', 'Others')], max_length=10)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Test',
-            fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=200)),
-                ('slug', models.SlugField(editable=False, unique=True)),
-                ('aits', models.BooleanField(default=False)),
-                ('practice', models.BooleanField(default=False)),
-                ('date_added', models.DateTimeField(auto_now_add=True)),
-                ('activation_time', models.DateTimeField(blank=True, null=True)),
-                ('closing_time', models.DateTimeField(blank=True, null=True)),
-                ('time_alotted', models.DurationField(default=datetime.timedelta(seconds=10800))),
-                ('sections', django.contrib.postgres.fields.jsonb.JSONField(blank=True, null=True)),
-                ('questions', django.contrib.postgres.fields.jsonb.JSONField(blank=True, null=True)),
-                ('answers', django.contrib.postgres.fields.jsonb.JSONField(blank=True, null=True)),
-                ('stats', django.contrib.postgres.fields.jsonb.JSONField(blank=True, null=True)),
-                ('corrected', models.BooleanField(default=False)),
-                ('finished', models.BooleanField(default=False)),
-                ('visible', models.BooleanField(default=True)),
-                ('free', models.BooleanField(default=False)),
-                ('marks_list', django.contrib.postgres.fields.jsonb.JSONField(blank=True, null=True)),
-                ('syllabus', models.CharField(blank=True, max_length=1024, null=True)),
-                ('exam', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='tests', to='api.Exam')),
-                ('institute', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='api.Institute')),
-                ('registered_students', models.ManyToManyField(blank=True, to='api.Student')),
-                ('tags', models.ManyToManyField(blank=True, to='api.Tag')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Variable',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('value', models.IntegerField(default=0)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Transaction',
-            fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('date_added', models.DateField(auto_now_add=True)),
-                ('credits_added', models.IntegerField(default=0)),
-                ('transaction_id', models.CharField(blank=True, max_length=200, null=True, unique=True)),
-                ('mode', models.CharField(choices=[('CASH', 'Cash'), ('UPI', 'UPI'), ('NETBANKING', 'Netbanking'), ('PAYTM', 'PayTM'), ('OTHERS', 'Others')], max_length=10)),
-                ('amount', models.IntegerField(default=0)),
-                ('institute', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='api.Institute')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='TestSeries',
-            fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('name', models.CharField(max_length=200)),
-                ('price', models.IntegerField()),
-                ('date_added', models.DateField(auto_now_add=True)),
-                ('slug', models.SlugField(editable=False, unique=True)),
-                ('visible', models.BooleanField(default=False)),
-                ('discount', models.IntegerField(default=0)),
-                ('access_code', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='test_series', to='api.AccessCode')),
-                ('exams', models.ManyToManyField(blank=True, related_name='test_series', to='api.Exam')),
-                ('institute', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='test_series', to='api.Institute')),
-                ('offers', models.ManyToManyField(blank=True, related_name='test_series', to='api.Offer')),
-                ('registered_students', models.ManyToManyField(blank=True, to='api.Student')),
-                ('tags', models.ManyToManyField(blank=True, related_name='test_series', to='api.Tag')),
-                ('tests', models.ManyToManyField(blank=True, related_name='test_series', to='api.Test')),
-            ],
-            options={
-                'verbose_name': 'Test Series',
-                'verbose_name_plural': 'Test Series',
-            },
-        ),
-        migrations.CreateModel(
-            name='Session',
-            fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('practice', models.BooleanField(default=False)),
-                ('checkin_time', models.DateTimeField(default=django.utils.timezone.now)),
-                ('duration', models.DurationField(default=datetime.timedelta(seconds=10800))),
-                ('completed', models.BooleanField(default=False)),
-                ('response', django.contrib.postgres.fields.jsonb.JSONField(blank=True, null=True)),
-                ('result', django.contrib.postgres.fields.jsonb.JSONField(blank=True, null=True)),
-                ('current', django.contrib.postgres.fields.jsonb.JSONField(blank=True, null=True)),
-                ('marks', django.contrib.postgres.fields.jsonb.JSONField(blank=True, null=True)),
-                ('ranks', django.contrib.postgres.fields.jsonb.JSONField(blank=True, null=True)),
-                ('student', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='sessions', to='api.Student')),
-                ('test', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='sessions', to='api.Test')),
-            ],
-            options={
-                'ordering': ['-practice', 'student', 'test'],
-            },
-        ),
-        migrations.CreateModel(
-            name='ResetCode',
-            fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('reset_code', models.CharField(max_length=6)),
-                ('date_added', models.DateField(auto_now_add=True)),
-                ('done', models.BooleanField(default=False)),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='codes', to=settings.AUTH_USER_MODEL)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='Payment',
-            fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('transaction_id', models.CharField(max_length=200)),
-                ('receipt', models.FileField(blank=True, null=True, storage=etests.storage_backends.PrivateMediaStorage(), upload_to='')),
-                ('date_added', models.DateField(auto_now_add=True)),
-                ('amount', models.IntegerField(default=0)),
-                ('verified', models.BooleanField(default=False)),
-                ('show', models.BooleanField(default=False)),
-                ('test_series', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='api.TestSeries')),
-                ('user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='payments', to=settings.AUTH_USER_MODEL)),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("transaction_id", models.CharField(max_length=200)),
+                (
+                    "receipt",
+                    models.FileField(
+                        blank=True,
+                        null=True,
+                        storage=etests.storage_backends.PrivateMediaStorage(),
+                        upload_to="",
+                    ),
+                ),
+                ("date_added", models.DateField(auto_now_add=True)),
+                ("amount", models.IntegerField(default=0)),
+                ("verified", models.BooleanField(default=False)),
+                ("show", models.BooleanField(default=False)),
+                (
+                    "test_series",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="api.TestSeries",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="payments",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='enrollment',
-            name='institute',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.Institute'),
+            model_name="enrollment",
+            name="institute",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="api.Institute"
+            ),
         ),
         migrations.AddField(
-            model_name='enrollment',
-            name='student',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='enrollment', to='api.Student'),
+            model_name="enrollment",
+            name="student",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="enrollment",
+                to="api.Student",
+            ),
         ),
         migrations.CreateModel(
-            name='CreditUse',
+            name="CreditUse",
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('date_added', models.DateField(auto_now_add=True)),
-                ('credits_used', models.IntegerField(default=0)),
-                ('institute', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='api.Institute')),
-                ('test', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='api.Test')),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("date_added", models.DateField(auto_now_add=True)),
+                ("credits_used", models.IntegerField(default=0)),
+                (
+                    "institute",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="api.Institute",
+                    ),
+                ),
+                (
+                    "test",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="api.Test",
+                    ),
+                ),
             ],
-            options={
-                'verbose_name_plural': 'Credits Usage',
-            },
+            options={"verbose_name_plural": "Credits Usage"},
         ),
         migrations.AddField(
-            model_name='batch',
-            name='institute',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='batches', to='api.Institute'),
+            model_name="batch",
+            name="institute",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="batches",
+                to="api.Institute",
+            ),
         ),
         migrations.CreateModel(
-            name='AITSTransaction',
+            name="AITSTransaction",
             fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('date_added', models.DateField(auto_now_add=True)),
-                ('transaction_id', models.CharField(blank=True, max_length=200, null=True, unique=True)),
-                ('mode', models.CharField(choices=[('CASH', 'Cash'), ('UPI', 'UPI'), ('NETBANKING', 'Netbanking'), ('PAYTM', 'PayTM'), ('OTHERS', 'Others')], max_length=10)),
-                ('amount', models.IntegerField(default=0)),
-                ('remarks', models.CharField(blank=True, max_length=50, null=True)),
-                ('receipt', models.FileField(null=True, storage=etests.storage_backends.PrivateMediaStorage(), upload_to='')),
-                ('institute', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='api.Institute')),
-                ('test_series', models.ManyToManyField(related_name='aits_transactions', to='api.TestSeries')),
+                ("id", models.AutoField(primary_key=True, serialize=False)),
+                ("date_added", models.DateField(auto_now_add=True)),
+                (
+                    "transaction_id",
+                    models.CharField(
+                        blank=True, max_length=200, null=True, unique=True
+                    ),
+                ),
+                (
+                    "mode",
+                    models.CharField(
+                        choices=[
+                            ("CASH", "Cash"),
+                            ("UPI", "UPI"),
+                            ("NETBANKING", "Netbanking"),
+                            ("PAYTM", "PayTM"),
+                            ("OTHERS", "Others"),
+                        ],
+                        max_length=10,
+                    ),
+                ),
+                ("amount", models.IntegerField(default=0)),
+                ("remarks", models.CharField(blank=True, max_length=50, null=True)),
+                (
+                    "receipt",
+                    models.FileField(
+                        null=True,
+                        storage=etests.storage_backends.PrivateMediaStorage(),
+                        upload_to="",
+                    ),
+                ),
+                (
+                    "institute",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        to="api.Institute",
+                    ),
+                ),
+                (
+                    "test_series",
+                    models.ManyToManyField(
+                        related_name="aits_transactions", to="api.TestSeries"
+                    ),
+                ),
             ],
-            options={
-                'verbose_name_plural': 'AITS Transactions',
-            },
+            options={"verbose_name_plural": "AITS Transactions"},
         ),
         migrations.AlterUniqueTogether(
-            name='enrollment',
-            unique_together={('batch', 'roll_number')},
+            name="enrollment", unique_together={("batch", "roll_number")}
         ),
     ]
+

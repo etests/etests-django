@@ -1,23 +1,18 @@
-from rest_framework import serializers
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
+from rest_framework.exceptions import PermissionDenied
 
 from api.models import Session, Test
 
+from .test import TestSerializer
 
-class SessionListSerializer(serializers.ModelSerializer):
+class SessionListSerializer(ModelSerializer):
     class Meta:
         model = Session
         fields = ("id", "practice", "checkin_time", "completed")
 
 
-class SessionSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(read_only=True)
-    test = StudentTestSerializer(read_only=True)
-    completed = serializers.BooleanField(default=False)
-    practice = serializers.BooleanField(read_only=True)
-    checkin_time = serializers.DateTimeField(read_only=True)
-    duration = serializers.DurationField(read_only=True)
-    current = serializers.JSONField(required=False)
-    response = serializers.JSONField(required=False)
+class SessionSerializer(ModelSerializer):
+    test = TestSerializer(read_only=True)
 
     class Meta:
         model = Session
@@ -30,15 +25,20 @@ class SessionSerializer(serializers.ModelSerializer):
             "duration",
             "current",
             "response",
+            "ranks",
+            "result",
+            "marks",
         )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        if self.context.get("request").method == "POST":
-            self.fields.get("response").read_only = True
-            self.fields.get("current").read_only = True
-            self.fields.get("completed").read_only = True
+        read_only_fields = (
+            "id",
+            "practice",
+            "checkin_time",
+            "duration",
+            "ranks",
+            "result",
+            "marks",
+        )
 
     def create(self, validated_data):
         test = Test.objects.get(id=validated_data.get("test_id"))
@@ -55,59 +55,21 @@ class SessionSerializer(serializers.ModelSerializer):
         else:
             return super().create(validated_data)
 
+    def update(self, instance, validated_data):
+        if validated_data.get("completed", False):
+            instance.evaluate(commit=False)
 
-class PracticeSessionSerializer(serializers.ModelSerializer):
-    test = TestSerializer(many=False, read_only=True)
+        instance.save()
 
-    class Meta:
-        model = Session
-        fields = (
-            "id",
-            "practice",
-            "response",
-            "test",
-            "checkin_time",
-            "duration",
-            "current",
-            "completed",
-            "result",
-            "marks",
-            "ranks",
-        )
-        extra_kwargs = {"ranks": {"read_only": True}}
+        return instance
 
 
-class ResultSerializer(serializers.ModelSerializer):
-    test = StudentTestSerializer(many=False, read_only=True)
+class RanksSerializer(ModelSerializer):
+    name = SerializerMethodField()
 
     class Meta:
         model = Session
-        fields = ("id", "response", "test", "marks", "completed")
-
-
-class ReviewSerializer(serializers.ModelSerializer):
-    test = TestSerializer(many=False, read_only=True)
-
-    class Meta:
-        model = Session
-        fields = ("id", "response", "test", "result", "marks", "completed", "ranks")
-
-
-class RankListSerializer(serializers.ModelSerializer):
-    roll_number = serializers.SerializerMethodField()
-    name = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Session
-        fields = ("id", "roll_number", "name", "marks", "ranks", "practice")
-
-    def get_roll_number(self, obj):
-        try:
-            return Enrollment.objects.get(
-                student=obj.student, institute=obj.test.institute
-            ).roll_number
-        except:
-            return "-"
+        fields = ("id", "name", "marks", "ranks", "practice")
 
     def get_name(self, obj):
         return obj.student.user.name
