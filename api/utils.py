@@ -39,11 +39,13 @@ class SessionEvaluation:
         self.test = session.test
         self.session = session
         self.total_marks = 0
-        self.section_wise_marks = [0] * len(self.test.sections)
+        self.section_wise_marks = [0 for i in range(len(self.test.sections))]
         self.questions = self.test.questions
-        self.max_marks = [0] * (len(self.test.sections) + 1)
-        self.question_wise_marks = [{"marks": 0, "status": 0}] * len(self.questions)
-        self.topic_wise_marks = [{}] * len(self.test.sections)
+        self.max_marks = [0 for i in range(len(self.test.sections) + 1)]
+        self.question_wise_marks = [
+            {"marks": 0, "status": 0} for i in range(len(self.questions))
+        ]
+        self.topic_wise_marks = [{} for i in range(len(self.test.sections))]
 
     def is_list_empty(self, l):
         if isinstance(l, list):
@@ -153,7 +155,7 @@ class SessionEvaluation:
                 answers = self.test.answers[i]["answer"]
                 cur_marks = [{"marks": 0, "status": 0} for i in range(len(responses))]
                 for j, response in enumerate(responses):
-                    if not response:
+                    if self.is_list_empty(response):
                         continue
                     elif response and sorted(response) == sorted(answers[j]):
                         cur_marks[j]["marks"] = self.questions[i]["partial_marks"]
@@ -195,6 +197,7 @@ class SessionEvaluation:
             "topic_wise_marks": self.topic_wise_marks,
         }
         self.session.completed = True
+
 
 def generate_ranks(sessions):
     if not sessions:

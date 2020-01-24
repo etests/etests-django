@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth import password_validation as validators
+from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.serializers import (
     CharField,
@@ -10,8 +11,10 @@ from rest_framework.serializers import (
 )
 
 from api.models import Institute, Student, User
+from api.ses import send_email
 
 from .user import UserDetailsSerializer
+
 
 class RegisterSerializer(ModelSerializer):
     class Meta:
@@ -40,10 +43,21 @@ class RegisterSerializer(ModelSerializer):
         user = User.objects.create(**validated_data)
         user.set_password(validated_data["password"])
         user.save()
+
         if user.is_student:
             Student.objects.create(user=user)
         elif user.is_institute:
             Institute.objects.create(user=user)
+
+        send_email(
+            user.email,
+            render_to_string("registration/subject.txt"),
+            render_to_string(
+                f"registration/{'student' if user.is_student else 'institute'}.html",
+                context={"name": user.name, "title": "eTests"},
+            ),
+        )
+
         return user
 
 

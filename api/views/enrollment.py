@@ -28,7 +28,7 @@ class EnrollmentView(ListCreateAPIView):
                 "batch": request.data["batch"],
                 "roll_number": roll_number,
             }
-            for roll_number in request.data["rollNumbers"]
+            for roll_number in request.data["roll_numbers"]
         ]
 
         serializer = self.get_serializer(data=data, many=True)

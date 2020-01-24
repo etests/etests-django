@@ -86,8 +86,7 @@ class LoginView(GenericAPIView):
         self.refresh = RefreshToken.for_user(self.user)
         self.access = self.refresh.access_token
 
-        if settings.REST_SESSION_LOGIN:
-            self.process_login()
+        self.process_login()
 
     def get_response(self):
         serializer_class = JWTSerializer

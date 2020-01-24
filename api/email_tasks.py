@@ -1,5 +1,5 @@
 from .ses import send_email
-from .models import Institute, Test, Session
+from .models import Institute, Test
 from django.db.models import Count
 from datetime import date, timedelta
 from django.template.loader import render_to_string

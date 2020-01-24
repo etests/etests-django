@@ -3,8 +3,7 @@ from rest_framework.generics import (
     CreateAPIView,
     ListAPIView,
     RetrieveAPIView,
-    RetrieveUpdateAPIView,
-    RetrieveUpdateDestroyAPIView,
+    UpdateAPIView,
 )
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
@@ -31,11 +30,10 @@ class SessionListView(ListAPIView):
         return None
 
 
-class SessionCreateRetrieveUpdateView(CreateAPIView, RetrieveUpdateAPIView):
+class SessionCreateRetrieveView(CreateAPIView, RetrieveAPIView):
     permission_classes = (IsRegisteredForTest,)
     serializer_class = SessionSerializer
     lookup_field = "test_id"
-    http_method_names = ["get", "post", "patch"]
 
     def get_queryset(self):
         return Session.objects.filter(
@@ -46,6 +44,17 @@ class SessionCreateRetrieveUpdateView(CreateAPIView, RetrieveUpdateAPIView):
         serializer.save(
             student=self.request.user.student, test_id=self.kwargs.get("test_id")
         )
+
+
+class SessionUpdateView(UpdateAPIView):
+    permission_classes = (IsStudentOwner,)
+    serializer_class = SessionSerializer
+
+    def get_queryset(self):
+        return Session.objects.filter(
+            completed=False, student=self.request.user.student
+        )
+
 
 class ResultView(RetrieveAPIView):
     permission_classes = (ReadOnly, IsAuthenticated)

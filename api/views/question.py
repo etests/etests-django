@@ -24,7 +24,7 @@ class RetrieveQuestionAPIView(APIView):
     permission_classes = (IsAdminUser,)
     serializer_class = QuestionSerializer
 
-    def post(self, request):
+    def get(self, request):
         params = request.data
         type = params.get("type", None)
         difficulty = params.get("difficulty", None)

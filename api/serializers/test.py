@@ -73,6 +73,7 @@ class TestSerializer(ModelSerializer):
             "time_alotted",
             "sections",
             "questions",
+            "answers",
             "free",
             "syllabus",
         )

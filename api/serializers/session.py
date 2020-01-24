@@ -1,9 +1,12 @@
+from django.template.loader import render_to_string
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_framework.exceptions import PermissionDenied
 
 from api.models import Session, Test
+from api.ses import send_email
 
 from .test import TestSerializer
+
 
 class SessionListSerializer(ModelSerializer):
     class Meta:
@@ -56,8 +59,29 @@ class SessionSerializer(ModelSerializer):
             return super().create(validated_data)
 
     def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
         if validated_data.get("completed", False):
             instance.evaluate(commit=False)
+            test = instance.test
+            send_email(
+                instance.student.user.email,
+                render_to_string(
+                    "student_results/subject.txt", {"test_name": test.name}
+                ),
+                render_to_string(
+                    "student_results/body.html",
+                    {
+                        "name": instance.student.user.name,
+                        "test_name": test.name,
+                        "date_time": instance.checkin_time,
+                        "marks_obtained": instance.marks["total"],
+                        "max_marks": instance.marks["max_marks"][-1],
+                        "result_id": instance.id,
+                    },
+                ),
+            )
 
         instance.save()
 
