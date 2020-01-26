@@ -50,9 +50,8 @@ urlpatterns = [
     path(
         "testseries/<int:pk>/", testseries.TestSeriesRetrieveUpdateDestoryView.as_view()
     ),
-    path("tests/", test.TestListView.as_view()),
+    path("tests/", test.TestListCreateView.as_view()),
     path("tests/free/", test.FreeTestListView.as_view()),
-    path("tests/", test.TestCreateView.as_view()),
     path("tests/<int:pk>/", test.TestRetrieveUpdateDestoryView.as_view()),
     path("tests/<int:test_id>/sessions/", session.SessionCreateRetrieveView.as_view()),
     path("sessions/", session.SessionListView.as_view()),

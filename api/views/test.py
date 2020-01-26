@@ -1,25 +1,28 @@
 from rest_framework.generics import (
-    CreateAPIView,
+    ListCreateAPIView,
     ListAPIView,
     RetrieveUpdateDestroyAPIView,
 )
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, SAFE_METHODS
 
 from api.models import Batch, Exam, Test
 from api.permissions import *
 from api.serializers.test import (
     TestSerializer,
     TestListSerializer,
-    TestCreateSerializer,
+    TestCreateUpdateSerializer,
 )
 
 
-class TestListView(ListAPIView):
-    permission_classes = (IsAuthenticated,)
+class TestListCreateView(ListCreateAPIView):
+    permission_classes = (ReadOnly | IsInstituteOwner | IsAdminUser,)
     filterset_fields = ["institute"]
 
     def get_serializer_class(self):
-        return TestListSerializer
+        if self.request.method == "POST":
+            return TestCreateUpdateSerializer
+        else:
+            return TestListSerializer
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
@@ -37,6 +40,11 @@ class TestListView(ListAPIView):
                 return Test.objects.all()
         return None
 
+    def perform_create(self, serializer):
+        # TODO: Add exams property to TestSeries
+        # TODO: Add registered_batches field to Test
+        serializer.save(institute=self.request.user.institute)
+
 
 class FreeTestListView(ListAPIView):
     permission_classes = (IsAuthenticated,)
@@ -53,19 +61,19 @@ class FreeTestListView(ListAPIView):
             return None
 
 
-class TestCreateView(CreateAPIView):
-    permission_classes = (IsInstituteOwner | IsAdminUser,)
-    serializer_class = TestCreateSerializer
-
-    def perform_create(self, serializer):
-        # TODO: Add exams property to TestSeries
-        # TODO: Add registered_batches field to Test
-        serializer.save(institute=self.request.user.institute)
-
-
 class TestRetrieveUpdateDestoryView(RetrieveUpdateDestroyAPIView):
     permission_classes = (IsInstituteOwner | IsAdminUser,)
-    serializer_class = TestSerializer
+
+    def get_serializer_class(self):
+        if self.request.method in SAFE_METHODS:
+            return TestSerializer
+        else:
+            return TestCreateUpdateSerializer
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context.update({"allow_answers": True})
+        return context
 
     def get_queryset(self):
         if self.request.user.is_authenticated:

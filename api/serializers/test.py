@@ -43,10 +43,9 @@ class TestListSerializer(ModelSerializer):
         if user.is_authenticated and user.is_student:
             sessions = Session.objects.filter(test=obj, student=user.student)
             return SessionListSerializer(sessions, many=True, read_only=True).data
-        return None
 
 
-class TestCreateSerializer(ModelSerializer):
+class TestCreateUpdateSerializer(ModelSerializer):
     class Meta:
         model = Test
         fields = (
