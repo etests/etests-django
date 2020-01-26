@@ -4,7 +4,7 @@ from rest_framework.serializers import (
     StringRelatedField,
 )
 
-from api.models import Test, Session
+from api.models import Session, Test
 
 
 class SessionListSerializer(ModelSerializer):
@@ -73,6 +73,8 @@ class TestCreateSerializer(ModelSerializer):
 
 
 class TestSerializer(ModelSerializer):
+    answers = SerializerMethodField()
+
     class Meta:
         model = Test
         fields = (
@@ -92,3 +94,7 @@ class TestSerializer(ModelSerializer):
             "free",
             "syllabus",
         )
+
+    def get_answers(self, obj):
+        if self.context.get("allow_answers", False):
+            return obj.answers

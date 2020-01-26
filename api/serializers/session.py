@@ -9,7 +9,7 @@ from .test import TestSerializer
 
 
 class SessionSerializer(ModelSerializer):
-    test = TestSerializer(read_only=True)
+    test = SerializerMethodField()
 
     class Meta:
         model = Session
@@ -36,6 +36,12 @@ class SessionSerializer(ModelSerializer):
             "result",
             "marks",
         )
+
+    def get_test(self, obj):
+        return TestSerializer(
+            obj.test,
+            context={"allow_answers": obj.practice or obj.test.status > 1},
+        ).data
 
     def create(self, validated_data):
         test = Test.objects.get(id=validated_data.get("test_id"))

@@ -56,9 +56,10 @@ class SessionUpdateView(UpdateAPIView):
     serializer_class = SessionSerializer
 
     def get_queryset(self):
-        return Session.objects.filter(
-            completed=False, student=self.request.user.student
-        )
+        if self.request.user.is_student:
+            return Session.objects.filter(
+                completed=False, student=self.request.user.student
+            )
 
 
 class ResultView(RetrieveAPIView):

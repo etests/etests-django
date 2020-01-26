@@ -164,8 +164,8 @@ class SessionAdmin(admin.ModelAdmin):
     list_filter = ("practice", "completed", "test")
 
     def _marks(self, obj):
-        if obj.marks and "total" in obj.marks and "maxMarks" in obj.marks:
-            return str(obj.marks["total"]) + "/" + str(obj.marks["maxMarks"][-1])
+        if obj.marks and "total" in obj.marks and "max_marks" in obj.marks:
+            return str(obj.marks["total"]) + "/" + str(obj.marks["max_marks"][-1])
 
     def _rank(self, obj):
         if obj.ranks and "overall" in obj.ranks:

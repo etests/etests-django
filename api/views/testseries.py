@@ -14,6 +14,8 @@ class TestSeriesListView(ListAPIView):
     permission_classes = (ReadOnly,)
     serializer_class = TestSeriesSerializer
 
+    filterset_fields = ("institute", "exams",)
+
     def get_queryset(self):
         return TestSeries.objects.filter(institute__verified=True, visible=True)
 
