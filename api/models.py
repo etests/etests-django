@@ -168,6 +168,9 @@ class Student(models.Model):
     def __str__(self):
         return self.user.name
 
+    def batches(self):
+        return Batch.objects.filter(enrollments__student=self)
+
     def save(self, *args, **kwargs):
         if not self.pk:
             self.user.is_student = True
@@ -268,8 +271,10 @@ class TestSeries(models.Model):
 
 class Test(models.Model):
     id = models.AutoField(primary_key=True)
-    registered_students = models.ManyToManyField(Student, blank=True)
-    # registered_batches = models.ManyToManyField(Batch, blank=True)
+    registered_students = models.ManyToManyField(
+        Student, related_name="tests", blank=True
+    )
+    registered_batches = models.ManyToManyField(Batch, related_name="tests", blank=True)
     name = models.CharField(max_length=200)
     institute = models.ForeignKey(
         Institute, blank=True, null=True, on_delete=models.CASCADE
@@ -388,8 +393,6 @@ class Session(models.Model):
             self.practice = self.test.status > 1
 
         super(Session, self).save(*args, **kwargs)
-
-
 
 
 class Payment(models.Model):

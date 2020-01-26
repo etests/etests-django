@@ -1,22 +1,23 @@
+from django.db.models import Q
 from rest_framework.generics import (
-    ListCreateAPIView,
     ListAPIView,
+    ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
 )
-from rest_framework.permissions import IsAdminUser, IsAuthenticated, SAFE_METHODS
+from rest_framework.permissions import SAFE_METHODS, IsAdminUser, IsAuthenticated
 
 from api.models import Batch, Exam, Test
 from api.permissions import *
 from api.serializers.test import (
-    TestSerializer,
-    TestListSerializer,
     TestCreateUpdateSerializer,
+    TestListSerializer,
+    TestSerializer,
 )
 
 
 class TestListCreateView(ListCreateAPIView):
     permission_classes = (ReadOnly | IsInstituteOwner | IsAdminUser,)
-    filterset_fields = ["institute"]
+    filterset_fields = ("institute", "exam", "free")
 
     def get_serializer_class(self):
         if self.request.method == "POST":
@@ -31,18 +32,17 @@ class TestListCreateView(ListCreateAPIView):
                     aits=False, institute=self.request.user.institute
                 )
             elif self.request.user.is_student:
+                student = self.request.user.student
                 return Test.objects.filter(
-                    aits=False,
-                    registered_students=self.request.user.student,
-                    visible=True,
-                )
+                    Q(registered_students=student)
+                    | Q(registered_batches__in=student.batches())
+                ).filter(aits=False, visible=True)
             elif self.request.user.is_staff:
                 return Test.objects.all()
         return None
 
     def perform_create(self, serializer):
         # TODO: Add exams property to TestSeries
-        # TODO: Add registered_batches field to Test
         serializer.save(institute=self.request.user.institute)
 
 

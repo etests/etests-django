@@ -33,6 +33,7 @@ class TestListSerializer(ModelSerializer):
             "free",
             "syllabus",
             "sessions",
+            "registered_batches"
         )
 
     def get_institute(self, obj):
@@ -43,7 +44,7 @@ class TestListSerializer(ModelSerializer):
         if user.is_authenticated and user.is_student:
             sessions = Session.objects.filter(test=obj, student=user.student)
             return SessionListSerializer(sessions, many=True, read_only=True).data
-
+    
 
 class TestCreateUpdateSerializer(ModelSerializer):
     class Meta:
@@ -64,6 +65,7 @@ class TestCreateUpdateSerializer(ModelSerializer):
             "status",
             "free",
             "syllabus",
+            "registered_batches" # FIXME: Should be shown to owner institute only
         )
         extra_kwargs = {
             "test_series": {"required": False},

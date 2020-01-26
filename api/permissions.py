@@ -41,10 +41,10 @@ class IsRegisteredForTest(IsStudentOwner):
             return super().has_permission(request, view) and (
                 request.user.student
                 in test.registered_students.all()
-                # or Enrollment.objects.filter(
-                #     batch__in=test.registered_batches.all(), student=request.user.student
-                # ).count()
-                # != 0
+                or Enrollment.objects.filter(
+                    batch__in=test.registered_batches.all(), student=request.user.student
+                ).count()
+                != 0
             )
         except:
             return False
