@@ -4,7 +4,7 @@ from rest_framework.serializers import (
     StringRelatedField,
 )
 
-from api.models import Session, Test
+from api.models import Session, Test, TestSeries
 
 
 class SessionListSerializer(ModelSerializer):
@@ -33,7 +33,7 @@ class TestListSerializer(ModelSerializer):
             "free",
             "syllabus",
             "sessions",
-            "registered_batches"
+            "registered_batches",
         )
 
     def get_institute(self, obj):
@@ -44,7 +44,7 @@ class TestListSerializer(ModelSerializer):
         if user.is_authenticated and user.is_student:
             sessions = Session.objects.filter(test=obj, student=user.student)
             return SessionListSerializer(sessions, many=True, read_only=True).data
-    
+
 
 class TestCreateUpdateSerializer(ModelSerializer):
     class Meta:
@@ -65,12 +65,22 @@ class TestCreateUpdateSerializer(ModelSerializer):
             "status",
             "free",
             "syllabus",
-            "registered_batches" # FIXME: Should be shown to owner institute only
+            "registered_batches",  # FIXME: Should be shown to owner institute only
         )
         extra_kwargs = {
             "test_series": {"required": False},
             "status": {"read_only": True},
         }
+
+    def create(self, validated_data):
+        exam = validated_data.get("exam", None)
+        test_series = validated_data.get("test_series", [])
+
+        if test_series and exam:
+            for ts in test_series:
+                ts.exams.add(exam)
+
+        return super().create(validated_data)
 
 
 class TestSerializer(ModelSerializer):

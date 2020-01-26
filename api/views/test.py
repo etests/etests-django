@@ -42,7 +42,6 @@ class TestListCreateView(ListCreateAPIView):
         return None
 
     def perform_create(self, serializer):
-        # TODO: Add exams property to TestSeries
         serializer.save(institute=self.request.user.institute)
 
 
