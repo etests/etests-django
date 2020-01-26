@@ -3,6 +3,7 @@
 .venv
 env/
 venv/
+pypy_venv/
 ENV/
 env.bak/
 venv.bak/

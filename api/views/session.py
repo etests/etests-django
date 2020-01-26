@@ -10,8 +10,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.models import Session, Test
-from api.permissions import *
-from api.serializers.session import *
+from api.permissions import (
+    IsStudentOwner,
+    IsInstituteOwner,
+    IsRegisteredForTest,
+    ReadOnly,
+)
+from api.serializers.session import SessionSerializer, RanksSerializer
 from api.utils import SessionEvaluation, generate_ranks
 
 

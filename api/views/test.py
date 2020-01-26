@@ -7,7 +7,11 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 from api.models import Batch, Exam, Test
 from api.permissions import *
-from api.serializers.test import *
+from api.serializers.test import (
+    TestSerializer,
+    TestListSerializer,
+    TestCreateSerializer,
+)
 
 
 class TestListView(ListAPIView):

@@ -8,12 +8,6 @@ from api.ses import send_email
 from .test import TestSerializer
 
 
-class SessionListSerializer(ModelSerializer):
-    class Meta:
-        model = Session
-        fields = ("id", "practice", "checkin_time", "completed")
-
-
 class SessionSerializer(ModelSerializer):
     test = TestSerializer(read_only=True)
 
