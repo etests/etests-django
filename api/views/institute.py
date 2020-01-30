@@ -12,7 +12,19 @@ class InstitutesListView(ListAPIView):
     serializer_class = InstituteListSerializer
 
     def get_queryset(self):
-        return Institute.objects.filter(verified=True, show=True)
+        queryset =  Institute.objects.filter(verified=True, show=True)
+        user = self.request.user
+        if user.is_authenticated:
+            queryset = queryset.filter(user__country=user.country)
+        else:
+            try:
+                queryset = queryset.filter(
+                    user__country__name=get_client_country(self.request)
+                )
+            except:
+                pass
+        return queryset
+
 
 # DEPRECATE
 class JoinedInstitutesView(ListAPIView):
@@ -21,8 +33,6 @@ class JoinedInstitutesView(ListAPIView):
 
     def get_queryset(self):
         if self.request.user.is_student:
-            return Institute.objects.filter(
-                students=self.request.user.student, verified=True
-            )
+            return self.request.user.student.institutes.filter(verified=True).distinct()
         else:
             return None

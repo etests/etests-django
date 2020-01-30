@@ -1,10 +1,17 @@
+import razorpay
+from django.conf import settings
 from rest_framework.serializers import (
     ModelSerializer,
     SerializerMethodField,
     StringRelatedField,
-    ValidationError
+    ValidationError,
 )
-from api.models import Payment, AITSTransaction, Transaction, CreditUse, Tag, Question
+
+from api.models import TestSeriesTransaction, CreditUse, Payment, Question, Transaction
+
+RAZORPAY_CLIENT = razorpay.Client(
+    auth=(settings.RAZORPAY_KEY, settings.RAZORPAY_SECRET)
+)
 
 
 class PaymentSerializer(ModelSerializer):
@@ -13,9 +20,23 @@ class PaymentSerializer(ModelSerializer):
         fields = ("transaction_id", "receipt", "user", "amount", "test_series")
 
     def validate_test_series(self, test_series):
-        if Payment.objects.filter(user=self.context.get("request").user, test_series=test_series):
+        if Payment.objects.filter(
+            user=self.context.get("request").user, test_series=test_series
+        ):
             raise ValidationError("You have already made a payment")
         return test_series
+
+    def validate(self, attrs):
+        payment_id = attrs.get("transaction_id")
+        amount = attrs.get("test_series").price * 100
+        RAZORPAY_CLIENT.payment.capture(payment_id, amount=100)
+        payment = RAZORPAY_CLIENT.payment.fetch(payment_id)
+        if not payment["error_code"]:
+            # send_email(self.context.get("request").user.email, "", "")
+            attrs["verified"] = True
+            return attrs
+        else:
+            raise ValidationError("Payment failed")
 
 
 class PaymentListSerializer(ModelSerializer):
@@ -50,7 +71,7 @@ class TestSeriesTransactionSerializer(ModelSerializer):
     test_series = StringRelatedField(many=True)
 
     class Meta:
-        model = AITSTransaction
+        model = TestSeriesTransaction
         fields = "__all__"
 
 

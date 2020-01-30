@@ -1,23 +1,38 @@
-from api.serializers.testseries import TestSeriesSerializer
-from rest_framework.permissions import IsAdminUser
-
 from rest_framework.generics import (
     ListAPIView,
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
 )
-from api.permissions import *
+from rest_framework.permissions import IsAdminUser
+
 from api.models import TestSeries
+from api.permissions import *
+from api.serializers.testseries import TestSeriesSerializer
+
+from api.utils import get_client_country
 
 
 class TestSeriesListView(ListAPIView):
     permission_classes = (ReadOnly,)
     serializer_class = TestSeriesSerializer
 
-    filterset_fields = ("institute", "exams",)
+    filterset_fields = ("institute", "exams")
 
     def get_queryset(self):
-        return TestSeries.objects.filter(institute__verified=True, visible=True)
+        queryset = TestSeries.objects.filter(
+            institute__verified=True, visible=True
+        ).exclude(tests=None)
+        user = self.request.user
+        if user.is_authenticated:
+            queryset = queryset.filter(institute__user__country=user.country)
+        else:
+            try:
+                queryset = queryset.filter(
+                    institute__user__country__name=get_client_country(self.request)
+                )
+            except:
+                pass
+        return queryset
 
 
 class TestSeriesListCreateView(ListCreateAPIView):

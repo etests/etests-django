@@ -4,8 +4,19 @@ import string
 from collections import namedtuple
 from importlib import import_module
 
+from django.contrib.gis.geoip2 import GeoIP2
 from django.utils.text import slugify
 from six import string_types
+
+
+def get_client_country(request):
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(",")[0]
+    else:
+        ip = request.META.get("REMOTE_ADDR")
+    g = GeoIP2()
+    return g.country(ip).get("country_code")
 
 
 def random_key(length=8):

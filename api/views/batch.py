@@ -13,9 +13,7 @@ class BatchListView(generics.ListAPIView):
 
     def get_queryset(self):
         if self.request.user.is_student:
-            return Batch.objects.filter(
-                institute__in=self.request.user.student.institutes
-            )
+            return self.request.user.student.batches()
         elif self.request.user.is_institute:
             return Batch.objects.filter(institute=self.request.user.institute)
         elif self.request.user.is_staff:
@@ -35,8 +33,6 @@ class BatchListCreateView(generics.ListCreateAPIView):
                 return Batch.objects.filter(institute=self.request.user.institute)
             elif self.request.user.is_staff:
                 return Batch.objects.all()
-        else:
-            return None
 
     def perform_create(self, serializer):
         serializer.save(institute=self.request.user.institute)
@@ -53,8 +49,6 @@ class BatchRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
                 return Batch.objects.filter(institute=self.request.user.institute)
             elif self.request.user.is_staff:
                 return Batch.objects.all()
-        else:
-            return None
 
 
 class BatchJoinView(generics.GenericAPIView):

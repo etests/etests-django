@@ -42,7 +42,7 @@ urlpatterns = [
     path("images/", csrf_exempt(common.UploadQuestionImageView.as_view())),
     path("institutes/joined/", institute.JoinedInstitutesView.as_view()),
     path("institutes/", institute.InstitutesListView.as_view()),
-    path("exams/", common.ExamListView.as_view({"get": "list"})),
+    path("exams/", common.ExamListView.as_view()),
     # path("subjects/", common.SubjectListView.as_view({"get": "list"})),
     # path("topics/", common.TopicListView.as_view({"get": "list"})),
     path("testseries/", testseries.TestSeriesListView.as_view()),

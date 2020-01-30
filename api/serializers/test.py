@@ -94,7 +94,6 @@ class TestSerializer(ModelSerializer):
             "institute",
             "status",
             "aits",
-            "tags",
             "date_added",
             "activation_time",
             "closing_time",

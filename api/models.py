@@ -17,10 +17,10 @@ from django.db.models.signals import pre_save
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
-
-from etests.storage_backends import *
+from django_countries.fields import CountryField
 
 from api.utils import *
+from etests.storage_backends import *
 
 
 class MyUserManager(BaseUserManager):
@@ -49,8 +49,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=100)
     email = models.EmailField(unique=True, blank=True, null=True)
     phone = models.CharField(max_length=15, unique=True, blank=True, null=True)
-    state = models.CharField(max_length=100)
-    city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    country = CountryField(null=True, blank=True)
     date_joined = models.DateField(auto_now_add=True)
     is_staff = models.BooleanField(_("staff status"), default=False)
     is_active = models.BooleanField(_("active"), default=True)
@@ -181,6 +182,7 @@ class Exam(models.Model):
     id = models.AutoField(primary_key=True)
     position = models.IntegerField("position")
     name = models.CharField(max_length=200)
+    countries = CountryField(multiple=True, blank=True)
     slug = models.SlugField(unique=False, editable=False)
     image = models.CharField(
         default="exam.png", max_length=20 * 1024, blank=True, null=True
@@ -200,31 +202,6 @@ class Exam(models.Model):
         super(Exam, self).save(*args, **kwargs)
 
 
-class AccessCode(models.Model):
-    id = models.AutoField(primary_key=True)
-    limit = models.IntegerField()
-    key = models.CharField(default=random_key, max_length=10, unique=True)
-    use_count = models.IntegerField(default=0)
-
-    def __str__(self):
-        return self.key
-
-
-class Tag(models.Model):
-    id = models.AutoField(primary_key=True)
-    TAG_TYPE_CHOICES = (("EXAM", "Exam"), ("TOPIC", "Topic"), ("OTHER", "Others"))
-    name = models.CharField(max_length=50)
-    type = models.CharField(max_length=10, choices=TAG_TYPE_CHOICES)
-
-    def __str__(self):
-        return self.name
-
-
-class Offer(models.Model):
-    title = models.CharField(max_length=80)
-    description = models.CharField(max_length=1024)
-
-
 class TestSeries(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=200)
@@ -233,7 +210,6 @@ class TestSeries(models.Model):
     slug = models.SlugField(unique=True, editable=False)
     visible = models.BooleanField(default=False)
     exams = models.ManyToManyField(Exam, related_name="test_series", blank=True)
-    offers = models.ManyToManyField(Offer, related_name="test_series", blank=True)
     discount = models.IntegerField(default=0)
     institute = models.ForeignKey(
         Institute,
@@ -243,14 +219,6 @@ class TestSeries(models.Model):
         on_delete=models.CASCADE,
     )
     registered_students = models.ManyToManyField(Student, blank=True)
-    access_code = models.ForeignKey(
-        AccessCode,
-        related_name="test_series",
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
-    )
-    tags = models.ManyToManyField(Tag, related_name="test_series", blank=True)
     tests = models.ManyToManyField("Test", related_name="test_series", blank=True)
 
     class Meta:
@@ -284,7 +252,6 @@ class Test(models.Model):
         Exam, related_name="tests", blank=True, null=True, on_delete=models.SET_NULL
     )
     aits = models.BooleanField(default=False)
-    tags = models.ManyToManyField(Tag, blank=True)
     date_added = models.DateTimeField(auto_now_add=True)
     activation_time = models.DateTimeField(blank=True, null=True)
     closing_time = models.DateTimeField(blank=True, null=True)
@@ -509,7 +476,7 @@ class ResetCode(models.Model):
     done = models.BooleanField(default=False)
 
 
-class AITSTransaction(models.Model):
+class TestSeriesTransaction(models.Model):
     TRANSACTIONS_TYPE_CHOICES = (
         ("CASH", "Cash"),
         ("UPI", "UPI"),
@@ -529,19 +496,13 @@ class AITSTransaction(models.Model):
     test_series = models.ManyToManyField(
         TestSeries, related_name="aits_transactions", blank=False
     )
-    receipt = models.FileField(storage=PrivateMediaStorage(), null=True)
+    receipt = models.FileField(storage=PrivateMediaStorage(), null=True, blank=True)
 
     def __str__(self):
-        return (
-            self.institute.user.name
-            + "/Mode-"
-            + self.mode
-            + "/TID-"
-            + self.transaction_id
-        )
+        return f"{self.institute.user.name} / {self.mode} / {self.transaction_id}"
 
     class Meta:
-        verbose_name_plural = "AITS Transactions"
+        verbose_name_plural = "Test Series Transactions"
 
 
 class Question(models.Model):
@@ -580,4 +541,3 @@ class QuestionImage(models.Model):
     file = models.ImageField(
         storage=PublicMediaStorage(), validators=[validate_file_size]
     )
-

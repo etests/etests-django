@@ -14,28 +14,37 @@ from rest_framework.viewsets import ModelViewSet, ViewSet
 
 from api.forms import PaymentForm, QuestionImageUploadForm
 from api.models import (
-    AITSTransaction,
+    TestSeriesTransaction,
     Exam,
     Payment,  # Subject,; Topic,
     QuestionImage,
     ResetCode,
-    Tag,
     Transaction,
 )
 from api.permissions import IsInstituteOwner, ReadOnly
 from api.serializers.common import *
 from api.serializers.exam import *
+from api.utils import get_client_country
 from ml.preprocessing import clean
 
 
-class ExamListView(ViewSet):
+class ExamListView(ListAPIView):
     permission_classes = (ReadOnly,)
+    serializer_class = ExamSerializer
 
-    def list(self, request):
-        queryset = Exam.objects.filter()
-        serializer = ExamSerializer(queryset, many=True, context={"request": request})
-        return Response(serializer.data)
-
+    def get_queryset(self):
+        queryset = Exam.objects.all()
+        user = self.request.user
+        if user.is_authenticated:
+            queryset = queryset.filter(countries=user.country)
+        else:
+            try:
+                queryset = queryset.filter(
+                    countries=get_client_country(self.request)
+                )
+            except:
+                pass
+        return queryset
 
 # class SubjectListView(ViewSet):
 #     permission_classes = (ReadOnly,)
@@ -71,7 +80,7 @@ class TestSeriesTransactionListView(ListAPIView):
 
     def get_queryset(self):
         if self.request.user.is_institute:
-            return AITSTransaction.objects.filter(institute=self.request.user.institute)
+            return TestSeriesTransaction.objects.filter(institute=self.request.user.institute)
         return None
 
 
