@@ -23,12 +23,12 @@ class TestSeriesListView(ListAPIView):
             institute__verified=True, visible=True
         ).exclude(tests=None)
         user = self.request.user
-        if user.is_authenticated:
+        if user.is_authenticated and user.country:
             queryset = queryset.filter(institute__user__country=user.country)
         else:
             try:
                 queryset = queryset.filter(
-                    institute__user__country__name=get_client_country(self.request)
+                    institute__user__country=get_client_country(self.request)
                 )
             except:
                 pass

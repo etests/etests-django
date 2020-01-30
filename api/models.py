@@ -529,7 +529,7 @@ class Question(models.Model):
     difficulty = models.CharField(max_length=10, choices=LEVELS)
 
 
-def validate_file_size(self, file):
+def validate_file_size(file):
     if file.size > 256000:
         raise ValidationError("The maximum image size is 250 KB.")
     else:

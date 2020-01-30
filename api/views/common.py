@@ -35,7 +35,7 @@ class ExamListView(ListAPIView):
     def get_queryset(self):
         queryset = Exam.objects.all()
         user = self.request.user
-        if user.is_authenticated:
+        if user.is_authenticated and user.country:
             queryset = queryset.filter(countries=user.country)
         else:
             try:
@@ -119,7 +119,7 @@ class TestSeriesBuyersView(ListAPIView):
             return None
 
 
-class UploadQuestionImageView(APIView):
+class UploadImageView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
@@ -145,7 +145,7 @@ class UploadQuestionImageView(APIView):
         if form.is_valid():
             image = form.save()
             return JsonResponse(
-                {"uploaded": 1, "fileName": image.file.name, "url": image.file.url}
+                {"uploaded": 1, "file_name": image.file.name, "url": image.file.url}
             )
         else:
             return JsonResponse(

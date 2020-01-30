@@ -6,6 +6,8 @@ from api.models import Institute
 from api.permissions import IsStudentOwner, ReadOnly
 from api.serializers.institute import *
 
+from api.utils import get_client_country
+
 
 class InstitutesListView(ListAPIView):
     permission_classes = (ReadOnly,)
@@ -14,12 +16,12 @@ class InstitutesListView(ListAPIView):
     def get_queryset(self):
         queryset =  Institute.objects.filter(verified=True, show=True)
         user = self.request.user
-        if user.is_authenticated:
+        if user.is_authenticated and user.country:
             queryset = queryset.filter(user__country=user.country)
         else:
             try:
                 queryset = queryset.filter(
-                    user__country__name=get_client_country(self.request)
+                    user__country=get_client_country(self.request)
                 )
             except:
                 pass

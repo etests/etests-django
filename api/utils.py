@@ -10,7 +10,7 @@ from six import string_types
 
 
 def get_client_country(request):
-    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", None)
     if x_forwarded_for:
         ip = x_forwarded_for.split(",")[0]
     else:

@@ -39,7 +39,7 @@ urlpatterns = [
         "enrollments/<int:pk>/",
         enrollment.EnrollmentRetrieveUpdateDestoryView.as_view(),
     ),
-    path("images/", csrf_exempt(common.UploadQuestionImageView.as_view())),
+    path("images/", csrf_exempt(common.UploadImageView.as_view())),
     path("institutes/joined/", institute.JoinedInstitutesView.as_view()),
     path("institutes/", institute.InstitutesListView.as_view()),
     path("exams/", common.ExamListView.as_view()),
