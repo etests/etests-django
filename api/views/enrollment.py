@@ -13,11 +13,11 @@ class EnrollmentView(ListCreateAPIView):
     serializer_class = EnrollmentSerializer
 
     def get_queryset(self):
-        if self.request.user.is_institute:
-            return Enrollment.objects.filter(institute=self.request.user.institute)
-        elif self.request.user.is_staff:
-            return Enrollment.objects.all()
-        return None
+        if self.request.user.is_authenticated:
+            if self.request.user.is_institute:
+                return Enrollment.objects.filter(institute=self.request.user.institute)
+            elif self.request.user.is_staff:
+                return Enrollment.objects.all()
 
     def create(self, request, *args, **kwargs):
         enrollments = []
@@ -46,13 +46,12 @@ class EnrollmentRetrieveUpdateDestoryView(RetrieveUpdateDestroyAPIView):
     serializer_class = EnrollmentSerializer
 
     def get_queryset(self):
-        if self.request.user.is_institute:
-            return Enrollment.objects.filter(institute=self.request.user.institute)
-        elif self.request.user.is_student:
-            return Enrollment.objects.filter(
-                institute=self.request.user.student.institute
-            )
-        elif self.request.user.is_staff:
-            return Enrollment.objects.all()
-        else:
-            return None
+        if self.request.user.is_authenticated:
+            if self.request.user.is_institute:
+                return Enrollment.objects.filter(institute=self.request.user.institute)
+            elif self.request.user.is_student:
+                return Enrollment.objects.filter(
+                    institute=self.request.user.student.institute
+                )
+            elif self.request.user.is_staff:
+                return Enrollment.objects.all()

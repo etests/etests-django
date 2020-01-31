@@ -15,7 +15,7 @@ class IsInstituteOwner(BasePermission):
         return (
             request.user.is_authenticated
             and request.user.is_institute
-            and (not obj.institute or obj.institute == request.user.institute)
+            and (obj.institute == request.user.institute)
         )
 
 
@@ -39,10 +39,10 @@ class IsRegisteredForTest(IsStudentOwner):
             test_id = view.kwargs.get("test_id", None)
             test = Test.objects.get(id=test_id)
             return super().has_permission(request, view) and (
-                request.user.student
-                in test.registered_students.all()
+                request.user.student in test.registered_students.all()
                 or Enrollment.objects.filter(
-                    batch__in=test.registered_batches.all(), student=request.user.student
+                    batch__in=test.registered_batches.all(),
+                    student=request.user.student,
                 ).count()
                 != 0
                 or test.free

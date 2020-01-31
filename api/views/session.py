@@ -26,13 +26,13 @@ class SessionListView(ListAPIView):
     serializer_class = SessionSerializer
 
     def get_queryset(self):
-        if self.request.user.is_staff:
-            return Session.objects.filter(completed=True)
-        elif self.request.user.is_student:
-            return Session.objects.filter(
-                student=self.request.user.student, completed=True
-            )
-        return None
+        if self.request.user.is_authenticated:
+            if self.request.user.is_staff:
+                return Session.objects.filter(completed=True)
+            elif self.request.user.is_student:
+                return Session.objects.filter(
+                    student=self.request.user.student, completed=True
+                )
 
 
 class SessionCreateRetrieveView(CreateAPIView, RetrieveAPIView):
@@ -41,9 +41,10 @@ class SessionCreateRetrieveView(CreateAPIView, RetrieveAPIView):
     lookup_field = "test_id"
 
     def get_queryset(self):
-        return Session.objects.filter(
-            completed=False, student=self.request.user.student
-        ).prefetch_related("test")
+        if self.request.user.is_authenticated and self.request.user.is_student:
+            return Session.objects.filter(
+                completed=False, student=self.request.user.student
+            ).prefetch_related("test")
 
     def perform_create(self, serializer):
         serializer.save(
@@ -56,7 +57,7 @@ class SessionUpdateView(UpdateAPIView):
     serializer_class = SessionSerializer
 
     def get_queryset(self):
-        if self.request.user.is_student:
+        if self.request.user.is_authenticated and self.request.user.is_student:
             return Session.objects.filter(
                 completed=False, student=self.request.user.student
             )
@@ -69,13 +70,15 @@ class ResultView(RetrieveAPIView):
         return SessionSerializer
 
     def get_queryset(self):
-        if self.request.user.is_student:
-            return Session.objects.filter(student=self.request.user.student)
-        elif self.request.user.is_institute:
-            return Session.objects.filter(test__institute=self.request.user.institute)
-        elif self.request.user.is_staff:
-            return Session.objects.all()
-        return None
+        if self.request.user.is_authenticated:
+            if self.request.user.is_student:
+                return Session.objects.filter(student=self.request.user.student)
+            elif self.request.user.is_institute:
+                return Session.objects.filter(
+                    test__institute=self.request.user.institute
+                )
+            elif self.request.user.is_staff:
+                return Session.objects.all()
 
 
 class RankListView(APIView):

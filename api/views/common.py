@@ -12,12 +12,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ViewSet
 
-from api.forms import PaymentForm, QuestionImageUploadForm
+from api.forms import PaymentForm, ImageUploadForm
 from api.models import (
     TestSeriesTransaction,
     Exam,
     Payment,  # Subject,; Topic,
-    QuestionImage,
+    Image,
     ResetCode,
     Transaction,
 )
@@ -39,12 +39,11 @@ class ExamListView(ListAPIView):
             queryset = queryset.filter(countries=user.country)
         else:
             try:
-                queryset = queryset.filter(
-                    countries=get_client_country(self.request)
-                )
+                queryset = queryset.filter(countries=get_client_country(self.request))
             except:
                 pass
         return queryset
+
 
 # class SubjectListView(ViewSet):
 #     permission_classes = (ReadOnly,)
@@ -69,9 +68,8 @@ class TransactionListView(ListAPIView):
     serializer_class = TransactionSerializer
 
     def get_queryset(self):
-        if self.request.user.is_institute:
+        if self.request.user.is_authenticated and self.request.user.is_institute:
             return Transaction.objects.filter(institute=self.request.user.institute)
-        return None
 
 
 class TestSeriesTransactionListView(ListAPIView):
@@ -79,9 +77,10 @@ class TestSeriesTransactionListView(ListAPIView):
     serializer_class = TestSeriesTransactionSerializer
 
     def get_queryset(self):
-        if self.request.user.is_institute:
-            return TestSeriesTransaction.objects.filter(institute=self.request.user.institute)
-        return None
+        if self.request.user.is_authenticated and self.request.user.is_institute:
+            return TestSeriesTransaction.objects.filter(
+                institute=self.request.user.institute
+            )
 
 
 class CreditListView(ListAPIView):
@@ -89,9 +88,8 @@ class CreditListView(ListAPIView):
     serializer_class = CreditUseSerializer
 
     def get_queryset(self):
-        if self.request.user.is_institute:
+        if self.request.user.is_authenticated and self.request.user.is_institute:
             return CreditUse.objects.filter(institute=self.request.user.institute)
-        return None
 
 
 class PaymentView(CreateAPIView):
@@ -107,16 +105,15 @@ class TestSeriesBuyersView(ListAPIView):
     serializer_class = PaymentListSerializer
 
     def get_queryset(self):
-        if self.request.user.is_institute:
-            return Payment.objects.filter(
-                test_series__institute=self.request.user.institute,
-                verified=True,
-                show=True,
-            )
-        elif self.request.user.is_staff:
-            return Payment.objects.filter(verified=True, show=True)
-        else:
-            return None
+        if self.request.user.is_authenticated:
+            if self.request.user.is_institute:
+                return Payment.objects.filter(
+                    test_series__institute=self.request.user.institute,
+                    verified=True,
+                    show=True,
+                )
+            elif self.request.user.is_staff:
+                return Payment.objects.filter(verified=True, show=True)
 
 
 class UploadImageView(APIView):
@@ -141,7 +138,7 @@ class UploadImageView(APIView):
         else:
             request.FILES["file"] = uploaded_image
 
-        form = QuestionImageUploadForm(request.POST, request.FILES)
+        form = ImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
             image = form.save()
             return JsonResponse(

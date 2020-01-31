@@ -174,9 +174,9 @@ class SessionAdmin(admin.ModelAdmin):
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ("id", "type", "subjectIndex", "topicIndex", "difficulty")
+    list_display = ("id", "type", "subject_index", "topic_index", "difficulty")
     list_display_links = ("id",)
-    list_filter = ("type", "subjectIndex", "topicIndex", "difficulty")
+    list_filter = ("type", "subject_index", "topic_index", "difficulty")
 
 
 @admin.register(ResetCode)

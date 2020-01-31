@@ -28,18 +28,18 @@ class RetrieveQuestionAPIView(APIView):
         params = request.data
         type = params.get("type", None)
         difficulty = params.get("difficulty", None)
-        subjectIndex = params.get("subjectIndex", None)
-        topicIndex = params.get("topicIndex", None)
+        subject_index = params.get("subject_index", None)
+        topic_index = params.get("topic_index", None)
 
         questions = Question.objects.all()
         if type:
             questions = questions.filter(type=type)
         if difficulty:
             questions = questions.filter(difficulty=difficulty)
-        if subjectIndex:
-            questions = questions.filter(subjectIndex=subjectIndex)
-            if topicIndex:
-                questions = questions.filter(topicIndex=topicIndex)
+        if subject_index:
+            questions = questions.filter(subject_index=subject_index)
+            if topic_index:
+                questions = questions.filter(topic_index=topic_index)
 
         try:
             count = questions.count()

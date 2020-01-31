@@ -12,14 +12,13 @@ class BatchListView(generics.ListAPIView):
     serializer_class = BatchSerializer
 
     def get_queryset(self):
-        if self.request.user.is_student:
-            return self.request.user.student.batches()
-        elif self.request.user.is_institute:
-            return Batch.objects.filter(institute=self.request.user.institute)
-        elif self.request.user.is_staff:
-            return Batch.objects.all()
-        else:
-            return None
+        if self.request.user.is_authenticated:
+            if self.request.user.is_student:
+                return self.request.user.student.batches()
+            elif self.request.user.is_institute:
+                return Batch.objects.filter(institute=self.request.user.institute)
+            elif self.request.user.is_staff:
+                return Batch.objects.all()
 
 
 

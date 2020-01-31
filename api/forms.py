@@ -13,7 +13,7 @@ from django.utils.translation import gettext_lazy as _
 
 from api.models import ResetCode
 
-from .models import Payment, QuestionImage, User
+from .models import Payment, Image, User
 from .ses import send_email
 from .utils import random_key
 
@@ -94,7 +94,7 @@ class PaymentForm(forms.ModelForm):
         fields = ("transaction_id", "receipt", "user", "amount", "test_series")
 
 
-class QuestionImageUploadForm(forms.ModelForm):
+class ImageUploadForm(forms.ModelForm):
     class Meta:
-        model = QuestionImage
+        model = Image
         fields = ("file",)

@@ -40,17 +40,17 @@ class TestSeriesListCreateView(ListCreateAPIView):
     serializer_class = TestSeriesSerializer
 
     def get_queryset(self):
-        if self.request.user.is_institute:
-            return TestSeries.objects.filter(institute=self.request.user.institute)
-        elif self.request.user.is_student:
-            return TestSeries.objects.filter(
-                registered_students=self.request.user.student,
-                visible=True,
-                institute__verified=True,
-            )
-        elif self.request.user.is_staff:
-            return TestSeries.objects.all()
-        return None
+        if self.request.user.is_authenticated:
+            if self.request.user.is_institute:
+                return TestSeries.objects.filter(institute=self.request.user.institute)
+            elif self.request.user.is_student:
+                return TestSeries.objects.filter(
+                    registered_students=self.request.user.student,
+                    visible=True,
+                    institute__verified=True,
+                )
+            elif self.request.user.is_staff:
+                return TestSeries.objects.all()
 
     def perform_create(self, serializer):
         serializer.save(institute=self.request.user.institute)

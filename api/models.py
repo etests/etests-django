@@ -531,8 +531,8 @@ class Question(models.Model):
     answer = JSONField()
     solution = models.CharField(max_length=20000)
     type = models.CharField(max_length=10, choices=TYPES)
-    subjectIndex = models.IntegerField()
-    topicIndex = models.IntegerField()
+    subject_index = models.IntegerField()
+    topic_index = models.IntegerField()
     difficulty = models.CharField(max_length=10, choices=LEVELS)
 
 
@@ -543,7 +543,7 @@ def validate_file_size(file):
         return file
 
 
-class QuestionImage(models.Model):
+class Image(models.Model):
     id = models.AutoField(primary_key=True)
     file = models.ImageField(
         storage=PublicMediaStorage(), validators=[validate_file_size]
