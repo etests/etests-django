@@ -1,8 +1,3 @@
-from io import BytesIO
-
-import cv2
-import numpy as np
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import JsonResponse
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.authentication import SessionAuthentication
@@ -25,7 +20,7 @@ from api.permissions import IsInstituteOwner, ReadOnly
 from api.serializers.common import *
 from api.serializers.exam import *
 from api.utils import get_client_country
-from ml.preprocessing import clean
+from api.utils import clean_iamge
 
 
 class ExamListView(ListAPIView):
@@ -121,17 +116,8 @@ class UploadImageView(APIView):
 
     def post(self, request):
         uploaded_image = request.FILES.get("upload")
-        raw_image = cv2.imdecode(
-            np.fromstring(uploaded_image.read(), np.uint8), cv2.IMREAD_UNCHANGED
-        )
-        cleaned_image = clean(raw_image)
 
-        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 60]
-        _, image_buffer = cv2.imencode(".jpg", cleaned_image, encode_param)
-
-        processed_image = SimpleUploadedFile(
-            "question.jpg", BytesIO(image_buffer).getvalue()
-        )
+        processed_image = clean_iamge(uploaded_image)
 
         if processed_image.size < uploaded_image.size:
             request.FILES["file"] = processed_image
