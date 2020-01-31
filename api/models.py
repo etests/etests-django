@@ -294,7 +294,9 @@ class Test(models.Model):
         return self.name
 
     def evaluate_sessions(self, include_practice=False):
-        sessions = self.sessions.filter(practice=include_practice, marks__isnull=True)
+        sessions = self.sessions.filter(marks__isnull=True)
+        if not include_practice:
+            sessions = sessions.exclude(practice=True)
         for session in sessions:
             session.evaluate(commit=False)
         Session.objects.bulk_update(sessions, ["marks", "result", "completed"])

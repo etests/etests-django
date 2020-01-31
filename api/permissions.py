@@ -45,6 +45,7 @@ class IsRegisteredForTest(IsStudentOwner):
                     batch__in=test.registered_batches.all(), student=request.user.student
                 ).count()
                 != 0
+                or test.free
             )
         except:
             return False
