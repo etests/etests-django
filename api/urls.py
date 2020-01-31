@@ -62,6 +62,5 @@ urlpatterns = [
     path("payments/", csrf_exempt(common.PaymentView.as_view())),
     path("testseries/transactions/", common.TestSeriesTransactionListView.as_view()),
     path("testseries/buyers/", common.TestSeriesBuyersView.as_view()),
-    path("questions/", question.AddQuestionAPIView.as_view()),
-    path("questions/", question.RetrieveQuestionAPIView.as_view()),
+    path("questions/", question.QuestionView.as_view())
 ]

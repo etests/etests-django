@@ -29,7 +29,7 @@ class PaymentSerializer(ModelSerializer):
     def validate(self, attrs):
         payment_id = attrs.get("transaction_id")
         amount = attrs.get("test_series").price * 100
-        RAZORPAY_CLIENT.payment.capture(payment_id, amount=100)
+        RAZORPAY_CLIENT.payment.capture(payment_id, amount=amount)
         payment = RAZORPAY_CLIENT.payment.fetch(payment_id)
         if not payment["error_code"]:
             # send_email(self.context.get("request").user.email, "", "")
@@ -79,4 +79,3 @@ class QuestionSerializer(ModelSerializer):
     class Meta:
         model = Question
         fields = "__all__"
-        extra_kwargs = {"id": {"read_only": True}}

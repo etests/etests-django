@@ -1,26 +1,26 @@
-import random
-import string
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 from django.contrib.auth.models import (
     AbstractBaseUser,
-    AbstractUser,
     BaseUserManager,
     PermissionsMixin,
 )
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.postgres.fields import ArrayField, JSONField
+from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
-from django.db import migrations, models
+from django.db import models
 from django.db.models.signals import pre_save
 from django.utils import timezone
-from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from django_countries.fields import CountryField
 
-from api.utils import *
-from etests.storage_backends import *
+from api.utils import (
+    SessionEvaluation,
+    generate_ranks,
+    get_unique_slug,
+    random_key,
+    unique_random_key,
+)
+from etests.storage_backends import PublicMediaStorage, PrivateMediaStorage
 
 
 class MyUserManager(BaseUserManager):
@@ -529,11 +529,12 @@ class Question(models.Model):
     id = models.AutoField(primary_key=True)
     text = models.CharField(max_length=20000)
     answer = JSONField()
-    solution = models.CharField(max_length=20000)
+    solution = models.CharField(max_length=20000, null=True, blank=True)
     type = models.CharField(max_length=10, choices=TYPES)
     subject_index = models.IntegerField()
     topic_index = models.IntegerField()
     difficulty = models.CharField(max_length=10, choices=LEVELS)
+    tags = JSONField(default=list)
 
 
 def validate_file_size(file):
