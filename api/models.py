@@ -293,8 +293,8 @@ class Test(models.Model):
     def __str__(self):
         return self.name
 
-    def evaluate_sessions(self):
-        sessions = self.sessions.filter(practice=False, marks__isnull=True)
+    def evaluate_sessions(self, include_practice=False):
+        sessions = self.sessions.filter(practice=include_practice, marks__isnull=True)
         for session in sessions:
             session.evaluate(commit=False)
         Session.objects.bulk_update(sessions, ["marks", "result", "completed"])
@@ -344,6 +344,11 @@ class Session(models.Model):
             self.save()
 
     def save(self, *args, **kwargs):
+        duration = max(
+            self.test.time_alotted - (timezone.now() - self.checkin_time), timedelta(0)
+        )
+        duration -= timedelta(microseconds=duration.microseconds)
+        self.duration = duration
         if self.pk is None:
             self.completed = False
             self.current = {"question_index": 0, "section_index": 0}

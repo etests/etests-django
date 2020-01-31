@@ -39,8 +39,7 @@ class SessionSerializer(ModelSerializer):
 
     def get_test(self, obj):
         return TestSerializer(
-            obj.test,
-            context={"allow_answers": obj.practice or obj.test.status > 1},
+            obj.test, context={"allow_answers": obj.practice or obj.test.status > 1}
         ).data
 
     def create(self, validated_data):
