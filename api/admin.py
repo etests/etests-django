@@ -190,7 +190,7 @@ class ResetCodeAdmin(admin.ModelAdmin):
 class PaymentAdmin(admin.ModelAdmin):
     list_display = (
         "transaction_id",
-        "user",
+        "student",
         "test_series",
         "amount",
         "verified",
@@ -198,7 +198,7 @@ class PaymentAdmin(admin.ModelAdmin):
         "receipt",
     )
     list_display_links = ("transaction_id",)
-    list_filter = ("user", "test_series", "verified", "show")
+    list_filter = ("student", "test_series", "verified", "show")
 
 
 @admin.register(Transaction)

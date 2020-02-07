@@ -46,7 +46,7 @@ urlpatterns = [
     # path("subjects/", common.SubjectListView.as_view({"get": "list"})),
     # path("topics/", common.TopicListView.as_view({"get": "list"})),
     path("testseries/", testseries.TestSeriesListView.as_view()),
-    path("user/testseries/", testseries.TestSeriesListCreateView.as_view()),
+    path("testseries/user/", testseries.TestSeriesListCreateView.as_view()),
     path(
         "testseries/<int:pk>/", testseries.TestSeriesRetrieveUpdateDestoryView.as_view()
     ),

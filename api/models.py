@@ -178,6 +178,10 @@ class Student(models.Model):
         super(Student, self).save(*args, **kwargs)
 
 
+class Employee(models.Model):
+    qualification = models.CharField(max_length=500, blank=True, null=True)
+    address = models.CharField(max_length=1000, blank=True, null=True)
+
 class Exam(models.Model):
     id = models.AutoField(primary_key=True)
     position = models.IntegerField("position")
@@ -374,8 +378,12 @@ class Payment(models.Model):
     transaction_id = models.CharField(max_length=200)
     receipt = models.FileField(storage=PrivateMediaStorage(), null=True, blank=True)
     date_added = models.DateField(auto_now_add=True)
-    user = models.ForeignKey(
-        User, related_name="payments", blank=True, null=True, on_delete=models.SET_NULL
+    student = models.ForeignKey(
+        Student,
+        related_name="payments",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
     )
     amount = models.IntegerField(default=0)
     verified = models.BooleanField(default=False)
@@ -424,11 +432,7 @@ class Transaction(models.Model):
 
     def __str__(self):
         return (
-            self.institute.user.name
-            + "/Mode-"
-            + self.mode
-            + "/TID-"
-            + self.transaction_id
+            self.institute.user.name + " / " + self.mode + " / " + self.transaction_id
         )
 
     def save(self, *args, **kwargs):
@@ -531,9 +535,9 @@ class Question(models.Model):
     answer = JSONField()
     solution = models.CharField(max_length=20000, null=True, blank=True)
     type = models.CharField(max_length=10, choices=TYPES)
-    subject_index = models.IntegerField()
-    topic_index = models.IntegerField()
-    difficulty = models.CharField(max_length=10, choices=LEVELS)
+    subject_index = models.IntegerField(null=True, blank=True)
+    topic_index = models.IntegerField(null=True, blank=True)
+    difficulty = models.CharField(max_length=10, choices=LEVELS, null=True, blank=True)
     tags = JSONField(default=list)
 
 

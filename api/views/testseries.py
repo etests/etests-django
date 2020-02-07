@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAdminUser
 
 from api.models import TestSeries
 from api.permissions import *
-from api.serializers.testseries import TestSeriesSerializer
+from api.serializers.testseries import TestSeriesSerializer, UserTestSeriesSerializer
 
 from api.utils import get_client_country
 
@@ -37,7 +37,7 @@ class TestSeriesListView(ListAPIView):
 
 class TestSeriesListCreateView(ListCreateAPIView):
     permission_classes = (ReadOnly | IsInstituteOwner | IsAdminUser,)
-    serializer_class = TestSeriesSerializer
+    serializer_class = UserTestSeriesSerializer
 
     def get_queryset(self):
         if self.request.user.is_authenticated:

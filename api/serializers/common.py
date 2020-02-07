@@ -8,6 +8,7 @@ from rest_framework.serializers import (
 )
 
 from api.models import TestSeriesTransaction, CreditUse, Payment, Question, Transaction
+from .bulk import BulkSerializerMixin, BulkListSerializer
 
 RAZORPAY_CLIENT = razorpay.Client(
     auth=(settings.RAZORPAY_KEY, settings.RAZORPAY_SECRET)
@@ -17,11 +18,11 @@ RAZORPAY_CLIENT = razorpay.Client(
 class PaymentSerializer(ModelSerializer):
     class Meta:
         model = Payment
-        fields = ("transaction_id", "receipt", "user", "amount", "test_series")
+        fields = ("transaction_id", "receipt", "student", "amount", "test_series")
 
     def validate_test_series(self, test_series):
         if Payment.objects.filter(
-            user=self.context.get("request").user, test_series=test_series
+            student=self.context.get("request").user.student, test_series=test_series
         ):
             raise ValidationError("You have already made a payment")
         return test_series
@@ -75,7 +76,8 @@ class TestSeriesTransactionSerializer(ModelSerializer):
         fields = "__all__"
 
 
-class QuestionSerializer(ModelSerializer):
+class QuestionSerializer(BulkSerializerMixin, ModelSerializer):
     class Meta:
         model = Question
+        list_serializer_class = BulkListSerializer
         fields = "__all__"

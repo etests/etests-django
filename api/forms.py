@@ -88,11 +88,6 @@ class SetPasswordForm(forms.Form):
             self.user.save()
         return self.user
 
-class PaymentForm(forms.ModelForm):
-    class Meta:
-        model = Payment
-        fields = ("transaction_id", "receipt", "user", "amount", "test_series")
-
 
 class ImageUploadForm(forms.ModelForm):
     class Meta:

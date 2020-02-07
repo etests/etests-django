@@ -8,22 +8,6 @@ from api.models import TestSeries, Payment
 
 from .test import TestListSerializer
 
-
-class FilteredListSerializer(ListSerializer):
-    def to_representation(self, data):
-        if (
-            not self.context["request"].user.is_authenticated
-            or self.context["request"].user.is_student
-        ):
-            data = data.filter(institute__verified=True, visible=True)
-        elif self.context["request"].user.is_staff:
-            pass
-        elif self.context["request"].user.is_institute:
-            data = data.filter(institute=self.context["request"].user.institute)
-
-        return super(FilteredListSerializer, self).to_representation(data)
-
-
 class TestSeriesSerializer(ModelSerializer):
     tests = TestListSerializer(many=True, read_only=True)
     institute = SerializerMethodField()
@@ -31,7 +15,6 @@ class TestSeriesSerializer(ModelSerializer):
     status = SerializerMethodField()
 
     class Meta:
-        list_serializer_class = FilteredListSerializer
         model = TestSeries
         fields = (
             "id",
@@ -61,3 +44,18 @@ class TestSeriesSerializer(ModelSerializer):
     def get_institute(self, obj):
         return {"id": obj.institute.id, "name": obj.institute.user.name}
 
+
+class UserTestSeriesSerializer(ModelSerializer):
+    tests = TestListSerializer(many=True, read_only=True)
+    exams = StringRelatedField(many=True)
+
+    class Meta:
+        model = TestSeries
+        fields = (
+            "id",
+            "name",
+            "price",
+            "visible",
+            "exams",
+            "tests",
+        )

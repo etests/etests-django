@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ViewSet
 
-from api.forms import PaymentForm, ImageUploadForm
+from api.forms import ImageUploadForm
 from api.models import (
     TestSeriesTransaction,
     Exam,
