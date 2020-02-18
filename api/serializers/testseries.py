@@ -34,7 +34,7 @@ class TestSeriesSerializer(ModelSerializer):
             return 1
         else:
             payments = Payment.objects.filter(
-                user=self.context["request"].user, test_series=obj
+                student=self.context["request"].user.student, test_series=obj
             )
             if payments:
                 return 4 if payments[0].verified else 3
