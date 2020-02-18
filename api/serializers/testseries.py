@@ -47,7 +47,7 @@ class TestSeriesSerializer(ModelSerializer):
 
 class UserTestSeriesSerializer(ModelSerializer):
     tests = TestListSerializer(many=True, read_only=True)
-    exams = StringRelatedField(many=True)
+    exams = StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = TestSeries
