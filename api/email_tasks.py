@@ -1,13 +1,35 @@
 from .ses import send_email
-from .models import Institute, Test
+from .models import Institute, Test, Student, Session
 from django.db.models import Count
-from datetime import date, timedelta
+from datetime import timedelta
+from django.utils import timezone
 from django.template.loader import render_to_string
+
+
+def student_reminder(days=2):
+    for student in Student.objects.all():
+        last_n_days_sessions = student.sessions.filter(
+            checkin_time__gte=timezone.now() - timedelta(days=days)
+        )
+        sessions_count = last_n_days_sessions.count()
+        send_email(
+            student.user.email,
+            render_to_string("student_reminder/subject.txt"),
+            render_to_string(
+                "student_reminder/body.html",
+                {
+                    "name": student.user.name,
+                    "n": days,
+                    "sessions_count": sessions_count,
+                },
+            ),
+        )
+
 
 def email_institutes_test_report(days=5):
     for institute in Institute.objects.filter(verified=True):
-        last_n_days_tests = Test.objects.filter(
-            institute=institute, date_added__gte=date.today() - timedelta(days=days)
+        last_n_days_tests = institute.tests.filter(
+            date_added__gte=timezone.now() - timedelta(days=days)
         )
         tests_count = last_n_days_tests.count()
         tests_sessions_counts = last_n_days_tests.annotate(

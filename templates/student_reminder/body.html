@@ -1,0 +1,16 @@
+{% extends 'base.html' %} {% block content %} Hi {{name}}, <br />
+
+{% if sessions_count > 0 %}
+
+You attempted {{sessions_count}} test{%if sessions_count > 1%}s{%endif%} in last {{n}} days<br />
+
+Go to your <a href="https://etests.co.in/student/dashboard">Dashboard</a> to attempt more tests. You can also check results for the tests attempted from dashboard.
+
+{% else %} We are missing you out. You have not attempted any tests in last {{n}}
+days. Go to your
+<a href="https://etests.co.in/institute/dashboard">Dashboard</a> and start
+attempting tests now. You can also check results <a href="https://www.etests.co.in/student/results">here</a>. {% endif %}  <br/>
+
+In case you are facing any problems, feel free to chat with us on Messenger or WhatsApp.
+
+{% endblock %}

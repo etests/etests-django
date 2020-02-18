@@ -249,7 +249,7 @@ class Test(models.Model):
     registered_batches = models.ManyToManyField(Batch, related_name="tests", blank=True)
     name = models.CharField(max_length=200)
     institute = models.ForeignKey(
-        Institute, blank=True, null=True, on_delete=models.CASCADE
+        Institute, related_name="tests", blank=True, null=True, on_delete=models.CASCADE
     )
     slug = models.SlugField(unique=True, editable=False)
     exam = models.ForeignKey(
