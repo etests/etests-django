@@ -1,20 +1,14 @@
-# Django settings for etests project.
-
 import os
 from datetime import timedelta
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
 ALLOWED_HOSTS = ["etests.co.in", "api.etests.co.in"]
 
-# Application definition
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -98,7 +92,6 @@ WSGI_APPLICATION = "etests.wsgi.application"
 
 AUTH_USER_MODEL = "api.User"
 
-# Password validation
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
@@ -109,7 +102,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "Asia/Kolkata"
@@ -121,7 +113,6 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
 STATIC_URL = "/static/"
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
@@ -136,13 +127,11 @@ CORS_ORIGIN_WHITELIST = [
 
 GEOIP_PATH = os.path.join(BASE_DIR, "GeoLite")
 
-# Get env variables
 try:
     from env import *
 except:
     pass
 
-# Local settings
 try:
     from local_settings import *
 except:

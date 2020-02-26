@@ -4,7 +4,11 @@ from env import EMAIL_ID, AWS_REGION
 
 
 def send_email(
-    to_email, subject, body_html, from_email="noreply@etests.co.in", charset="UTF-8"
+    to_email,
+    subject,
+    body_html,
+    from_email="eTests<noreply@etests.co.in>",
+    charset="UTF-8",
 ):
     client = boto3.client("ses", region_name=AWS_REGION)
     try:

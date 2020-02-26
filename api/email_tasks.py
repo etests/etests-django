@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.template.loader import render_to_string
 
 
-def student_reminder(days=2):
+def student_reminder(days=4):
     for student in Student.objects.all():
         last_n_days_sessions = student.sessions.filter(
             checkin_time__gte=timezone.now() - timedelta(days=days)
