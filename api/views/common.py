@@ -31,10 +31,12 @@ class ExamListView(ListAPIView):
         queryset = Exam.objects.all()
         user = self.request.user
         if user.is_authenticated and user.country:
-            queryset = queryset.filter(countries=user.country)
+            queryset = queryset.filter(countries__contains=user.country)
         else:
             try:
-                queryset = queryset.filter(countries=get_client_country(self.request))
+                queryset = queryset.filter(
+                    countries__contains=get_client_country(self.request)
+                )
             except:
                 pass
         return queryset

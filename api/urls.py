@@ -25,7 +25,7 @@ urlpatterns = [
     path("register/", auth.RegisterView.as_view()),
     path("email/verify/", auth.VerifyEmailView.as_view()),
     path("email/confirm/", TemplateView.as_view()),
-    path("profile/update/", auth.ProfileView.as_view()),
+    path("profile/", auth.ProfileView.as_view()),
     path("password/request/", password.PasswordResetRequestView.as_view()),
     path("password/reset/", password.PasswordResetConfirmView.as_view()),
     path("password/change/", password.ChangePasswordView.as_view()),
@@ -62,5 +62,5 @@ urlpatterns = [
     path("payments/", csrf_exempt(common.PaymentView.as_view())),
     path("testseries/transactions/", common.TestSeriesTransactionListView.as_view()),
     path("testseries/buyers/", common.TestSeriesBuyersView.as_view()),
-    path("questions/", question.QuestionView.as_view())
+    path("questions/", question.QuestionView.as_view()),
 ]
