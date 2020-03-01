@@ -51,7 +51,7 @@ class EnrollmentRetrieveUpdateDestoryView(RetrieveUpdateDestroyAPIView):
                 return Enrollment.objects.filter(institute=self.request.user.institute)
             elif self.request.user.is_student:
                 return Enrollment.objects.filter(
-                    institute=self.request.user.student.institute
+                    institute__in=self.request.user.student.institutes.all()
                 )
             elif self.request.user.is_staff:
                 return Enrollment.objects.all()
