@@ -1,5 +1,6 @@
 import random
 import string
+from datetime import datetime
 from importlib import import_module
 from io import BytesIO
 
@@ -18,7 +19,9 @@ def clean_iamge(img, alpha=2.2, beta=-160, quality=60):
     encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
     _, image_buffer = cv2.imencode(".jpg", cleaned_image, encode_param)
 
-    processed_image = SimpleUploadedFile("image.jpg", BytesIO(image_buffer).getvalue())
+    processed_image = SimpleUploadedFile(
+        str(datetime.now()) + ".jpg", BytesIO(image_buffer).getvalue()
+    )
 
     return processed_image
 
