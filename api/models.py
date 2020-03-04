@@ -563,6 +563,10 @@ class Question(models.Model):
     exam = models.ForeignKey(Exam, null=True, blank=True, on_delete=models.SET_NULL)
     subject_index = models.IntegerField(null=True, blank=True)
     topic_index = models.IntegerField(null=True, blank=True)
+    subject = models.ForeignKey(
+        Subject, null=True, blank=True, on_delete=models.SET_NULL
+    )
+    topic = models.ForeignKey(Topic, null=True, blank=True, on_delete=models.SET_NULL)
     tags = JSONField(default=list)
 
     class Meta:

@@ -187,7 +187,16 @@ class SessionAdmin(admin.ModelAdmin):
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ("id", "type", "exam", "subject_index", "topic_index", "difficulty")
+    list_display = (
+        "id",
+        "type",
+        "exam",
+        "subject_index",
+        "topic_index",
+        "subject",
+        "topic",
+        "difficulty",
+    )
     list_display_links = ("id",)
     list_filter = ("type", "subject_index", "topic_index", "difficulty")
 
