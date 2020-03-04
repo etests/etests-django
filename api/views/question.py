@@ -15,9 +15,11 @@ from api.serializers.common import QuestionSerializer, QuestionAnnotateSerialize
 
 class AllowPOSTforAdminOnly(BasePermission):
     def has_permission(self, request, view):
-        if request.user.is_authenticated:
-            return request.user.is_staff or request.method in SAFE_METHODS
-        return False
+        return (
+            request.user.is_authenticated
+            and request.user.is_staff
+            or request.method in SAFE_METHODS
+        )
 
 
 class Pagination(PageNumberPagination):
