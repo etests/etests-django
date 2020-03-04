@@ -1,8 +1,8 @@
 from django.http import JsonResponse
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.generics import CreateAPIView, ListAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ViewSet
@@ -11,7 +11,9 @@ from api.forms import ImageUploadForm
 from api.models import (
     TestSeriesTransaction,
     Exam,
-    Payment,  # Subject,; Topic,
+    Payment,
+    Subject,
+    Topic,
     Image,
     ResetCode,
     Transaction,
@@ -42,22 +44,12 @@ class ExamListView(ListAPIView):
         return queryset
 
 
-# class SubjectListView(ViewSet):
-#     permission_classes = (ReadOnly,)
-
-#     def list(self, request):
-#         queryset = Subject.objects.filter()
-#         serializer = SubjectSerializer(queryset, many=True)
-#         return Response(serializer.data)
+class SubjectListView(ListCreateAPIView):
+    permission_classes = (ReadOnly | IsAdminUser,)
 
 
-# class TopicListView(ViewSet):
-#     permission_classes = (ReadOnly,)
-
-#     def list(self, request):
-#         queryset = Topic.objects.filter()
-#         serializer = TopicSerializer(queryset, many=True)
-#         return Response(serializer.data)
+class TopicListView(ListCreateAPIView):
+    permission_classes = (ReadOnly | IsAdminUser,)
 
 
 class TransactionListView(ListAPIView):

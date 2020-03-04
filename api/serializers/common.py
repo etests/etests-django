@@ -7,12 +7,32 @@ from rest_framework.serializers import (
     ValidationError,
 )
 
-from api.models import TestSeriesTransaction, CreditUse, Payment, Question, Transaction
+from api.models import (
+    Subject,
+    Topic,
+    TestSeriesTransaction,
+    CreditUse,
+    Payment,
+    Question,
+    Transaction,
+)
 from .bulk import BulkSerializerMixin, BulkListSerializer
 
 RAZORPAY_CLIENT = razorpay.Client(
     auth=(settings.RAZORPAY_KEY, settings.RAZORPAY_SECRET)
 )
+
+
+class SubjectSerializer(ModelSerializer):
+    class Meta:
+        model = Subject
+        fields = "__all__"
+
+
+class TopicSerializer(ModelSerializer):
+    class Meta:
+        model = Topic
+        fields = "__all__"
 
 
 class PaymentSerializer(ModelSerializer):

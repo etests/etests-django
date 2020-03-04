@@ -104,6 +104,19 @@ class InstituteAdmin(admin.ModelAdmin):
     list_display_links = ("user",)
     list_filter = ("verified", "show", "rating", "pincode")
 
+
+@admin.register(Subject)
+class SubjectAdmin(admin.ModelAdmin):
+    list_display = ("name", "position")
+    list_display_links = ("name",)
+
+
+@admin.register(Topic)
+class TopicAdmin(admin.ModelAdmin):
+    list_display = ("name", "subject", "position")
+    list_display_links = ("name",)
+
+
 @admin.register(Test)
 class TestAdmin(admin.ModelAdmin):
     list_display = (
@@ -174,7 +187,7 @@ class SessionAdmin(admin.ModelAdmin):
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ("id", "type", "subject_index", "topic_index", "difficulty")
+    list_display = ("id", "type", "exam", "subject_index", "topic_index", "difficulty")
     list_display_links = ("id",)
     list_filter = ("type", "subject_index", "topic_index", "difficulty")
 

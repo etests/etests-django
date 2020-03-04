@@ -183,6 +183,29 @@ class Employee(models.Model):
     address = models.CharField(max_length=1000, blank=True, null=True)
 
 
+class Subject(models.Model):
+    name = models.CharField(max_length=200)
+    position = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ("position", "name")
+
+
+class Topic(models.Model):
+    name = models.CharField(max_length=200)
+    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    position = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ("subject", "position", "name")
+
+
 class Exam(models.Model):
     id = models.AutoField(primary_key=True)
     position = models.IntegerField("position")
@@ -196,7 +219,7 @@ class Exam(models.Model):
     end_date = models.DateField(blank=True, null=True)
 
     class Meta:
-        ordering = ["position"]
+        ordering = ("position",)
 
     def __str__(self):
         return self.name
@@ -537,6 +560,7 @@ class Question(models.Model):
     solution = models.CharField(max_length=20000, null=True, blank=True)
     type = models.IntegerField(choices=TYPES)
     difficulty = models.IntegerField(choices=LEVELS, null=True, blank=True)
+    exam = models.ForeignKey(Exam, null=True, blank=True, on_delete=models.SET_NULL)
     subject_index = models.IntegerField(null=True, blank=True)
     topic_index = models.IntegerField(null=True, blank=True)
     tags = JSONField(default=list)
