@@ -81,3 +81,11 @@ class QuestionSerializer(BulkSerializerMixin, ModelSerializer):
         model = Question
         list_serializer_class = BulkListSerializer
         fields = "__all__"
+
+
+class QuestionAnnotateSerializer(ModelSerializer):
+    class Meta:
+        model = Question
+        fields = "__all__"
+        read_only_fields = ("text", "answer", "type", "solution")
+

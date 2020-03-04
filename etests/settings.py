@@ -50,13 +50,13 @@ MIDDLEWARE = [
 
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
+    "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
         "rest_framework.authentication.SessionAuthentication",
-    ],
-    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAdminUser"],
+    ),
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAdminUser",),
     "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
-    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     "DEFAULT_PARSER_CLASSES": (
         "djangorestframework_camel_case.parser.CamelCaseFormParser",
         "djangorestframework_camel_case.parser.CamelCaseMultiPartParser",

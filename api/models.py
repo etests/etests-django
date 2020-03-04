@@ -541,6 +541,9 @@ class Question(models.Model):
     topic_index = models.IntegerField(null=True, blank=True)
     tags = JSONField(default=list)
 
+    class Meta:
+        ordering = ("subject_index", "topic_index", "type", "difficulty")
+
 
 def validate_file_size(file):
     if file.size > 256000:

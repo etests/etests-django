@@ -63,4 +63,5 @@ urlpatterns = [
     path("testseries/transactions/", common.TestSeriesTransactionListView.as_view()),
     path("testseries/buyers/", common.TestSeriesBuyersView.as_view()),
     path("questions/", question.QuestionView.as_view()),
+    path("questions/<int:pk>/", question.QuestionUpdateView.as_view()),
 ]
