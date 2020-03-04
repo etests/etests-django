@@ -1,16 +1,22 @@
+from random import shuffle
+
 from django.db.models import Q
 from rest_framework import status
 from rest_framework.exceptions import NotFound
-from rest_framework.permissions import AllowAny, IsAdminUser
+from rest_framework.generics import UpdateAPIView
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import (
+    SAFE_METHODS,
+    AllowAny,
+    BasePermission,
+    IsAdminUser,
+)
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_bulk import ListBulkCreateUpdateAPIView
-from rest_framework.permissions import BasePermission, SAFE_METHODS
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.generics import UpdateAPIView
 
 from api.models import Question
-from api.serializers.common import QuestionSerializer, QuestionAnnotateSerializer
+from api.serializers.common import QuestionAnnotateSerializer, QuestionSerializer
 
 
 class AllowPOSTforAdminOnly(BasePermission):
@@ -53,12 +59,11 @@ class QuestionView(ListBulkCreateUpdateAPIView):
                 Q(type__isnull=True)
                 | Q(subject_index__isnull=True)
                 | Q(topic_index__isnull=True)
-            )
+            ).order_by("?")
 
 
 class QuestionUpdateView(UpdateAPIView):
     permission_classes = (AllowAny,)
-    pagination_class = Pagination
     filterset_fields = ("type", "difficulty", "subject_index", "topic_index")
     allowed_methods = ("PATCH",)
 
