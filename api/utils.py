@@ -12,7 +12,7 @@ from django.utils.text import slugify
 from six import string_types
 
 
-def clean_iamge(img, alpha=2.2, beta=-160, quality=60):
+def clean_image(img, alpha=2.2, beta=-160, quality=60):
     raw_image = cv2.imdecode(np.fromstring(img.read(), np.uint8), cv2.IMREAD_UNCHANGED)
     cleaned_image = np.clip(alpha * raw_image + beta, 0, 255).astype(np.uint8)
 

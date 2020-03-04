@@ -182,6 +182,7 @@ class Employee(models.Model):
     qualification = models.CharField(max_length=500, blank=True, null=True)
     address = models.CharField(max_length=1000, blank=True, null=True)
 
+
 class Exam(models.Model):
     id = models.AutoField(primary_key=True)
     position = models.IntegerField("position")
@@ -518,26 +519,26 @@ class TestSeriesTransaction(models.Model):
 
 class Question(models.Model):
     TYPES = (
-        ("0", "Single Correct"),
-        ("1", "Multiple Correct"),
-        ("2", "Numerical"),
-        ("3", "Matrix Match"),
+        (0, "Single Correct"),
+        (1, "Multiple Correct"),
+        (2, "Numerical"),
+        (3, "Matrix Match"),
     )
     LEVELS = (
-        ("0", "Very Easy"),
-        ("1", "Easy"),
-        ("2", "Medium"),
-        ("3", "Hard"),
-        ("4", "Very Hard"),
+        (0, "Very Easy"),
+        (1, "Easy"),
+        (2, "Medium"),
+        (3, "Hard"),
+        (4, "Very Hard"),
     )
     id = models.AutoField(primary_key=True)
     text = models.CharField(max_length=20000)
     answer = JSONField()
     solution = models.CharField(max_length=20000, null=True, blank=True)
-    type = models.CharField(max_length=10, choices=TYPES)
+    type = models.IntegerField(choices=TYPES)
+    difficulty = models.IntegerField(choices=LEVELS, null=True, blank=True)
     subject_index = models.IntegerField(null=True, blank=True)
     topic_index = models.IntegerField(null=True, blank=True)
-    difficulty = models.CharField(max_length=10, choices=LEVELS, null=True, blank=True)
     tags = JSONField(default=list)
 
 

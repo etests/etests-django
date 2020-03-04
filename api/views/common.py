@@ -20,7 +20,7 @@ from api.permissions import IsInstituteOwner, ReadOnly
 from api.serializers.common import *
 from api.serializers.exam import *
 from api.utils import get_client_country
-from api.utils import clean_iamge
+from api.utils import clean_image
 
 
 class ExamListView(ListAPIView):
@@ -119,7 +119,7 @@ class UploadImageView(APIView):
     def post(self, request):
         uploaded_image = request.FILES.get("upload")
 
-        processed_image = clean_iamge(uploaded_image)
+        processed_image = clean_image(uploaded_image)
 
         if processed_image.size < uploaded_image.size:
             request.FILES["file"] = processed_image
