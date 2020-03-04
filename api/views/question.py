@@ -51,7 +51,6 @@ class QuestionView(ListBulkCreateUpdateAPIView):
         else:
             return Question.objects.filter(
                 Q(type__isnull=True)
-                | Q(difficulty__isnull=True)
                 | Q(subject_index__isnull=True)
                 | Q(topic_index__isnull=True)
             )
@@ -72,7 +71,6 @@ class QuestionUpdateView(UpdateAPIView):
         else:
             return Question.objects.filter(
                 Q(type__isnull=True)
-                | Q(difficulty__isnull=True)
                 | Q(subject_index__isnull=True)
                 | Q(topic_index__isnull=True)
             )
