@@ -55,14 +55,8 @@ class QuestionView(ListBulkCreateUpdateAPIView):
         if self.request.user.is_authenticated and self.request.user.is_staff:
             return Question.objects.filter(institute__isnull=True)
         else:
-            return (
-                Question.objects.filter(institute__isnull=True)
-                .filter(
-                    Q(type__isnull=True)
-                    | Q(subject_index__isnull=True)
-                    | Q(topic_index__isnull=True)
-                )
-                .order_by("?")
+            return Question.objects.filter(institute__isnull=True).filter(
+                Q(subject__isnull=True) | Q(topic__isnull=True)
             )
 
 
@@ -79,7 +73,5 @@ class QuestionUpdateView(UpdateAPIView):
             return Question.objects.filter(institute__isnull=True)
         else:
             return Question.objects.filter(institute__isnull=True).filter(
-                Q(type__isnull=True)
-                | Q(subject_index__isnull=True)
-                | Q(topic_index__isnull=True)
+                Q(subject__isnull=True) | Q(topic__isnull=True)
             )

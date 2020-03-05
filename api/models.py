@@ -563,8 +563,6 @@ class Question(models.Model):
     type = models.IntegerField(choices=TYPES)
     difficulty = models.IntegerField(choices=LEVELS, null=True, blank=True)
     exam = models.ForeignKey(Exam, null=True, blank=True, on_delete=models.SET_NULL)
-    subject_index = models.IntegerField(null=True, blank=True)
-    topic_index = models.IntegerField(null=True, blank=True)
     subject = models.ForeignKey(
         Subject, null=True, blank=True, on_delete=models.SET_NULL
     )
@@ -591,7 +589,7 @@ class Question(models.Model):
         super().save(*args, **kwargs)
 
     class Meta:
-        ordering = ("subject_index", "topic_index", "type", "difficulty")
+        ordering = ("subject", "topic", "type", "difficulty")
 
 
 def validate_file_size(file):

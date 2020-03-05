@@ -103,6 +103,7 @@ class QuestionSerializer(BulkSerializerMixin, ModelSerializer):
         model = Question
         list_serializer_class = BulkListSerializer
         fields = (
+            "id",
             "text",
             "answer",
             "solution",
@@ -118,6 +119,7 @@ class QuestionAnnotateSerializer(ModelSerializer):
     class Meta:
         model = Question
         fields = (
+            "id",
             "text",
             "answer",
             "solution",

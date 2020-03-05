@@ -198,7 +198,15 @@ class QuestionAdmin(admin.ModelAdmin):
         "difficulty",
     )
     list_display_links = ("id",)
-    list_filter = ("type", "subject_index", "topic_index", "difficulty")
+    list_filter = (
+        "type",
+        "exam",
+        "subject",
+        "topic",
+        "test",
+        "institute",
+        "difficulty",
+    )
 
 
 @admin.register(ResetCode)
