@@ -23,16 +23,18 @@ RAZORPAY_CLIENT = razorpay.Client(
 )
 
 
-class SubjectSerializer(ModelSerializer):
-    class Meta:
-        model = Subject
-        fields = "__all__"
-
-
 class TopicSerializer(ModelSerializer):
     class Meta:
         model = Topic
-        fields = "__all__"
+        fields = ("id", "name")
+
+
+class SubjectSerializer(ModelSerializer):
+    topics = TopicSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Subject
+        fields = ("id", "name", "topics")
 
 
 class PaymentSerializer(ModelSerializer):
@@ -100,12 +102,29 @@ class QuestionSerializer(BulkSerializerMixin, ModelSerializer):
     class Meta:
         model = Question
         list_serializer_class = BulkListSerializer
-        fields = "__all__"
+        fields = (
+            "text",
+            "answer",
+            "solution",
+            "type",
+            "difficulty",
+            "subject",
+            "topic",
+            "tags",
+        )
 
 
 class QuestionAnnotateSerializer(ModelSerializer):
     class Meta:
         model = Question
-        fields = "__all__"
+        fields = (
+            "text",
+            "answer",
+            "solution",
+            "type",
+            "difficulty",
+            "subject",
+            "topic",
+        )
         read_only_fields = ("text", "answer", "type", "solution")
 

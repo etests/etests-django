@@ -45,7 +45,7 @@ class Pagination(PageNumberPagination):
 class QuestionView(ListBulkCreateUpdateAPIView):
     permission_classes = (AllowPOSTforAdminOnly,)
     pagination_class = Pagination
-    filterset_fields = ("type", "difficulty", "subject_index", "topic_index")
+    filterset_fields = ("type", "difficulty", "subject", "topic")
     allowed_methods = (*SAFE_METHODS, "POST", "PATCH")
 
     def get_serializer_class(self):
@@ -53,18 +53,22 @@ class QuestionView(ListBulkCreateUpdateAPIView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated and self.request.user.is_staff:
-            return Question.objects.all()
+            return Question.objects.filter(institute__isnull=True)
         else:
-            return Question.objects.filter(
-                Q(type__isnull=True)
-                | Q(subject_index__isnull=True)
-                | Q(topic_index__isnull=True)
-            ).order_by("?")
+            return (
+                Question.objects.filter(institute__isnull=True)
+                .filter(
+                    Q(type__isnull=True)
+                    | Q(subject_index__isnull=True)
+                    | Q(topic_index__isnull=True)
+                )
+                .order_by("?")
+            )
 
 
 class QuestionUpdateView(UpdateAPIView):
     permission_classes = (AllowAny,)
-    filterset_fields = ("type", "difficulty", "subject_index", "topic_index")
+    filterset_fields = ("type", "difficulty", "subject", "topic")
     allowed_methods = ("PATCH",)
 
     def get_serializer_class(self):
@@ -72,9 +76,9 @@ class QuestionUpdateView(UpdateAPIView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated and self.request.user.is_staff:
-            return Question.objects.all()
+            return Question.objects.filter(institute__isnull=True)
         else:
-            return Question.objects.filter(
+            return Question.objects.filter(institute__isnull=True).filter(
                 Q(type__isnull=True)
                 | Q(subject_index__isnull=True)
                 | Q(topic_index__isnull=True)

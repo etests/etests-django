@@ -196,7 +196,9 @@ class Subject(models.Model):
 
 class Topic(models.Model):
     name = models.CharField(max_length=200)
-    subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    subject = models.ForeignKey(
+        Subject, related_name="topics", on_delete=models.CASCADE
+    )
     position = models.IntegerField(default=0)
 
     def __str__(self):
@@ -567,7 +569,26 @@ class Question(models.Model):
         Subject, null=True, blank=True, on_delete=models.SET_NULL
     )
     topic = models.ForeignKey(Topic, null=True, blank=True, on_delete=models.SET_NULL)
-    tags = JSONField(default=list)
+    test = models.ForeignKey(Test, null=True, blank=True, on_delete=models.SET_NULL)
+    institute = models.ForeignKey(
+        Institute, null=True, blank=True, on_delete=models.SET_NULL
+    )
+    correct_marks = models.FloatField(default=4)
+    partial_marks = models.FloatField(default=0)
+    incorrect_marks = models.FloatField(default=1)
+    option_count = models.IntegerField(default=4)
+    tags = JSONField(default=list, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.type:
+            if self.type == 1:
+                self.incorrect_marks = 2
+            elif self.type == 2:
+                self.correct_marks = 3
+                self.incorrect_marks = 0
+            elif self.type == 3:
+                self.partial_marks = 2
+        super().save(*args, **kwargs)
 
     class Meta:
         ordering = ("subject_index", "topic_index", "type", "difficulty")

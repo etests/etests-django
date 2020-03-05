@@ -44,12 +44,16 @@ class ExamListView(ListAPIView):
         return queryset
 
 
-class SubjectListView(ListCreateAPIView):
-    permission_classes = (ReadOnly | IsAdminUser,)
-
-
 class TopicListView(ListCreateAPIView):
     permission_classes = (ReadOnly | IsAdminUser,)
+    serializer_class = TopicSerializer
+    queryset = Topic.objects.all()
+
+
+class SubjectListView(ListCreateAPIView):
+    permission_classes = (ReadOnly | IsAdminUser,)
+    serializer_class = SubjectSerializer
+    queryset = Subject.objects.all()
 
 
 class TransactionListView(ListAPIView):
