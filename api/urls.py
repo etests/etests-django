@@ -43,14 +43,10 @@ urlpatterns = [
     path("institutes/joined/", institute.JoinedInstitutesView.as_view()),
     path("institutes/", institute.InstitutesListView.as_view()),
     path("exams/", common.ExamListView.as_view()),
-    path("payments/", csrf_exempt(common.PaymentView.as_view())),
+    path("payments/<str:transaction_id>/", common.PaymentView.as_view()),
+    path("payments/gateway/", common.PaymentGatewayView.as_view()),
     path("questions/", question.QuestionView.as_view()),
     path("questions/<int:pk>/", question.QuestionUpdateView.as_view()),
-    path("testseries/", testseries.TestSeriesListView.as_view()),
-    path("testseries/user/", testseries.TestSeriesListCreateView.as_view()),
-    path(
-        "testseries/<int:pk>/", testseries.TestSeriesRetrieveUpdateDestoryView.as_view()
-    ),
     path("tests/", test.TestListCreateView.as_view()),
     path("tests/free/", test.FreeTestListView.as_view()),
     path("tests/<int:pk>/", test.TestRetrieveUpdateDestoryView.as_view()),
@@ -60,7 +56,14 @@ urlpatterns = [
     path("sessions/", session.SessionListView.as_view()),
     path("sessions/<int:pk>/", session.SessionUpdateView.as_view()),
     path("subjects/", common.SubjectListView.as_view()),
-    path("transactions/", common.TransactionListView.as_view()),
+    path("testseries/", testseries.TestSeriesListView.as_view()),
+    path("testseries/<int:pk>/", testseries.TestSeriesRetrieveView.as_view()),
+    path("testseries/user/", testseries.TestSeriesListCreateView.as_view()),
+    path(
+        "testseries/user/<int:pk>/",
+        testseries.TestSeriesRetrieveUpdateDestoryView.as_view(),
+    ),
     path("testseries/transactions/", common.TestSeriesTransactionListView.as_view()),
     path("testseries/buyers/", common.TestSeriesBuyersView.as_view()),
+    path("transactions/", common.TransactionListView.as_view()),
 ]

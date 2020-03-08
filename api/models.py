@@ -419,13 +419,16 @@ class Payment(models.Model):
     show = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.user.name
+        if self.student:
+            return self.student.user.name
+        else:
+            return self.transaction_id
 
     def save(self, *args, **kwargs):
-        if self.verified:
-            self.test_series.registered_students.add(self.user.student)
+        if self.student and self.verified:
+            self.test_series.registered_students.add(self.student)
             for test in self.test_series.tests.all():
-                test.registered_students.add(self.user.student)
+                test.registered_students.add(self.student)
 
         super(Payment, self).save(*args, **kwargs)
 

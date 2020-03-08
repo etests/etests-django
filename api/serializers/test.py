@@ -31,6 +31,7 @@ class TestListSerializer(ModelSerializer):
             "institute",
             "exam",
             "free",
+            "status",
             "syllabus",
             "sessions",
             "registered_batches",

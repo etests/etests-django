@@ -1,5 +1,3 @@
-from random import shuffle
-
 from django.db.models import Q
 from rest_framework import status
 from rest_framework.exceptions import NotFound
@@ -55,8 +53,10 @@ class QuestionView(ListBulkCreateUpdateAPIView):
         if self.request.user.is_authenticated and self.request.user.is_staff:
             return Question.objects.filter(institute__isnull=True)
         else:
-            return Question.objects.filter(institute__isnull=True).filter(
-                Q(subject__isnull=True) | Q(topic__isnull=True)
+            return (
+                Question.objects.filter(institute__isnull=True)
+                .filter(Q(subject__isnull=True) | Q(topic__isnull=True))
+                .order_by("?")
             )
 
 

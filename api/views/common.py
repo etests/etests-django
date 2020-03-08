@@ -1,28 +1,35 @@
 from django.http import JsonResponse
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.generics import CreateAPIView, ListAPIView, ListCreateAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
+from rest_framework.generics import (
+    CreateAPIView,
+    ListAPIView,
+    ListCreateAPIView,
+    UpdateAPIView,
+)
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ViewSet
 
 from api.forms import ImageUploadForm
 from api.models import (
-    TestSeriesTransaction,
     Exam,
-    Payment,
-    Subject,
-    Topic,
     Image,
+    Payment,
     ResetCode,
+    Subject,
+    TestSeriesTransaction,
+    Topic,
     Transaction,
+    TestSeries,
 )
-from api.permissions import IsInstituteOwner, ReadOnly
+from api.permissions import IsInstituteOwner, IsStudent, ReadOnly
 from api.serializers.common import *
 from api.serializers.exam import *
-from api.utils import get_client_country
-from api.utils import clean_image
+from api.utils import clean_image, get_client_country
+from django.shortcuts import get_object_or_404
+from django.http.response import Http404
 
 
 class ExamListView(ListAPIView):
@@ -85,12 +92,31 @@ class CreditListView(ListAPIView):
             return CreditUse.objects.filter(institute=self.request.user.institute)
 
 
-class PaymentView(CreateAPIView):
-    permission_classes = (IsAuthenticated,)
+class PaymentView(UpdateAPIView):
+    permission_classes = (IsStudent,)
     serializer_class = PaymentSerializer
+    lookup_field = "transaction_id"
+    allowed_methods = ("patch",)
+
+    def handle_exception(self, exc):
+        if isinstance(exc, Http404):
+            return Response("Invalid Transaction Id", status=status.HTTP_404_NOT_FOUND)
+
+        return super(PaymentView, self).handle_exception(exc)
+
+    def get_queryset(self):
+        return Payment.objects.filter(student__isnull=True)
+
+    def perform_update(self, serializer):
+        serializer.save(student=self.request.user.student)
+
+
+class PaymentGatewayView(CreateAPIView):
+    permission_classes = (IsStudent,)
+    serializer_class = PaymentGatewaySerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        serializer.save(student=self.request.user.student)
 
 
 class TestSeriesBuyersView(ListAPIView):

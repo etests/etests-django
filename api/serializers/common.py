@@ -40,6 +40,13 @@ class SubjectSerializer(ModelSerializer):
 class PaymentSerializer(ModelSerializer):
     class Meta:
         model = Payment
+        fields = ("student", "transaction_id", "test_series")
+        read_only_fields = ("student", "transaction_id", "test_series")
+
+
+class PaymentGatewaySerializer(ModelSerializer):
+    class Meta:
+        model = Payment
         fields = ("transaction_id", "receipt", "student", "amount", "test_series")
 
     def validate_test_series(self, test_series):
