@@ -47,6 +47,8 @@ class SessionSerializer(ModelSerializer):
         sessions = Session.objects.filter(**validated_data)
         if sessions.filter(completed=False).count() > 0:
             return sessions.filter(completed=False)[0]
+        elif test.status == 0:
+            raise PermissionDenied("This test is not active yet.")
         elif (
             test.status == 1
             and sessions.filter(completed=True, practice=False).count() > 0

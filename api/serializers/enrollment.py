@@ -1,10 +1,12 @@
 from rest_framework.serializers import ModelSerializer
 from api.models import Enrollment
+from api.serializers.bulk import BulkSerializerMixin, BulkListSerializer
 
 
-class EnrollmentSerializer(ModelSerializer):
+class EnrollmentSerializer(BulkSerializerMixin, ModelSerializer):
     class Meta:
         model = Enrollment
+        list_serializer_class = BulkListSerializer
         fields = (
             "id",
             "institute",
@@ -15,4 +17,5 @@ class EnrollmentSerializer(ModelSerializer):
             "date_joined",
         )
         read_only_fields = ("student", "date_joined")
+        extra_kwargs = {"institute": {"required": False}}
 

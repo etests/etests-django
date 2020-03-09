@@ -1,14 +1,19 @@
 from rest_framework import status
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.generics import (
+    CreateAPIView,
+    ListAPIView,
+    RetrieveUpdateDestroyAPIView,
+)
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
+from rest_framework_bulk import ListBulkCreateUpdateAPIView
 
 from api.models import Enrollment
 from api.permissions import IsInstituteOwner, ReadOnly
 from api.serializers.enrollment import *
 
 
-class EnrollmentView(ListCreateAPIView):
+class EnrollmentView(ListBulkCreateUpdateAPIView):
     permission_classes = (IsInstituteOwner | IsAdminUser,)
     serializer_class = EnrollmentSerializer
 
@@ -19,26 +24,11 @@ class EnrollmentView(ListCreateAPIView):
             elif self.request.user.is_staff:
                 return Enrollment.objects.all()
 
-    def create(self, request, *args, **kwargs):
-        enrollments = []
-        headers = []
-        data = [
-            {
-                "institute": request.user.institute.id,
-                "batch": request.data["batch"],
-                "roll_number": roll_number,
-            }
-            for roll_number in request.data["roll_numbers"]
-        ]
-
-        serializer = self.get_serializer(data=data, many=True)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-
-        return Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers
-        )
+    def perform_bulk_create(self, serializer):
+        if self.request.user.is_institute:
+            serializer.save(institute=self.request.user.institute)
+        elif self.request.user.is_staff:
+            serializer.save()
 
 
 class EnrollmentRetrieveUpdateDestoryView(RetrieveUpdateDestroyAPIView):

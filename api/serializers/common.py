@@ -41,7 +41,13 @@ class PaymentSerializer(ModelSerializer):
     class Meta:
         model = Payment
         fields = ("student", "transaction_id", "test_series")
-        read_only_fields = ("student", "transaction_id", "test_series")
+        read_only_fields = ("student", "transaction_id")
+
+    def validate_test_series(self, test_series):
+        if self.instance.test_series != test_series:
+            raise ValidationError("Invalid Transaction Id")
+
+        return test_series
 
 
 class PaymentGatewaySerializer(ModelSerializer):
