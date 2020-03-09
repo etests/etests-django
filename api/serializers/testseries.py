@@ -44,8 +44,8 @@ class TestSeriesSerializer(ModelSerializer):
 
 class TestSeriesDetialsSerializer(ModelSerializer):
     institute = StringRelatedField()
-    tests = TestListSerializer(many=True)
-    exams = StringRelatedField(many=True)
+    tests = TestListSerializer(many=True, read_only=True)
+    exams = StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = TestSeries

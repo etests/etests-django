@@ -200,10 +200,10 @@ class SessionEvaluation:
                 marks = sum(self.question_wise_marks[i]["marks"])
             else:
                 marks = self.question_wise_marks[i]["marks"]
-            if self.questions[i]["topic_index"] in current_topic:
-                current_topic[self.questions[i]["topic_index"]] += marks
+            if self.questions[i]["topic"] in current_topic:
+                current_topic[self.questions[i]["topic"]] += marks
             else:
-                current_topic[self.questions[i]["topic_index"]] = marks
+                current_topic[self.questions[i]["topic"]] = marks
 
         self.total_marks = round(self.total_marks, 2)
         self.section_wise_marks = [round(marks, 2) for marks in self.section_wise_marks]
