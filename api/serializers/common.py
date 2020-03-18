@@ -53,7 +53,7 @@ class PaymentSerializer(ModelSerializer):
 class PaymentGatewaySerializer(ModelSerializer):
     class Meta:
         model = Payment
-        fields = ("transaction_id", "receipt", "student", "amount", "test_series")
+        fields = ("transaction_id", "student", "amount", "test_series")
 
     def validate_test_series(self, test_series):
         if Payment.objects.filter(
@@ -65,8 +65,13 @@ class PaymentGatewaySerializer(ModelSerializer):
     def validate(self, attrs):
         payment_id = attrs.get("transaction_id")
         amount = attrs.get("test_series").price * 100
-        RAZORPAY_CLIENT.payment.capture(payment_id, amount=amount)
+        try:
+            RAZORPAY_CLIENT.payment.capture(payment_id, amount=amount)
+        except razorpay.errors.BadRequestError:
+            raise ValidationError("Invalid Payment Id")
+
         payment = RAZORPAY_CLIENT.payment.fetch(payment_id)
+
         if not payment["error_code"]:
             # send_email(self.context.get("request").user.email, "", "")
             attrs["verified"] = True

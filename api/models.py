@@ -78,6 +78,9 @@ class Institute(models.Model):
     show = models.BooleanField(default=True)
     rating = models.FloatField(default=0)
     about = models.CharField(max_length=1024, null=True, blank=True)
+    joined_students = models.ManyToManyField(
+        "Student", related_name="joined_institutes"
+    )
 
     class Meta:
         db_table = "api_institute"
