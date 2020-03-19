@@ -1,5 +1,5 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
-from .models import Test, Enrollment
+from .models import Test
 
 
 class ReadOnly(BasePermission):
@@ -40,11 +40,7 @@ class IsRegisteredForTest(IsStudentOwner):
             test = Test.objects.get(id=test_id)
             return super().has_permission(request, view) and (
                 request.user.student in test.registered_students.all()
-                or Enrollment.objects.filter(
-                    batch__in=test.registered_batches.all(),
-                    student=request.user.student,
-                ).count()
-                != 0
+                or request.user.student in test.institute.students
                 or test.free
             )
         except:

@@ -34,7 +34,6 @@ class TestListSerializer(ModelSerializer):
             "status",
             "syllabus",
             "sessions",
-            "registered_batches",
         )
 
     def get_institute(self, obj):
@@ -66,7 +65,6 @@ class TestCreateUpdateSerializer(ModelSerializer):
             "status",
             "free",
             "syllabus",
-            "registered_batches",  # FIXME: Should be shown to owner institute only
         )
         extra_kwargs = {
             "test_series": {"required": False},

@@ -6,7 +6,7 @@ from rest_framework.generics import (
 )
 from rest_framework.permissions import SAFE_METHODS, IsAdminUser, IsAuthenticated
 
-from api.models import Batch, Exam, Test
+from api.models import Exam, Test
 from api.permissions import *
 from api.serializers.test import (
     TestCreateUpdateSerializer,
@@ -33,10 +33,13 @@ class TestListCreateView(ListCreateAPIView):
                 )
             elif self.request.user.is_student:
                 student = self.request.user.student
-                return Test.objects.filter(
-                    Q(registered_students=student)
-                    | Q(registered_batches__in=student.batches())
-                ).filter(aits=False, visible=True)
+                return (
+                    Test.objects.filter(
+                        Q(registered_students=student) | Q(institute__students=student)
+                    )
+                    .filter(aits=False, visible=True)
+                    .distinct()
+                )
             elif self.request.user.is_staff:
                 return Test.objects.all()
         return None

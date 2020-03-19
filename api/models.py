@@ -78,9 +78,7 @@ class Institute(models.Model):
     show = models.BooleanField(default=True)
     rating = models.FloatField(default=0)
     about = models.CharField(max_length=1024, null=True, blank=True)
-    joined_students = models.ManyToManyField(
-        "Student", related_name="joined_institutes"
-    )
+    students = models.ManyToManyField("Student", related_name="institutes")
 
     class Meta:
         db_table = "api_institute"
@@ -94,76 +92,10 @@ class Institute(models.Model):
         super(Institute, self).save(*args, **kwargs)
 
 
-class Batch(models.Model):
-    joining_key = models.CharField(max_length=8, default=random_key)
-    name = models.CharField(max_length=100)
-    institute = models.ForeignKey(
-        Institute, related_name="batches", on_delete=models.CASCADE
-    )
-
-    def students(self):
-        return Student.objects.filter(enrollment__batch=self)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        db_table = "api_batch"
-        verbose_name_plural = "Batches"
-
-
-class Enrollment(models.Model):
-    institute = models.ForeignKey(Institute, on_delete=models.CASCADE)
-    batch = models.ForeignKey(
-        Batch,
-        blank=True,
-        null=True,
-        related_name="enrollments",
-        on_delete=models.CASCADE,
-    )
-    roll_number = models.CharField(max_length=25)
-    joining_key = models.CharField(max_length=8, null=True, blank=True, unique=True)
-    student = models.ForeignKey(
-        "Student", related_name="enrollment", null=True, on_delete=models.SET_NULL
-    )
-    date_joined = models.DateField(null=True)
-
-    class Meta:
-        db_table = "api_enrollment"
-        unique_together = ("batch", "roll_number")
-
-    def __str__(self):
-        if self.roll_number:
-            return self.roll_number
-        elif self.student:
-            return self.student.user.name
-        else:
-            return self.pk
-
-    def save(self, *args, **kwargs):
-        errors = {}
-        if self.batch not in self.institute.batches.all():
-            errors["batch"] = ("This batch does not belong to the institute.",)
-            raise ValidationError(errors)
-        else:
-            super(Enrollment, self).save(*args, **kwargs)
-
-
-def pre_save_create_joining_key(sender, instance, *args, **kwargs):
-    if not instance.joining_key:
-        instance.joining_key = unique_random_key(instance)
-
-
-pre_save.connect(pre_save_create_joining_key, sender=Enrollment)
-
-
 class Student(models.Model):
     GENDERS = (("M", "Male"), ("F", "Female"), ("O", "Others"))
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     gender = models.CharField(max_length=1, choices=GENDERS, blank=True, null=True)
-    institutes = models.ManyToManyField(
-        Institute, related_name="students", through=Enrollment, blank=True
-    )
     birth_date = models.DateField(null=True, blank=True)
 
     class Meta:
@@ -171,9 +103,6 @@ class Student(models.Model):
 
     def __str__(self):
         return self.user.name
-
-    def batches(self):
-        return Batch.objects.filter(enrollments__student=self)
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -275,7 +204,6 @@ class Test(models.Model):
     registered_students = models.ManyToManyField(
         Student, related_name="tests", blank=True
     )
-    registered_batches = models.ManyToManyField(Batch, related_name="tests", blank=True)
     name = models.CharField(max_length=200)
     institute = models.ForeignKey(
         Institute, related_name="tests", blank=True, null=True, on_delete=models.CASCADE
