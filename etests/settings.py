@@ -119,11 +119,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 CORS_ORIGIN_ALLOW_ALL = False
 
-CORS_ORIGIN_WHITELIST = [
-    "https://www.etests.co.in",
-    "https://etests.co.in",
-    "https://api.etests.co.in",
-]
+CORS_ORIGIN_REGEX_WHITELIST = (r"^(https?://)?(\w+\.)?etests\.co\.in$",)
 
 GEOIP_PATH = os.path.join(BASE_DIR, "GeoLite")
 

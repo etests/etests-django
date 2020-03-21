@@ -72,13 +72,14 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Institute(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    handle = models.CharField(unique=True, max_length=50, null=True, blank=True)
     pincode = models.CharField(max_length=10, null=True, blank=True)
     current_credits = models.IntegerField(default=0)
     verified = models.BooleanField(default=False)
     show = models.BooleanField(default=True)
     rating = models.FloatField(default=0)
     about = models.CharField(max_length=1024, null=True, blank=True)
-    students = models.ManyToManyField("Student", related_name="institutes")
+    students = models.ManyToManyField("Student", related_name="institutes", blank=True)
 
     class Meta:
         db_table = "api_institute"

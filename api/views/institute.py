@@ -1,5 +1,5 @@
 from rest_framework import status
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.response import Response
 
 from api.models import Institute
@@ -26,6 +26,15 @@ class InstitutesListView(ListAPIView):
             except:
                 pass
         return queryset
+
+
+class InstitutesView(RetrieveAPIView):
+    permission_classes = (ReadOnly,)
+    serializer_class = InstituteListSerializer
+    lookup_field = "handle"
+
+    def get_queryset(self):
+        return Institute.objects.filter(verified=True, show=True)
 
 
 # DEPRECATE

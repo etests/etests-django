@@ -32,6 +32,7 @@ urlpatterns = [
     path("images/", csrf_exempt(common.UploadImageView.as_view())),
     path("institutes/", institute.InstitutesListView.as_view()),
     path("institutes/joined/", institute.JoinedInstitutesView.as_view()),
+    path("institutes/<str:handle>/", institute.InstitutesView.as_view()),
     path("exams/", common.ExamListView.as_view()),
     path("payments/gateway/", common.PaymentGatewayView.as_view()),
     path("payments/<str:transaction_id>/", common.PaymentView.as_view()),
