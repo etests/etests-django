@@ -40,7 +40,10 @@ class IsRegisteredForTest(IsStudentOwner):
             test = Test.objects.get(id=test_id)
             return super().has_permission(request, view) and (
                 request.user.student in test.registered_students.all()
-                or request.user.student in test.institute.students
+                or (
+                    not test.aits
+                    and request.user.student in test.institute.students.all()
+                )
                 or test.free
             )
         except:
@@ -50,4 +53,3 @@ class IsRegisteredForTest(IsStudentOwner):
 class IsOwner(BasePermission):
     def has_object_permission(self, request, view, obj):
         return request.user.is_authenticated and obj.user == request.user
-

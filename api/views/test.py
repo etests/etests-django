@@ -34,10 +34,10 @@ class TestListCreateView(ListCreateAPIView):
             elif self.request.user.is_student:
                 student = self.request.user.student
                 return (
-                    Test.objects.filter(
+                    Test.objects.filter(aits=False, visible=True)
+                    .filter(
                         Q(registered_students=student) | Q(institute__students=student)
                     )
-                    .filter(aits=False, visible=True)
                     .distinct()
                 )
             elif self.request.user.is_staff:
