@@ -185,6 +185,7 @@ class TestSeries(models.Model):
     tests = models.ManyToManyField("Test", related_name="test_series", blank=True)
 
     class Meta:
+        ordering = ("-date_added",)
         verbose_name = "Test Series"
         verbose_name_plural = "Test Series"
 
@@ -228,6 +229,9 @@ class Test(models.Model):
     free = models.BooleanField(default=False)
     marks_list = JSONField(blank=True, null=True)
     syllabus = models.CharField(max_length=1024, blank=True, null=True)
+
+    class Meta:
+        ordering = ("-date_added",)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -294,7 +298,7 @@ class Session(models.Model):
     ranks = JSONField(blank=True, null=True)
 
     class Meta:
-        ordering = ["practice", "checkin_time", "test", "student"]
+        ordering = ("practice", "checkin_time", "test", "student")
 
     def __str__(self):
         return self.student.user.name + " " + self.test.name
