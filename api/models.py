@@ -487,6 +487,7 @@ class Question(models.Model):
         (1, "Multiple Correct"),
         (2, "Numerical"),
         (3, "Matrix Match"),
+        (4, "Paragraph"),
     )
     LEVELS = (
         (0, "Very Easy"),
@@ -515,6 +516,9 @@ class Question(models.Model):
     incorrect_marks = models.FloatField(default=1)
     option_count = models.IntegerField(default=4)
     tags = JSONField(default=list, null=True, blank=True)
+    parent = models.ForeignKey(
+        "self", related_name="parts", null=True, blank=True, on_delete=models.CASCADE
+    )
 
     def save(self, *args, **kwargs):
         if self.type:

@@ -1,6 +1,7 @@
 import razorpay
 from django.conf import settings
 from rest_framework.serializers import (
+    Serializer,
     ModelSerializer,
     SerializerMethodField,
     StringRelatedField,
@@ -116,7 +117,19 @@ class TestSeriesTransactionSerializer(ModelSerializer):
         fields = "__all__"
 
 
+class RecursiveField(ModelSerializer):
+    def to_representation(self, value):
+        serializer = self.parent.parent.__class__(value, context=self.context)
+        return serializer.data
+
+    class Meta:
+        model = Question
+        fields = "__all__"
+
+
 class QuestionSerializer(BulkSerializerMixin, ModelSerializer):
+    parts = RecursiveField(many=True, required=False)
+
     class Meta:
         model = Question
         list_serializer_class = BulkListSerializer
@@ -130,7 +143,18 @@ class QuestionSerializer(BulkSerializerMixin, ModelSerializer):
             "subject",
             "topic",
             "tags",
+            "parts",
         )
+
+    def create(self, validated_data):
+        parts = validated_data.pop("parts", [])
+        question = Question.objects.create(**validated_data)
+
+        Question.objects.bulk_create(
+            [Question(**part, parent=question) for part in parts]
+        )
+
+        return question
 
 
 class QuestionAnnotateSerializer(ModelSerializer):
@@ -147,4 +171,3 @@ class QuestionAnnotateSerializer(ModelSerializer):
             "topic",
         )
         read_only_fields = ("text", "answer", "type", "solution")
-
