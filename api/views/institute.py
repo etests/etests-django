@@ -1,9 +1,10 @@
 from rest_framework import status
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 
+from api.permissions import IsStaff
 from api.models import Institute
-from api.permissions import IsStudentOwner, ReadOnly
+from api.permissions import IsStudentOwner, IsInstituteOwner, ReadOnly
 from api.serializers.institute import *
 
 from api.utils import get_client_country
@@ -28,13 +29,14 @@ class InstitutesListView(ListAPIView):
         return queryset
 
 
-class InstitutesView(RetrieveAPIView):
-    permission_classes = (ReadOnly,)
-    serializer_class = InstituteListSerializer
+class InstitutesView(RetrieveUpdateAPIView):
+    permission_classes = (ReadOnly | IsInstituteOwner | IsStaff,)
+    serializer_class = InstituteDetailsSerializer
     lookup_field = "handle"
+    allowed_methods = ("get", "patch")
 
     def get_queryset(self):
-        return Institute.objects.filter(verified=True, show=True)
+        return Institute.objects.filter(verified=True)
 
 
 # DEPRECATE

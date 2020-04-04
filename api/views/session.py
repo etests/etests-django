@@ -5,10 +5,11 @@ from rest_framework.generics import (
     RetrieveAPIView,
     UpdateAPIView,
 )
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.permissions import IsStaff
 from api.models import Session, Test
 from api.permissions import (
     IsStudentOwner,
@@ -21,7 +22,7 @@ from api.utils import SessionEvaluation, generate_ranks
 
 
 class SessionListView(ListAPIView):
-    permission_classes = (IsStudentOwner | IsAdminUser,)
+    permission_classes = (IsStudentOwner | IsStaff,)
 
     serializer_class = SessionSerializer
 
@@ -82,7 +83,7 @@ class ResultView(RetrieveAPIView):
 
 
 class RankListView(APIView):
-    permission_classes = (IsInstituteOwner | IsAdminUser,)
+    permission_classes = (IsInstituteOwner | IsStaff,)
 
     def get(self, request, id):
         sessions = Session.objects.filter(

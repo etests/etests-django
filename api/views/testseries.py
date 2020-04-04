@@ -4,8 +4,8 @@ from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
 )
-from rest_framework.permissions import IsAdminUser
 
+from api.permissions import IsStaff
 from api.models import TestSeries
 from api.permissions import *
 from api.serializers.testseries import TestSeriesSerializer, TestSeriesDetialsSerializer
@@ -58,7 +58,7 @@ class TestSeriesRetrieveView(RetrieveAPIView):
 
 
 class TestSeriesListCreateView(ListCreateAPIView):
-    permission_classes = (ReadOnly | IsInstituteOwner | IsAdminUser,)
+    permission_classes = (ReadOnly | IsInstituteOwner | IsStaff,)
     serializer_class = TestSeriesDetialsSerializer
 
     def get_queryset(self):
@@ -79,7 +79,7 @@ class TestSeriesListCreateView(ListCreateAPIView):
 
 
 class TestSeriesRetrieveUpdateDestoryView(RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsInstituteOwner | IsAdminUser,)
+    permission_classes = (IsInstituteOwner | IsStaff,)
     serializer_class = TestSeriesDetialsSerializer
 
     def get_queryset(self):

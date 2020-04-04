@@ -1,16 +1,16 @@
 import boto3
 from botocore.exceptions import ClientError
-from env import EMAIL_ID, AWS_REGION
+from django.conf import settings
 
 
 def send_email(
     to_email,
     subject,
     body_html,
-    from_email="eTests<noreply@etests.co.in>",
+    from_email=f"eTests<{settings.EMAIL_ID}>",
     charset="UTF-8",
 ):
-    client = boto3.client("ses", region_name=AWS_REGION)
+    client = boto3.client("ses", region_name=settings.AWS_REGION)
     try:
         response = client.send_email(
             Destination={"ToAddresses": [to_email]},

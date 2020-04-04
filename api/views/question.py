@@ -3,17 +3,13 @@ from rest_framework import status
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import UpdateAPIView
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import (
-    SAFE_METHODS,
-    AllowAny,
-    BasePermission,
-    IsAdminUser,
-)
+from rest_framework.permissions import SAFE_METHODS, AllowAny, BasePermission
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_bulk import ListBulkCreateUpdateAPIView
 
 from api.models import Question
+from api.permissions import IsStaff
 from api.serializers.common import QuestionAnnotateSerializer, QuestionSerializer
 
 

@@ -25,4 +25,5 @@ urlpatterns = [
     path("", schema_view.with_ui("swagger", cache_timeout=0), name="swagger"),
     path("rest/", include("rest_framework.urls", namespace="rest_framework")),
     path("", include("api.urls")),
+    path("oauth/", include("rest_framework_social_oauth2.urls")),
 ]

@@ -33,6 +33,11 @@ class MyUserManager(BaseUserManager):
         user.save()
         return user
 
+    def create_user(self, *args, **kwargs):
+        email = kwargs.pop("email")
+        password = kwargs.pop("password", random_key())
+        self._create_user(email, password, **kwargs)
+
     def create_superuser(self, email, password, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
@@ -63,9 +68,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = MyUserManager()
 
-    class Meta:
-        db_table = "api_user"
-
     def __str__(self):
         return self.name
 
@@ -80,9 +82,13 @@ class Institute(models.Model):
     rating = models.FloatField(default=0)
     about = models.CharField(max_length=1024, null=True, blank=True)
     students = models.ManyToManyField("Student", related_name="institutes", blank=True)
-
-    class Meta:
-        db_table = "api_institute"
+    carousel = JSONField(default=list, blank=True)
+    features = JSONField(default=list, blank=True)
+    team = JSONField(default=list, blank=True)
+    toppers = JSONField(default=list, blank=True)
+    downloads = JSONField(default=list, blank=True)
+    gallery = JSONField(default=list, blank=True)
+    faqs = JSONField(default=list, blank=True)
 
     def __str__(self):
         return self.user.name
@@ -98,9 +104,6 @@ class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     gender = models.CharField(max_length=1, choices=GENDERS, blank=True, null=True)
     birth_date = models.DateField(null=True, blank=True)
-
-    class Meta:
-        db_table = "api_student"
 
     def __str__(self):
         return self.user.name

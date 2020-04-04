@@ -111,9 +111,24 @@ class JWTSerializer(Serializer):
     Serializer for JWT authentication.
     """
 
-    refresh = CharField()
-    access = CharField()
+    refresh = CharField(max_length=4096, required=True, trim_whitespace=True)
+    access = CharField(max_length=4096, required=True, trim_whitespace=True)
+
     user = SerializerMethodField()
 
     def get_user(self, obj):
         return UserDetailsSerializer(obj["user"], context=self.context).data
+
+
+class SocialSerializer(Serializer):
+    provider = CharField(max_length=255, required=True)
+    access_token = CharField(max_length=4096, required=True, trim_whitespace=True)
+
+
+__all__ = (
+    "RegisterSerializer",
+    "LoginSerializer",
+    "VerifyEmailSerializer",
+    "SocialSerializer",
+    "JWTSerializer",
+)

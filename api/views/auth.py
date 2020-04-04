@@ -4,16 +4,19 @@ from django.contrib.auth import logout as django_logout
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
+from requests.exceptions import HTTPError
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, GenericAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from social_core.exceptions import AuthForbidden, AuthTokenError, MissingBackend
+from social_django.utils import load_backend, load_strategy
 
 from api.serializers.auth import *
-
 from api.serializers.user import ProfileSerializer
+
 
 sensitive = method_decorator(
     sensitive_post_parameters("password", "old_password", "new_password")
@@ -79,7 +82,9 @@ class LoginView(GenericAPIView):
         return super(LoginView, self).dispatch(*args, **kwargs)
 
     def process_login(self):
-        django_login(self.request, self.user)
+        django_login(
+            self.request, self.user, backend="social_core.backends.google.ModelBackend"
+        )
 
     def login(self):
         self.user = self.serializer.validated_data["user"]
@@ -107,6 +112,77 @@ class LoginView(GenericAPIView):
             data=self.request.data, context={"request": request}
         )
         self.serializer.is_valid(raise_exception=True)
+        self.login()
+        return self.get_response()
+
+
+class SocialLoginView(GenericAPIView):
+
+    serializer_class = SocialSerializer
+    permission_classes = (AllowAny,)
+
+    def __init__(self, *args, **kwargs):
+        self.user = None
+        self.provider = None
+        self.strategy = None
+        self.backend = None
+        self.access_token = None
+
+        super(SocialLoginView, self).__init__(*args, **kwargs)
+
+    @sensitive
+    def dispatch(self, *args, **kwargs):
+        return super(SocialLoginView, self).dispatch(*args, **kwargs)
+
+    def load_backend(self):
+        try:
+            self.backend = load_backend(
+                strategy=self.strategy, name=self.provider, redirect_uri=None
+            )
+
+        except MissingBackend:
+            return Response(
+                {"error": "Please provide a valid provider"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+    def login(self):
+        try:
+            self.user = self.backend.do_auth(self.access_token)
+        except HTTPError as error:
+            return Response(
+                {"error": {"access_token": "Invalid token", "details": str(error)}},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except AuthTokenError as error:
+            return Response(
+                {"error": "Invalid credentials", "details": str(error)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        django_login(
+            self.request, self.user, backend="social_core.backends.google.GoogleOAuth2"
+        )
+
+    def get_response(self):
+        serializer_class = JWTSerializer
+
+        refresh = RefreshToken.for_user(self.user)
+        access = refresh.access_token
+
+        data = {"user": self.user, "refresh": refresh, "access": access}
+
+        serializer = serializer_class(instance=data, context={"request": self.request})
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.provider = serializer.data.get("provider", None)
+        self.strategy = load_strategy(request)
+        self.access_token = serializer.data.get("access_token")
+        self.load_backend()
         self.login()
         return self.get_response()
 

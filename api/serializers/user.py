@@ -1,4 +1,8 @@
-from rest_framework.serializers import ModelSerializer, SerializerMethodField, StringRelatedField
+from rest_framework.serializers import (
+    ModelSerializer,
+    SerializerMethodField,
+    StringRelatedField,
+)
 
 from api.models import User, Institute, Student
 
@@ -6,7 +10,7 @@ from api.models import User, Institute, Student
 class InstituteDetailsSerializer(ModelSerializer):
     class Meta:
         model = Institute
-        fields = "__all__"
+        fields = ("id", "handle", "pincode", "about")
 
 
 class StudentDetailsSerializer(ModelSerializer):
@@ -19,9 +23,19 @@ class ProfileSerializer(ModelSerializer):
     birth_date = SerializerMethodField(read_only=True)
     pincode = SerializerMethodField(read_only=True)
     country = StringRelatedField()
+
     class Meta:
         model = User
-        fields = ("id", "name", "phone", "city", "state", "country", "birth_date", "pincode")
+        fields = (
+            "id",
+            "name",
+            "phone",
+            "city",
+            "state",
+            "country",
+            "birth_date",
+            "pincode",
+        )
 
     def get_birth_date(self, obj):
         if obj.is_student:

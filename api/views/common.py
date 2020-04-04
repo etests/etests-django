@@ -7,11 +7,12 @@ from rest_framework.generics import (
     ListCreateAPIView,
     UpdateAPIView,
 )
-from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ViewSet
 
+from api.permissions import IsStaff
 from api.forms import ImageUploadForm
 from api.models import (
     Exam,
@@ -52,13 +53,13 @@ class ExamListView(ListAPIView):
 
 
 class TopicListView(ListCreateAPIView):
-    permission_classes = (ReadOnly | IsAdminUser,)
+    permission_classes = (ReadOnly | IsStaff,)
     serializer_class = TopicSerializer
     queryset = Topic.objects.all()
 
 
 class SubjectListView(ListCreateAPIView):
-    permission_classes = (ReadOnly | IsAdminUser,)
+    permission_classes = (ReadOnly | IsStaff,)
     serializer_class = SubjectSerializer
     queryset = Subject.objects.all()
 

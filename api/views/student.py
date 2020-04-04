@@ -1,13 +1,13 @@
 from rest_framework.generics import ListAPIView
-from rest_framework.permissions import IsAdminUser
 
+from api.permissions import IsStaff
 from api.models import Student
 from api.permissions import IsInstituteOwner
 from api.serializers.student import StudentSerializer
 
 
 class StudentListView(ListAPIView):
-    permission_classes = (IsInstituteOwner | IsAdminUser,)
+    permission_classes = (IsInstituteOwner | IsStaff,)
     serializer_class = StudentSerializer
 
     def get_queryset(self):

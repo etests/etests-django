@@ -2,7 +2,18 @@ from rest_framework.permissions import BasePermission, SAFE_METHODS
 from .models import Test
 
 
+class IsStaff(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.is_staff
+
+    def has_object_permission(self, request, view, obj):
+        return request.user.is_authenticated and request.user.is_staff
+
+
 class ReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        return request.method in SAFE_METHODS
+
     def has_object_permission(self, request, view, obj):
         return request.method in SAFE_METHODS
 
@@ -15,7 +26,11 @@ class IsInstituteOwner(BasePermission):
         return (
             request.user.is_authenticated
             and request.user.is_institute
-            and (obj.institute == request.user.institute)
+            and (
+                hasattr(obj, "institute")
+                and obj.institute == request.user.institute
+                or obj == request.user.institute
+            )
         )
 
 

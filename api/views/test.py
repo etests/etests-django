@@ -4,8 +4,9 @@ from rest_framework.generics import (
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
 )
-from rest_framework.permissions import SAFE_METHODS, IsAdminUser, IsAuthenticated
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 
+from api.permissions import IsStaff
 from api.models import Exam, Test
 from api.permissions import *
 from api.serializers.test import (
@@ -16,7 +17,7 @@ from api.serializers.test import (
 
 
 class TestListCreateView(ListCreateAPIView):
-    permission_classes = (ReadOnly | IsInstituteOwner | IsAdminUser,)
+    permission_classes = (ReadOnly | IsInstituteOwner | IsStaff,)
     filterset_fields = ("institute", "exam", "free")
 
     def get_serializer_class(self):
@@ -64,7 +65,7 @@ class FreeTestListView(ListAPIView):
 
 
 class TestRetrieveUpdateDestoryView(RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsInstituteOwner | IsAdminUser,)
+    permission_classes = (IsInstituteOwner | IsStaff,)
 
     def get_serializer_class(self):
         if self.request.method in SAFE_METHODS:

@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.conf.urls import include, url
 from django.urls import include, path
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
@@ -22,6 +22,7 @@ urlpatterns = [
     path("login/", auth.LoginView.as_view()),
     path("logout/", auth.LogoutView.as_view()),
     path("register/", auth.RegisterView.as_view()),
+    # path("login/social/", auth.SocialLoginView.as_view()),
     path("email/verify/", auth.VerifyEmailView.as_view()),
     path("email/confirm/", TemplateView.as_view()),
     path("profile/", auth.ProfileView.as_view()),
