@@ -1,9 +1,10 @@
 from rest_framework import status
-from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
+from rest_framework.permissions import AllowAny
 
 from api.permissions import IsStaff
-from api.models import Institute
+from api.models import Institute, Contact
 from api.permissions import IsStudentOwner, IsInstituteOwner, ReadOnly
 from api.serializers.institute import *
 
@@ -37,6 +38,11 @@ class InstitutesView(RetrieveUpdateAPIView):
 
     def get_queryset(self):
         return Institute.objects.filter(verified=True)
+
+
+class ContactView(CreateAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = ContactSerializer
 
 
 # DEPRECATE

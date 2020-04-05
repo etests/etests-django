@@ -69,6 +69,13 @@ class InstituteAdmin(admin.ModelAdmin):
     list_filter = ("verified", "show", "rating", "pincode")
 
 
+@admin.register(Contact)
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ("first_name", "description", "institute")
+    list_display_links = ("description",)
+    list_filter = ("institute",)
+
+
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):
     list_display = ("name", "position")

@@ -2,9 +2,10 @@ from rest_framework.serializers import (
     ModelSerializer,
     SerializerMethodField,
     StringRelatedField,
+    SlugRelatedField,
 )
 
-from api.models import Institute
+from api.models import Institute, Contact
 
 from .user import UserSerializer
 
@@ -30,7 +31,9 @@ class InstituteDetailsSerializer(ModelSerializer):
             "test_series",
             "rating",
             "about",
+            "settings",
             "carousel",
+            "notifications",
             "features",
             "team",
             "toppers",
@@ -46,3 +49,20 @@ class JoinedInstitutesSerializer(ModelSerializer):
     class Meta:
         model = Institute
         fields = ("id", "user")
+
+
+class ContactSerializer(ModelSerializer):
+    institute = SlugRelatedField(
+        slug_field="handle", queryset=Institute.objects.filter(verified=True)
+    )
+
+    class Meta:
+        model = Contact
+        fields = (
+            "first_name",
+            "last_name",
+            "phone",
+            "email",
+            "description",
+            "institute",
+        )

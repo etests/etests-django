@@ -74,7 +74,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 class Institute(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    handle = models.CharField(unique=True, max_length=50, null=True, blank=True)
+    handle = models.SlugField(unique=True, max_length=50, null=True, blank=True)
     pincode = models.CharField(max_length=10, null=True, blank=True)
     current_credits = models.IntegerField(default=0)
     verified = models.BooleanField(default=False)
@@ -82,7 +82,9 @@ class Institute(models.Model):
     rating = models.FloatField(default=0)
     about = models.CharField(max_length=1024, null=True, blank=True)
     students = models.ManyToManyField("Student", related_name="institutes", blank=True)
+    settings = JSONField(default=dict, blank=True)
     carousel = JSONField(default=list, blank=True)
+    notifications = JSONField(default=list, blank=True)
     features = JSONField(default=list, blank=True)
     team = JSONField(default=list, blank=True)
     toppers = JSONField(default=list, blank=True)
@@ -97,6 +99,19 @@ class Institute(models.Model):
         if not self.pk:
             self.user.is_institute = True
         super(Institute, self).save(*args, **kwargs)
+
+
+class Contact(models.Model):
+    institute = models.ForeignKey(Institute, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50, blank=True, null=True)
+    phone = models.CharField(max_length=15)
+    email = models.EmailField(max_length=100)
+    description = models.CharField(max_length=250)
+    date_added = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.description
 
 
 class Student(models.Model):
