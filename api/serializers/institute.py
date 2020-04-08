@@ -40,6 +40,7 @@ class InstituteDetailsSerializer(ModelSerializer):
             "downloads",
             "gallery",
             "faqs",
+            "courses",
         )
 
 
