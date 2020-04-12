@@ -20,7 +20,11 @@ from api.utils import (
     random_key,
     unique_random_key,
 )
-from etests.storage_backends import PublicMediaStorage, PrivateMediaStorage
+from etests.storage_backends import (
+    PublicMediaStorage,
+    PrivateMediaStorage,
+    InstituteMediaStorage,
+)
 
 
 class MyUserManager(BaseUserManager):
@@ -561,8 +565,27 @@ def validate_file_size(file):
         return file
 
 
-class Image(models.Model):
+class QuestionImage(models.Model):
     id = models.AutoField(primary_key=True)
     file = models.ImageField(
         storage=PublicMediaStorage(), validators=[validate_file_size]
     )
+
+    def __str__(self):
+        if self.file:
+            return str(self.file)
+        else:
+            str(self.id)
+
+
+class Image(models.Model):
+    id = models.AutoField(primary_key=True)
+    file = models.ImageField(
+        storage=InstituteMediaStorage(), validators=[validate_file_size]
+    )
+
+    def __str__(self):
+        if self.file:
+            return str(self.file)
+        else:
+            str(self.id)

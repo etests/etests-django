@@ -143,7 +143,16 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 CORS_ORIGIN_ALLOW_ALL = False
-
+CORS_ALLOW_HEADERS = (
+    "Cache-Control",
+    "Content-Disposition",
+    "X-Requested-With",
+    "Accept-Encoding",
+    "Content-Type",
+    "Accept",
+    "Origin",
+    "Authorization",
+)
 CORS_ORIGIN_REGEX_WHITELIST = (r"^(https?://)?(\w+\.)?etests\.co\.in$",)
 
 GEOIP_PATH = os.path.join(BASE_DIR, "GeoLite")
@@ -180,7 +189,7 @@ AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 
-AWS_S3_CUSTOM_DOMAIN = "%s.s3.amazonaws.com" % AWS_STORAGE_BUCKET_NAME
+AWS_S3_CUSTOM_DOMAIN = os.getenv("MEDIA_DOMAIN")
 AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 
 AWS_PUBLIC_MEDIA_LOCATION = "media/public"
@@ -188,6 +197,11 @@ DEFAULT_FILE_STORAGE = "etests.storage_backends.PublicMediaStorage"
 
 AWS_PRIVATE_MEDIA_LOCATION = "media/private"
 PRIVATE_FILE_STORAGE = "etests.storage_backends.PrivateMediaStorage"
+
+
+AWS_INSTITUTE_MEDIA_LOCATION = ""
+AWS_INSTITUTE_STORAGE_BUCKET_NAME = os.getenv("AWS_INSTITUTE_STORAGE_BUCKET_NAME")
+AWS_INSTITUTE_DOMAIN = os.getenv("INSTITUTE_DOMAIN")
 
 AWS_STATIC_LOCATION = "static"
 

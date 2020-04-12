@@ -38,6 +38,7 @@ urlpatterns = [
     path("exams/", common.ExamListView.as_view()),
     path("payments/gateway/", common.PaymentGatewayView.as_view()),
     path("payments/<str:transaction_id>/", common.PaymentView.as_view()),
+    path("questions/images/", csrf_exempt(question.UploadQuestionImageView.as_view())),
     path("questions/", question.QuestionView.as_view()),
     path("questions/<int:pk>/", question.QuestionUpdateView.as_view()),
     path("students/", student.StudentListView.as_view()),

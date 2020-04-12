@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import UpdateAPIView
@@ -8,9 +9,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_bulk import ListBulkCreateUpdateAPIView
 
-from api.models import Question
+from api.models import Question, QuestionImage
 from api.permissions import IsStaff
 from api.serializers.common import QuestionAnnotateSerializer, QuestionSerializer
+from api.utils import clean_image
+from api.forms import QuestionImageUploadForm
 
 
 class AllowPOSTforAdminOnly(BasePermission):
@@ -70,4 +73,29 @@ class QuestionUpdateView(UpdateAPIView):
         else:
             return Question.objects.filter(institute__isnull=True).filter(
                 Q(subject__isnull=True) | Q(topic__isnull=True)
+            )
+
+
+class UploadQuestionImageView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        uploaded_image = request.FILES.get("upload")
+
+        processed_image = clean_image(uploaded_image)
+
+        if processed_image.size < uploaded_image.size:
+            request.FILES["file"] = processed_image
+        else:
+            request.FILES["file"] = uploaded_image
+
+        form = QuestionImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.save()
+            return JsonResponse(
+                {"uploaded": 1, "file_name": image.file.name, "url": image.file.url}
+            )
+        else:
+            return JsonResponse(
+                {"uploaded": 0, "error": {"message": form.errors.as_text()}}
             )

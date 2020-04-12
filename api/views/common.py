@@ -1,4 +1,3 @@
-from django.http import JsonResponse
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.generics import (
@@ -16,7 +15,6 @@ from api.permissions import IsStaff
 from api.forms import ImageUploadForm
 from api.models import (
     Exam,
-    Image,
     Payment,
     ResetCode,
     Subject,
@@ -28,9 +26,10 @@ from api.models import (
 from api.permissions import IsInstituteOwner, IsStudent, ReadOnly
 from api.serializers.common import *
 from api.serializers.exam import *
-from api.utils import clean_image, get_client_country
+from api.utils import get_client_country
 from django.shortcuts import get_object_or_404
 from django.http.response import Http404
+from django.http import JsonResponse
 
 
 class ExamListView(ListAPIView):
@@ -140,15 +139,6 @@ class UploadImageView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        uploaded_image = request.FILES.get("upload")
-
-        processed_image = clean_image(uploaded_image)
-
-        if processed_image.size < uploaded_image.size:
-            request.FILES["file"] = processed_image
-        else:
-            request.FILES["file"] = uploaded_image
-
         form = ImageUploadForm(request.POST, request.FILES)
         if form.is_valid():
             image = form.save()
