@@ -1,1 +1,1 @@
-eTests Password Reset
+eTests Verification Code

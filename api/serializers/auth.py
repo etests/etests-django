@@ -3,6 +3,7 @@ from django.contrib.auth import password_validation as validators
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.serializers import (
+    EmailField,
     CharField,
     ModelSerializer,
     Serializer,
@@ -51,6 +52,39 @@ class RegisterSerializer(ModelSerializer):
 
         send_email(
             user.email,
+            render_to_string("email_verification/subject.txt"),
+            render_to_string(
+                f"email_verification/body.html",
+                context={"name": user.name, "code": user.verification_code},
+            ),
+        )
+
+        return user
+
+
+class VerifyEmailSerializer(Serializer):
+    email = EmailField()
+    verification_code = CharField()
+
+    def validate(self, attrs):
+        user = User.objects.filter(email=attrs.get("email"), verified=False).first()
+        if not user:
+            raise ValidationError(_("Invalid email id"))
+
+        if user.verification_code != attrs.get("verification_code"):
+            raise ValidationError(_("Incorrect verification code"))
+
+        attrs["user"] = user
+
+        return attrs
+
+    def save(self, validated_data):
+        user = validated_data.get("user")
+        user.verified = True
+        user.save()
+
+        send_email(
+            user.email,
             render_to_string("registration/subject.txt"),
             render_to_string(
                 f"registration/{'student' if user.is_student else 'institute'}.html",
@@ -59,10 +93,6 @@ class RegisterSerializer(ModelSerializer):
         )
 
         return user
-
-
-class VerifyEmailSerializer(Serializer):
-    key = CharField()
 
 
 class LoginSerializer(Serializer):

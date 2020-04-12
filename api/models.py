@@ -56,6 +56,8 @@ class MyUserManager(BaseUserManager):
 
 class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=100)
+    verified = models.BooleanField(default=False)
+    verification_code = models.CharField(max_length=100, default=random_key)
     email = models.EmailField(unique=True, blank=True, null=True)
     phone = models.CharField(max_length=15, unique=True, blank=True, null=True)
     state = models.CharField(max_length=100, null=True, blank=True)
@@ -63,6 +65,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     country = CountryField(null=True, blank=True)
     date_joined = models.DateField(auto_now_add=True)
     is_staff = models.BooleanField(_("staff status"), default=False)
+    name = models.CharField(max_length=100)
     is_active = models.BooleanField(_("active"), default=True)
     is_student = models.BooleanField(default=False)
     is_institute = models.BooleanField(default=False)
@@ -96,6 +99,7 @@ class Institute(models.Model):
     gallery = JSONField(default=list, null=True, blank=True)
     faqs = JSONField(default=list, null=True, blank=True)
     courses = JSONField(default=list, null=True, blank=True)
+    centers = JSONField(default=list, null=True, blank=True)
 
     def __str__(self):
         return self.user.name

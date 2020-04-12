@@ -32,8 +32,7 @@ class RegisterView(CreateAPIView):
         return super(RegisterView, self).dispatch(*args, **kwargs)
 
     def get_response_data(self, user):
-        data = {"user": user, "refresh": str(self.refresh), "access": str(self.access)}
-        return JWTSerializer(data).data
+        return {"email": user.email}
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -49,8 +48,6 @@ class RegisterView(CreateAPIView):
 
     def perform_create(self, serializer):
         user = serializer.create(self.request.data)
-        self.refresh = RefreshToken.for_user(user)
-        self.access = self.refresh.access_token
         return user
 
 
@@ -58,19 +55,16 @@ class VerifyEmailView(APIView):
     permission_classes = (AllowAny,)
     allowed_methods = ("POST", "OPTIONS", "HEAD")
 
-    def get_object(self):
-        pass
-
     def get_serializer(self, *args, **kwargs):
         return VerifyEmailSerializer(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.kwargs["key"] = serializer.validated_data["key"]
-        confirmation = self.get_object()
-        confirmation.confirm(self.request)
-        return Response({"detail": _("ok")}, status=status.HTTP_200_OK)
+        serializer.save(serializer.validated_data)
+        return Response(
+            {"detail": _("Email verified successfuly")}, status=status.HTTP_200_OK
+        )
 
 
 class LoginView(GenericAPIView):

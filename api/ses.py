@@ -7,7 +7,7 @@ def send_email(
     to_email,
     subject,
     body_html,
-    from_email=f"eTests<{settings.EMAIL_ID}>",
+    from_email=f"eTests<{settings.DEFAULT_EMAIL_ID}>",
     charset="UTF-8",
 ):
     client = boto3.client("ses", region_name=settings.AWS_REGION)

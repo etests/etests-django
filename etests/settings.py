@@ -180,6 +180,11 @@ SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.user.user_details",
 )
 
+# Email
+
+EMAIL_BACKEND = "django_ses.SESBackend"
+DEFAULT_EMAIL_ID = os.getenv("NOREPY_EMAIL_ID")
+
 # AWS Configuration
 
 AWS_DEFAULT_ACL = "public-read"
