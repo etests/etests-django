@@ -35,6 +35,7 @@ class ProfileSerializer(ModelSerializer):
             "country",
             "birth_date",
             "pincode",
+            "image",
         )
 
     def get_birth_date(self, obj):
@@ -51,7 +52,7 @@ class ProfileSerializer(ModelSerializer):
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User
-        fields = ("name", "email", "phone", "city", "state")
+        fields = ("name", "email", "phone", "city", "state", "image")
 
 
 class UserDetailsSerializer(ModelSerializer):

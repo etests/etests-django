@@ -63,6 +63,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     state = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
     country = CountryField(null=True, blank=True)
+    image = models.CharField(max_length=2048, null=True, blank=True)
     date_joined = models.DateField(auto_now_add=True)
     is_staff = models.BooleanField(_("staff status"), default=False)
     name = models.CharField(max_length=100)
@@ -100,6 +101,8 @@ class Institute(models.Model):
     faqs = JSONField(default=list, null=True, blank=True)
     courses = JSONField(default=list, null=True, blank=True)
     centers = JSONField(default=list, null=True, blank=True)
+    contacts = JSONField(default=dict, null=True, blank=True)
+    faculty = JSONField(default=list, null=True, blank=True)
 
     def __str__(self):
         return self.user.name
