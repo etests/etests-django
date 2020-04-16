@@ -97,6 +97,7 @@ class Institute(models.Model):
     team = JSONField(default=list, null=True, blank=True)
     toppers = JSONField(default=list, null=True, blank=True)
     downloads = JSONField(default=list, null=True, blank=True)
+    questions = JSONField(default=list, null=True, blank=True)
     gallery = JSONField(default=list, null=True, blank=True)
     faqs = JSONField(default=list, null=True, blank=True)
     courses = JSONField(default=list, null=True, blank=True)

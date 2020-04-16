@@ -38,6 +38,7 @@ class InstituteDetailsSerializer(ModelSerializer):
             "team",
             "toppers",
             "downloads",
+            "questions",
             "gallery",
             "faqs",
             "courses",
