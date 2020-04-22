@@ -31,6 +31,7 @@ urlpatterns = [
     path("credits/", common.CreditListView.as_view()),
     path("images/", csrf_exempt(common.UploadImageView.as_view())),
     path("institutes/", institute.InstitutesListView.as_view()),
+    path("institutes/join/<int:pk>/", institute.JoinInstituteView.as_view()),
     path("institutes/joined/", institute.JoinedInstitutesView.as_view()),
     path("institutes/<str:handle>/", institute.InstitutesView.as_view()),
     path("contacts/", institute.ContactView.as_view()),

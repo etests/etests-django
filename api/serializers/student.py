@@ -1,11 +1,12 @@
-from rest_framework.serializers import ModelSerializer, StringRelatedField
+from rest_framework.serializers import ModelSerializer, StringRelatedField, CharField
 
-from api.models import Student
+from api.models import Institute
 
 
 class StudentSerializer(ModelSerializer):
-    name = StringRelatedField(read_only=True, source="user")
+    joining_key = CharField()
+    students = StringRelatedField(many=True)
 
     class Meta:
-        model = Student
-        fields = ("id", "name")
+        model = Institute
+        fields = ("id", "joining_key", "students")

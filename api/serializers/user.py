@@ -14,6 +14,7 @@ class UserSerializer(ModelSerializer):
     country = StringRelatedField()
     scope = SerializerMethodField()
     handle = SerializerMethodField()
+    joined = SerializerMethodField()
 
     class Meta:
         model = User
@@ -31,7 +32,15 @@ class UserSerializer(ModelSerializer):
             "about",
             "scope",
             "handle",
+            "joined",
         )
+
+    def get_joined(self, obj):
+        if obj.is_student:
+            print(obj.student.institutes.all())
+            return [institute.id for institute in obj.student.institutes.all()]
+        else:
+            return []
 
     def get_scope(self, obj):
         scope = []

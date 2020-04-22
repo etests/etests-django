@@ -1,11 +1,16 @@
 from rest_framework import status
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import (
+    ListAPIView,
+    CreateAPIView,
+    RetrieveUpdateAPIView,
+    GenericAPIView,
+)
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
 from api.permissions import IsStaff
 from api.models import Institute, Contact
-from api.permissions import IsStudentOwner, IsInstituteOwner, ReadOnly
+from api.permissions import IsStudentOwner, IsInstituteOwner, ReadOnly, IsStudent
 from api.serializers.institute import *
 
 from api.utils import get_client_country
@@ -38,6 +43,21 @@ class InstitutesView(RetrieveUpdateAPIView):
 
     def get_queryset(self):
         return Institute.objects.filter(verified=True)
+
+
+class JoinInstituteView(GenericAPIView):
+    permission_classes = (IsStudent,)
+    serializer_class = JoinInstituteSerializer
+
+    def get_queryset(self):
+        return Institute.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance=instance, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(student=request.user.student)
+        return Response({"id": instance.id}, status=status.HTTP_200_OK)
 
 
 class ContactView(CreateAPIView):

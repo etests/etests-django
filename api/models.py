@@ -89,6 +89,7 @@ class Institute(models.Model):
     show = models.BooleanField(default=True)
     rating = models.FloatField(default=0)
     about = models.CharField(max_length=1024, null=True, blank=True)
+    joining_key = models.CharField(max_length=20, default=random_key)
     students = models.ManyToManyField("Student", related_name="institutes", blank=True)
     settings = JSONField(default=dict, null=True, blank=True)
     carousel = JSONField(default=list, null=True, blank=True)

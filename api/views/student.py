@@ -1,4 +1,4 @@
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import RetrieveUpdateAPIView
 
 from api.permissions import IsStaff
 from api.models import Student
@@ -6,13 +6,9 @@ from api.permissions import IsInstituteOwner
 from api.serializers.student import StudentSerializer
 
 
-class StudentListView(ListAPIView):
-    permission_classes = (IsInstituteOwner | IsStaff,)
-    serializer_class = StudentSerializer
+class StudentListView(RetrieveUpdateAPIView):
+    def get_object(self):
+        return self.request.user.institute
 
-    def get_queryset(self):
-        if self.request.user.is_authenticated:
-            if self.request.user.is_staff:
-                return Student.objects.all()
-            elif self.request.user.is_institute:
-                return self.request.user.institute.students.all()
+    permission_classes = (IsInstituteOwner,)
+    serializer_class = StudentSerializer
