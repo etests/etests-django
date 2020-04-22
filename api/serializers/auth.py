@@ -14,7 +14,7 @@ from rest_framework.serializers import (
 from api.models import Institute, Student, User
 from api.ses import send_email
 
-from .user import UserDetailsSerializer
+from .user import UserSerializer
 
 
 class RegisterSerializer(ModelSerializer):
@@ -147,7 +147,7 @@ class JWTSerializer(Serializer):
     user = SerializerMethodField()
 
     def get_user(self, obj):
-        return UserDetailsSerializer(obj["user"], context=self.context).data
+        return UserSerializer(obj["user"], context=self.context).data
 
 
 class SocialSerializer(Serializer):

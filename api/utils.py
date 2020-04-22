@@ -1,5 +1,6 @@
 import random
 import string
+import requests
 from datetime import datetime
 from importlib import import_module
 from io import BytesIO
@@ -10,6 +11,23 @@ from django.contrib.gis.geoip2 import GeoIP2
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.utils.text import slugify
 from six import string_types
+
+
+def download_image(url):
+    image_bytes = BytesIO()
+    response = requests.get(url, stream=True)
+
+    if response.ok:
+        for block in response.iter_content(1024):
+            if not block:
+                break
+            image_bytes.write(block)
+
+    downloaded_image = SimpleUploadedFile(
+        str(datetime.now()) + ".jpg", image_bytes.getvalue()
+    )
+
+    return downloaded_image
 
 
 def clean_image(img, alpha=2.2, beta=-160, quality=60):

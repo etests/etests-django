@@ -39,13 +39,11 @@ class PasswordResetForm(forms.Form):
         resetting their password.
         """
         try:
-            return User._default_manager.get(
-                **{"%s__iexact" % User.get_email_field_name(): email, "is_active": True}
-            )
+            return User.objects.get(email=email, is_active=True)
         except:
             raise forms.ValidationError("No user with this email id.")
 
-    def save(self, from_email):
+    def save(self):
         """
         Generate a one-use only link for resetting password and send it to the
         user.
@@ -57,7 +55,7 @@ class PasswordResetForm(forms.Form):
             "password_reset/body.html",
             context={"name": user.name, "code": self.generate_code(user)},
         )
-        send_email(email, subject, message, from_email=from_email)
+        send_email(email, subject, message)
 
 
 class SetPasswordForm(forms.Form):

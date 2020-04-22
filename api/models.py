@@ -108,6 +108,10 @@ class Institute(models.Model):
     def __str__(self):
         return self.user.name
 
+    @property
+    def name(self):
+        return self.user.name
+
     def save(self, *args, **kwargs):
         if not self.pk:
             self.user.is_institute = True

@@ -1,3 +1,8 @@
+import json
+
+from django.http import JsonResponse
+from django.http.response import Http404
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status, viewsets
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.generics import (
@@ -11,25 +16,21 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, ViewSet
 
-from api.permissions import IsStaff
 from api.forms import ImageUploadForm
 from api.models import (
     Exam,
     Payment,
     ResetCode,
     Subject,
+    TestSeries,
     TestSeriesTransaction,
     Topic,
     Transaction,
-    TestSeries,
 )
-from api.permissions import IsInstituteOwner, IsStudent, ReadOnly
+from api.permissions import IsInstituteOwner, IsStaff, IsStudent, ReadOnly
 from api.serializers.common import *
 from api.serializers.exam import *
-from api.utils import get_client_country
-from django.shortcuts import get_object_or_404
-from django.http.response import Http404
-from django.http import JsonResponse
+from api.utils import download_image, get_client_country
 
 
 class ExamListView(ListAPIView):
@@ -139,7 +140,19 @@ class UploadImageView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
+
+        try:
+            post_data = json.loads(request.body.decode(encoding="utf-8"))
+            if "url" in post_data:
+                url = post_data.pop("url").strip("\n ")
+                downloaded_image = download_image(url)
+                print(downloaded_image)
+                request.FILES["file"] = downloaded_image
+        except:
+            pass
+
         form = ImageUploadForm(request.POST, request.FILES)
+
         if form.is_valid():
             image = form.save()
             return JsonResponse(

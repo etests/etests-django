@@ -15,7 +15,7 @@ from social_core.exceptions import AuthForbidden, AuthTokenError, MissingBackend
 from social_django.utils import load_backend, load_strategy
 
 from api.serializers.auth import *
-from api.serializers.user import ProfileSerializer
+from api.serializers.user import UserSerializer
 
 
 sensitive = method_decorator(
@@ -194,7 +194,7 @@ class LogoutView(APIView):
 
 
 class ProfileView(RetrieveUpdateAPIView):
-    serializer_class = ProfileSerializer
+    serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_object(self):

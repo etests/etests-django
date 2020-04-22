@@ -4,31 +4,23 @@ from rest_framework.serializers import (
     StringRelatedField,
 )
 
-from api.models import User, Institute, Student
+from api.models import User
 
 
-class InstituteDetailsSerializer(ModelSerializer):
-    class Meta:
-        model = Institute
-        fields = ("id", "handle", "pincode", "about")
-
-
-class StudentDetailsSerializer(ModelSerializer):
-    class Meta:
-        model = Student
-        fields = "__all__"
-
-
-class ProfileSerializer(ModelSerializer):
-    birth_date = SerializerMethodField(read_only=True)
-    pincode = SerializerMethodField(read_only=True)
+class UserSerializer(ModelSerializer):
+    birth_date = SerializerMethodField()
+    pincode = SerializerMethodField()
+    about = SerializerMethodField()
     country = StringRelatedField()
+    scope = SerializerMethodField()
+    handle = SerializerMethodField()
 
     class Meta:
         model = User
         fields = (
             "id",
             "name",
+            "email",
             "phone",
             "city",
             "state",
@@ -36,7 +28,20 @@ class ProfileSerializer(ModelSerializer):
             "birth_date",
             "pincode",
             "image",
+            "about",
+            "scope",
+            "handle",
         )
+
+    def get_scope(self, obj):
+        scope = []
+        if obj.is_student:
+            scope.append("student")
+        if obj.is_institute:
+            scope.append("institute")
+        if obj.is_staff:
+            scope.append("staff")
+        return scope
 
     def get_birth_date(self, obj):
         if obj.is_student:
@@ -48,36 +53,12 @@ class ProfileSerializer(ModelSerializer):
             return obj.institute.pincode
         return None
 
+    def get_about(self, obj):
+        if obj.is_institute:
+            return obj.institute.about
+        return None
 
-class UserSerializer(ModelSerializer):
-    class Meta:
-        model = User
-        fields = ("name", "email", "phone", "city", "state", "image")
-
-
-class UserDetailsSerializer(ModelSerializer):
-    profile = ProfileSerializer(source="*")
-    details = SerializerMethodField()
-    type = SerializerMethodField()
-
-    class Meta:
-        model = User
-        fields = ("id", "name", "email", "type", "profile", "details")
-        read_only_fields = ("id", "email")
-
-    def get_type(self, obj):
-        if obj.is_student:
-            return "student"
-        elif obj.is_institute:
-            return "institute"
-        elif obj.is_staff:
-            return "staff"
-        return ""
-
-    def get_details(self, obj):
-        if obj.is_student:
-            return StudentDetailsSerializer(obj.student, context=self.context).data
-        elif obj.is_institute:
-            return InstituteDetailsSerializer(obj.institute, context=self.context).data
-        else:
-            return None
+    def get_handle(self, obj):
+        if obj.is_institute:
+            return obj.institute.handle
+        return None

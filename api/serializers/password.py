@@ -27,7 +27,7 @@ class PasswordResetSerializer(Serializer):
 
     def save(self):
         request = self.context.get("request")
-        self.reset_form.save(from_email=settings.EMAIL_ID)
+        self.reset_form.save()
 
 
 class PasswordResetConfirmSerializer(Serializer):

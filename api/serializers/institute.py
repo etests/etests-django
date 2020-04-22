@@ -11,11 +11,9 @@ from .user import UserSerializer
 
 
 class InstituteListSerializer(ModelSerializer):
-    user = UserSerializer()
-
     class Meta:
         model = Institute
-        fields = ("id", "user", "pincode", "test_series", "rating", "about")
+        fields = ("id", "name", "pincode", "test_series", "rating", "about")
 
 
 class InstituteDetailsSerializer(ModelSerializer):
