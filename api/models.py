@@ -105,6 +105,7 @@ class Institute(models.Model):
     centers = JSONField(default=list, null=True, blank=True)
     contacts = JSONField(default=dict, null=True, blank=True)
     faculty = JSONField(default=list, null=True, blank=True)
+    links = JSONField(default=list, null=True, blank=True)
 
     def __str__(self):
         return self.user.name

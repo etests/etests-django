@@ -46,6 +46,7 @@ class InstituteDetailsSerializer(ModelSerializer):
             "centers",
             "contacts",
             "faculty",
+            "links",
         )
 
 
