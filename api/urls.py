@@ -42,6 +42,8 @@ urlpatterns = [
     path("questions/", question.QuestionView.as_view()),
     path("questions/<int:pk>/", question.QuestionUpdateView.as_view()),
     path("students/", student.StudentListView.as_view()),
+    path("students/<int:pk>/", student.StudentDeleteView.as_view()),
+    path("joining_key/", student.JoiningKeyView.as_view()),
     path("tests/", test.TestListCreateView.as_view()),
     path("tests/free/", test.FreeTestListView.as_view()),
     path("tests/<int:pk>/", test.TestRetrieveUpdateDestoryView.as_view()),

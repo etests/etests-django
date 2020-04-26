@@ -68,6 +68,7 @@ class VerifyEmailSerializer(Serializer):
 
     def validate(self, attrs):
         user = User.objects.filter(email=attrs.get("email")).first()
+        print(user)
         if not user:
             raise ValidationError(_("Invalid email id"))
 
