@@ -62,6 +62,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=15, unique=True, blank=True, null=True)
     state = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
+    address = models.CharField(max_length=250, null=True, blank=True)
     country = CountryField(null=True, blank=True)
     image = models.CharField(max_length=2048, null=True, blank=True)
     date_joined = models.DateField(auto_now_add=True)
@@ -106,6 +107,7 @@ class Institute(models.Model):
     contacts = JSONField(default=dict, null=True, blank=True)
     faculty = JSONField(default=list, null=True, blank=True)
     links = JSONField(default=list, null=True, blank=True)
+    forms = JSONField(default=list, null=True, blank=True)
 
     def __str__(self):
         return self.user.name
