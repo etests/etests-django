@@ -43,6 +43,13 @@ class RegisterSerializer(ModelSerializer):
     def create(self, validated_data):
         user = User.objects.create(**validated_data)
         user.set_password(validated_data["password"])
+
+        request = self.context.get("request")
+        if "HTTP_ORIGIN" in request.META:
+            user.site = request.META["HTTP_ORIGIN"]
+        elif "HTTP_REFERER" in request.META:
+            user.site = request.META["HTTP_REFERER"]
+
         user.save()
 
         if user.is_student:
@@ -68,7 +75,6 @@ class VerifyEmailSerializer(Serializer):
 
     def validate(self, attrs):
         user = User.objects.filter(email=attrs.get("email")).first()
-        print(user)
         if not user:
             raise ValidationError(_("Invalid email id"))
 
@@ -129,6 +135,14 @@ class LoginSerializer(Serializer):
             if not user.is_active:
                 msg = _("User account is disabled.")
                 raise ValidationError(msg)
+
+            if not user.site:
+                request = self.context.get("request")
+                if "HTTP_ORIGIN" in request.META:
+                    user.site = request.META["HTTP_ORIGIN"]
+                elif "HTTP_REFERER" in request.META:
+                    user.site = request.META["HTTP_REFERER"]
+                user.save()
         else:
             msg = _("Unable to log in with provided credentials.")
             raise ValidationError(msg)

@@ -36,7 +36,6 @@ class UserSerializer(ModelSerializer):
 
     def get_joined(self, obj):
         if obj.is_student:
-            print(obj.student.institutes.all())
             return [institute.id for institute in obj.student.institutes.all()]
         else:
             return []

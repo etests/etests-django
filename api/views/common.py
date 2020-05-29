@@ -146,7 +146,6 @@ class UploadImageView(APIView):
             if "url" in post_data:
                 url = post_data.pop("url").strip("\n ")
                 downloaded_image = download_image(url)
-                print(downloaded_image)
                 request.FILES["file"] = downloaded_image
         except:
             pass

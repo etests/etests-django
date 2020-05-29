@@ -18,7 +18,6 @@ class StudentSerializer(ModelSerializer):
         fields = ("id", "name", "email", "phone", "image")
 
     def update(self, instance, validated_data):
-        print(instance, validated_data)
         instance.students.remove(validated_data.get("id"))
         return instance
 

@@ -65,6 +65,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     address = models.CharField(max_length=250, null=True, blank=True)
     country = CountryField(null=True, blank=True)
     image = models.CharField(max_length=2048, null=True, blank=True)
+    site = models.CharField(max_length=250, null=True, blank=True)
     date_joined = models.DateField(auto_now_add=True)
     is_staff = models.BooleanField(_("staff status"), default=False)
     name = models.CharField(max_length=100)
