@@ -299,9 +299,11 @@ class Test(models.Model):
     def __str__(self):
         return self.name
 
-    def evaluate_sessions(self, include_practice=False):
-        sessions = self.sessions.filter(marks__isnull=True)
-        if not include_practice:
+    def evaluate_sessions(self, exclude_practice=True, exclude_evaluated=True):
+        sessions = self.sessions
+        if exclude_evaluated:
+            sessions = sessions.exclude(marks__isnull=False)
+        if exclude_practice:
             sessions = sessions.exclude(practice=True)
         for session in sessions:
             session.evaluate(commit=False)
