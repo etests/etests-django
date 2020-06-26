@@ -21,9 +21,9 @@ from api.utils import (
     unique_random_key,
 )
 from etests.storage_backends import (
-    PublicMediaStorage,
-    PrivateMediaStorage,
     InstituteMediaStorage,
+    PrivateMediaStorage,
+    PublicMediaStorage,
 )
 
 
@@ -123,6 +123,17 @@ class Institute(models.Model):
         super(Institute, self).save(*args, **kwargs)
 
 
+class Batch(models.Model):
+    name = models.CharField(max_length=256)
+    institute = models.ForeignKey(Institute, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = "batches"
+
+
 class Contact(models.Model):
     institute = models.ForeignKey(Institute, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50)
@@ -141,6 +152,7 @@ class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     gender = models.CharField(max_length=1, choices=GENDERS, blank=True, null=True)
     birth_date = models.DateField(null=True, blank=True)
+    batch = models.ForeignKey(Batch, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.user.name

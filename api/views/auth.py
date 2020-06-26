@@ -16,6 +16,7 @@ from social_django.utils import load_backend, load_strategy
 
 from api.serializers.auth import *
 from api.serializers.user import UserSerializer
+from api.models import Batch
 
 
 sensitive = method_decorator(
@@ -200,18 +201,22 @@ class ProfileView(RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
-    def get_queryset(self):
-        return User.objects.all()
-
     def perform_update(self, serializer):
         instance = self.get_object()
 
         birth_date = self.request.data.get("birth_date", None)
+        batch = self.request.data.get("batch", None)
         pincode = self.request.data.get("pincode", None)
         about = self.request.data.get("about", None)
 
-        if instance.is_student and birth_date:
-            instance.student.birth_date = birth_date
+        if instance.is_student:
+            if birth_date:
+                instance.student.birth_date = birth_date
+            if batch:
+                try:
+                    instance.student.batch = Batch.objects.get(id=batch)
+                except:
+                    pass
             instance.student.save()
 
         if instance.is_institute:

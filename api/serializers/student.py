@@ -4,6 +4,7 @@ from rest_framework.serializers import (
     StringRelatedField,
     CharField,
     PrimaryKeyRelatedField,
+    SerializerMethodField,
 )
 
 from api.models import Institute, User
@@ -12,14 +13,19 @@ from api.models import Institute, User
 class StudentSerializer(ModelSerializer):
     # Student id is required to make delete requests on institute students
     id = PrimaryKeyRelatedField(source="student", read_only=True)
+    batch = SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ("id", "name", "email", "phone", "image")
+        fields = ("id", "name", "email", "phone", "image", "batch")
 
     def update(self, instance, validated_data):
         instance.students.remove(validated_data.get("id"))
         return instance
+
+    def get_batch(self, obj):
+        if obj.is_student and obj.student.batch:
+            return obj.student.batch.name
 
 
 class JoiningKeySerializer(Serializer):

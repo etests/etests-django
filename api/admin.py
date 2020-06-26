@@ -49,7 +49,7 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ("user", "gender", "birth_date")
+    list_display = ("user", "gender", "birth_date", "batch")
     list_display_links = ("user",)
     list_filter = ("institutes",)
 

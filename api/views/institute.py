@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 
 from api.permissions import IsStaff
-from api.models import Institute, Contact
+from api.models import Institute, Contact, Batch
 from api.permissions import IsStudentOwner, IsInstituteOwner, ReadOnly, IsStudent
 from api.serializers.institute import *
 
@@ -63,6 +63,13 @@ class JoinInstituteView(GenericAPIView):
 class ContactView(CreateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = ContactSerializer
+
+
+class BatchView(ListAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = BatchSerializer
+    filterset_fields = ("institute__handle",)
+    queryset = Batch.objects.all()
 
 
 # DEPRECATE

@@ -7,7 +7,7 @@ from rest_framework.serializers import (
     CharField,
 )
 
-from api.models import Institute, Contact
+from api.models import Institute, Contact, Batch
 
 from .user import UserSerializer
 from rest_framework.exceptions import ValidationError
@@ -47,7 +47,7 @@ class InstituteDetailsSerializer(ModelSerializer):
             "contacts",
             "faculty",
             "links",
-            "forms"
+            "forms",
         )
 
 
@@ -87,3 +87,13 @@ class ContactSerializer(ModelSerializer):
             "description",
             "institute",
         )
+
+
+class BatchSerializer(ModelSerializer):
+    institute = SlugRelatedField(
+        slug_field="handle", queryset=Institute.objects.filter(verified=True)
+    )
+
+    class Meta:
+        model = Batch
+        fields = ("id", "name", "institute")
