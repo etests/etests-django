@@ -11,5 +11,5 @@ def start():
     # email_institutes_test_report, "cron", day_of_week="thu,mon", hour="2"
     # )
     scheduler.add_job(evaluate_sessions, "cron", day_of_week="*", hour="2")
-    scheduler.add_job(auto_rank_declare, "cron", day_of_week="*", hour="2")
+    scheduler.add_job(auto_rank_declare, "cron", day_of_week="*", hour="3")
     scheduler.start()
