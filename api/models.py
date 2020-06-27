@@ -124,14 +124,55 @@ class Institute(models.Model):
 
 
 class Batch(models.Model):
-    name = models.CharField(max_length=256)
-    institute = models.ForeignKey(Institute, on_delete=models.CASCADE)
+    joining_key = models.CharField(max_length=8, default=random_key)
+    name = models.CharField(max_length=100)
+    institute = models.ForeignKey(
+        Institute, related_name="batches", on_delete=models.CASCADE
+    )
+
+    def students(self):
+        return Student.objects.filter(enrollment__batch=self)
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name_plural = "batches"
+        verbose_name_plural = "Batches"
+
+
+class Enrollment(models.Model):
+    institute = models.ForeignKey(Institute, on_delete=models.CASCADE)
+    batch = models.ForeignKey(
+        Batch,
+        blank=True,
+        null=True,
+        related_name="enrollments",
+        on_delete=models.CASCADE,
+    )
+    roll_number = models.CharField(max_length=25)
+    student = models.ForeignKey(
+        "Student", related_name="enrollment", null=True, on_delete=models.SET_NULL
+    )
+    date_joined = models.DateField(null=True)
+
+    class Meta:
+        unique_together = ("batch", "roll_number")
+
+    def __str__(self):
+        if self.roll_number:
+            return self.roll_number
+        elif self.student:
+            return self.student.user.name
+        else:
+            return self.pk
+
+    def save(self, *args, **kwargs):
+        errors = {}
+        if self.batch not in self.institute.batches.all():
+            errors["batch"] = ("This batch does not belong to the institute.",)
+            raise ValidationError(errors)
+        else:
+            super(Enrollment, self).save(*args, **kwargs)
 
 
 class Contact(models.Model):
@@ -152,10 +193,15 @@ class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     gender = models.CharField(max_length=1, choices=GENDERS, blank=True, null=True)
     birth_date = models.DateField(null=True, blank=True)
-    batch = models.ForeignKey(Batch, null=True, blank=True, on_delete=models.SET_NULL)
+    new_institutes = models.ManyToManyField(
+        Institute, related_name="new_students", through=Enrollment, blank=True
+    )
 
     def __str__(self):
         return self.user.name
+
+    def batches(self):
+        return Batch.objects.filter(enrollments__student=self)
 
     def save(self, *args, **kwargs):
         if not self.pk:
@@ -258,6 +304,7 @@ class Test(models.Model):
     registered_students = models.ManyToManyField(
         Student, related_name="tests", blank=True
     )
+    registered_batches = models.ManyToManyField(Batch, related_name="tests", blank=True)
     name = models.CharField(max_length=200)
     institute = models.ForeignKey(
         Institute, related_name="tests", blank=True, null=True, on_delete=models.CASCADE

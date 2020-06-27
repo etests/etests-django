@@ -47,9 +47,38 @@ class UserAdmin(admin.ModelAdmin):
             return "User"
 
 
+class EnrollmentStatusFilter(SimpleListFilter):
+    title = "Enrollment Status"
+    parameter_name = "enroll_status"
+
+    def lookups(self, request, model_admin):
+        return [("Joined", "Joined"), ("Not Joined", "Not Joined")]
+
+    def queryset(self, request, queryset):
+        if self.value() == "Joined":
+            return queryset.filter(student__isnull=False)
+        elif self.value() == "Not Joined":
+            return queryset.filter(student__isnull=True)
+        else:
+            return queryset.all()
+
+
+@admin.register(Enrollment)
+class EnrollmentAdmin(admin.ModelAdmin):
+    list_display = ("institute", "batch", "roll_number", "student", "date_joined")
+    list_display_links = ("roll_number",)
+    list_filter = (EnrollmentStatusFilter, "institute")
+
+
+@admin.register(Batch)
+class BatchAdmin(admin.ModelAdmin):
+    list_display = ("institute", "name")
+    list_display_links = ("name",)
+
+
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ("user", "gender", "birth_date", "batch")
+    list_display = ("user", "gender", "birth_date")
     list_display_links = ("user",)
     list_filter = ("institutes",)
 

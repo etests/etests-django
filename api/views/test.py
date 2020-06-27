@@ -7,7 +7,7 @@ from rest_framework.generics import (
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 
 from api.permissions import IsStaff
-from api.models import Exam, Test
+from api.models import Batch, Exam, Test
 from api.permissions import *
 from api.serializers.test import (
     TestCreateUpdateSerializer,
@@ -37,7 +37,9 @@ class TestListCreateView(ListCreateAPIView):
                 return (
                     Test.objects.filter(aits=False, visible=True)
                     .filter(
-                        Q(registered_students=student) | Q(institute__students=student)
+                        Q(registered_students=student)
+                        | Q(institute__students=student)
+                        | Q(registered_batches__in=student.batches())
                     )
                     .distinct()
                 )
