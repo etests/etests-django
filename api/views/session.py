@@ -87,7 +87,7 @@ class RankListView(APIView):
 
     def get(self, request, id):
         sessions = Session.objects.filter(
-            test__id=id, completed=True, marks__isnull=False, ranks__isnull=False
+            test__id=id, completed=True, marks__isnull=False
         )
         serializer = RanksSerializer(sessions, many=True)
         return Response(serializer.data)

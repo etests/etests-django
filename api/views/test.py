@@ -38,7 +38,6 @@ class TestListCreateView(ListCreateAPIView):
                     Test.objects.filter(aits=False, visible=True)
                     .filter(
                         Q(registered_students=student)
-                        | Q(institute__students=student)
                         | Q(registered_batches__in=student.batches())
                     )
                     .distinct()
