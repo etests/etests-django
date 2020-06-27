@@ -87,13 +87,3 @@ class ContactSerializer(ModelSerializer):
             "description",
             "institute",
         )
-
-
-class BatchSerializer(ModelSerializer):
-    institute = SlugRelatedField(
-        slug_field="handle", queryset=Institute.objects.filter(verified=True)
-    )
-
-    class Meta:
-        model = Batch
-        fields = ("id", "name", "institute")

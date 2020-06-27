@@ -15,7 +15,6 @@ class UserSerializer(ModelSerializer):
     scope = SerializerMethodField()
     handle = SerializerMethodField()
     joined = SerializerMethodField()
-    batch = SerializerMethodField()
 
     class Meta:
         model = User
@@ -33,7 +32,6 @@ class UserSerializer(ModelSerializer):
             "scope",
             "handle",
             "joined",
-            "batch",
         )
 
     def get_joined(self, obj):
@@ -70,9 +68,4 @@ class UserSerializer(ModelSerializer):
     def get_handle(self, obj):
         if obj.is_institute:
             return obj.institute.handle
-        return None
-
-    def get_batch(self, obj):
-        if obj.is_student and obj.student.batch:
-            return obj.student.batch.id
         return None
