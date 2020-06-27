@@ -44,22 +44,6 @@ class InstitutesView(RetrieveUpdateAPIView):
     def get_queryset(self):
         return Institute.objects.filter(verified=True)
 
-
-class JoinInstituteView(GenericAPIView):
-    permission_classes = (IsStudent,)
-    serializer_class = JoinInstituteSerializer
-
-    def get_queryset(self):
-        return Institute.objects.all()
-
-    def post(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance=instance, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(student=request.user.student)
-        return Response({"id": instance.id}, status=status.HTTP_200_OK)
-
-
 class ContactView(CreateAPIView):
     permission_classes = (AllowAny,)
     serializer_class = ContactSerializer

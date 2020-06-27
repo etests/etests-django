@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from django.contrib.auth.models import (
     AbstractBaseUser,
@@ -132,9 +132,13 @@ class Batch(models.Model):
         return Student.objects.filter(enrollment__batch=self)
 
     def __str__(self):
-        return self.institute.name + " " + self.name
+        if self.name == "Common Batch":
+            return f"{self.name} ({self.institute.name})"
+        else:
+            return self.name
 
     class Meta:
+        ordering = ("id",)
         verbose_name_plural = "Batches"
 
 
@@ -151,10 +155,7 @@ class Enrollment(models.Model):
     student = models.ForeignKey(
         "Student", related_name="enrollment", null=True, on_delete=models.SET_NULL
     )
-    date_joined = models.DateField(null=True)
-
-    class Meta:
-        unique_together = ("batch", "roll_number")
+    date_joined = models.DateField(default=datetime.now)
 
     def __str__(self):
         if self.roll_number:
@@ -163,6 +164,10 @@ class Enrollment(models.Model):
             return self.student.user.name
         else:
             return self.pk
+
+    @property
+    def joining_key(self):
+        return self.batch.joining_key
 
     def save(self, *args, **kwargs):
         errors = {}

@@ -6,20 +6,13 @@ from rest_framework import status
 from rest_framework.response import Response
 
 
-
 class BatchListView(generics.ListAPIView):
-    permission_classes = (ReadOnly, permissions.IsAuthenticated)
+    permission_classes = (ReadOnly,)
     serializer_class = BatchSerializer
+    filterset_fields = ("institute", "institute__handle")
 
     def get_queryset(self):
-        if self.request.user.is_authenticated:
-            if self.request.user.is_student:
-                return self.request.user.student.batches()
-            elif self.request.user.is_institute:
-                return Batch.objects.filter(institute=self.request.user.institute)
-            elif self.request.user.is_staff:
-                return Batch.objects.all()
-
+        return Batch.objects.all()
 
 
 class BatchListCreateView(generics.ListCreateAPIView):
@@ -39,7 +32,7 @@ class BatchListCreateView(generics.ListCreateAPIView):
 
 class BatchRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = (IsInstituteOwner | permissions.IsAdminUser,)
-    serializer_class = BatchSerializer
+    serializer_class = BatchEnrollmentsSerializer
 
     def get_queryset(self):
 
@@ -48,18 +41,4 @@ class BatchRetrieveUpdateDestoryView(generics.RetrieveUpdateDestroyAPIView):
                 return Batch.objects.filter(institute=self.request.user.institute)
             elif self.request.user.is_staff:
                 return Batch.objects.all()
-
-
-class BatchJoinView(generics.GenericAPIView):
-    permission_classes = (IsStudent,)
-    serializer_class = BatchJoinSerializer
-
-    def get_queryset(self):
-        return Batch.objects.all()
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(instance=self.get_object(), data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response("Batch Joined Successfully", status=status.HTTP_200_OK)
 
