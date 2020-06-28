@@ -107,6 +107,7 @@ class TestSerializer(ModelSerializer):
             "answers",
             "free",
             "syllabus",
+            "stats",
         )
 
     def get_answers(self, obj):
@@ -123,7 +124,7 @@ class TestEvaluationSerializer(Serializer):
         fields = ("include_practice", "include_evaluated", "generate_ranks")
 
     def save(self):
-        generate_ranks = self.validated_data.pop("generate_ranks")
+        generate_ranks = self.validated_data.pop("generate_ranks", False)
         self.instance.evaluate_sessions(**self.validated_data)
         if generate_ranks:
             sleep(2)
