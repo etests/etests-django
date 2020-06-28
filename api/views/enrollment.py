@@ -25,7 +25,9 @@ class EnrollmentListCreateView(ListCreateAPIView):
             return StudentEnrollmentSerializer
 
     def get_queryset(self):
-        return Enrollment.objects.filter(student=self.request.user.student)
+        if self.request.user.is_authenticated:
+            if self.request.user.is_student:
+                return Enrollment.objects.filter(student=self.request.user.student)
 
     def perform_create(self, serializer):
         serializer.save(student=self.request.user.student)
@@ -36,7 +38,9 @@ class EnrollmentDeleteView(DestroyAPIView):
     serializer_class = StudentEnrollmentSerializer
 
     def get_queryset(self):
-        return Enrollment.objects.filter(student=self.request.user.student)
+        if self.request.user.is_authenticated:
+            if self.request.user.is_student:
+                return Enrollment.objects.filter(student=self.request.user.student)
 
     def perform_update(self, serializer):
         serializer.save(student=self.request.user.student)

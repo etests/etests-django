@@ -3,6 +3,7 @@ from rest_framework.generics import (
     ListAPIView,
     ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
+    GenericAPIView,
 )
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 
@@ -13,7 +14,10 @@ from api.serializers.test import (
     TestCreateUpdateSerializer,
     TestListSerializer,
     TestSerializer,
+    TestEvaluationSerializer,
 )
+from rest_framework.response import Response
+from rest_framework import status
 
 
 class TestListCreateView(ListCreateAPIView):
@@ -86,3 +90,17 @@ class TestRetrieveUpdateDestoryView(RetrieveUpdateDestroyAPIView):
             elif self.request.user.is_staff:
                 return Test.objects.all()
         return None
+
+
+class TestEvaluationView(GenericAPIView):
+    permission_classes = (IsStaff,)
+    serializer_class = TestEvaluationSerializer
+
+    queryset = Test.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response("Successful", status=status.HTTP_200_OK)

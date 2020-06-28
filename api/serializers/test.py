@@ -1,7 +1,10 @@
+from time import sleep
 from rest_framework.serializers import (
     ModelSerializer,
     SerializerMethodField,
     StringRelatedField,
+    Serializer,
+    BooleanField,
 )
 
 from api.models import Session, Test, TestSeries
@@ -109,3 +112,20 @@ class TestSerializer(ModelSerializer):
     def get_answers(self, obj):
         if self.context.get("allow_answers", False):
             return obj.answers
+
+
+class TestEvaluationSerializer(Serializer):
+    include_practice = BooleanField(default=False)
+    include_evaluated = BooleanField(default=False)
+    generate_ranks = BooleanField(default=False)
+
+    class Meta:
+        fields = ("include_practice", "include_evaluated", "generate_ranks")
+
+    def save(self):
+        generate_ranks = self.validated_data.pop("generate_ranks")
+        self.instance.evaluate_sessions(**self.validated_data)
+        if generate_ranks:
+            sleep(2)
+            self.instance.generate_ranks()
+        return self.instance
