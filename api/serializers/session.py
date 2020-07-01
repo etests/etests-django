@@ -2,7 +2,7 @@ from django.template.loader import render_to_string
 from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_framework.exceptions import PermissionDenied
 
-from api.models import Session, Test
+from api.models import Session, Test, Subject
 from api.ses import send_email
 
 from .test import TestSerializer
@@ -91,10 +91,17 @@ class SessionSerializer(ModelSerializer):
 
 class RanksSerializer(ModelSerializer):
     name = SerializerMethodField()
+    subjects = SerializerMethodField()
 
     class Meta:
         model = Session
-        fields = ("id", "name", "marks", "ranks", "practice")
+        fields = ("id", "name", "marks", "ranks", "practice", "subjects")
 
     def get_name(self, obj):
         return obj.student.user.name
+
+    def get_subjects(self, obj):
+        sections = obj.test.sections
+        subjects = Subject.objects.all()
+        return [subjects.get(id=section["subject"]).name for section in sections]
+
