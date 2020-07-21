@@ -48,6 +48,7 @@ class InstituteDetailsSerializer(ModelSerializer):
             "faculty",
             "links",
             "forms",
+            "extras",
         )
 
 

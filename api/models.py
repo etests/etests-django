@@ -83,6 +83,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Institute(models.Model):
+    def extras_default():
+        return dict(banner=None)
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     handle = models.SlugField(unique=True, max_length=50, null=True, blank=True)
     pincode = models.CharField(max_length=10, null=True, blank=True)
@@ -107,6 +110,7 @@ class Institute(models.Model):
     faculty = JSONField(default=list, null=True, blank=True)
     links = JSONField(default=list, null=True, blank=True)
     forms = JSONField(default=list, null=True, blank=True)
+    extras = JSONField(default=extras_default, null=True, blank=True)
 
     def __str__(self):
         return self.user.name
