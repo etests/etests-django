@@ -154,7 +154,7 @@ CORS_ALLOW_HEADERS = (
     "Authorization",
 )
 
-CORS_ORIGIN_WHITELIST = ("ikedaintl.edu.np",)
+CORS_ORIGIN_WHITELIST = ("https://ikedaintl.edu.np",)
 CORS_ORIGIN_REGEX_WHITELIST = (r"^(https?://)?(\w+\.)?etests\.co\.in$",)
 
 GEOIP_PATH = os.path.join(BASE_DIR, "GeoLite")
