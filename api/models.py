@@ -87,7 +87,7 @@ class Institute(models.Model):
         return dict(banner=None)
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    handle = models.SlugField(unique=True, max_length=50, null=True, blank=True)
+    handle = models.CharField(unique=True, max_length=50, null=True, blank=True)
     pincode = models.CharField(max_length=10, null=True, blank=True)
     current_credits = models.IntegerField(default=0)
     verified = models.BooleanField(default=False)
