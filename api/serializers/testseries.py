@@ -13,6 +13,7 @@ class TestSeriesSerializer(ModelSerializer):
     institute = StringRelatedField()
     exams = StringRelatedField(many=True)
     status = SerializerMethodField()
+    image = SerializerMethodField()
 
     class Meta:
         model = TestSeries
@@ -25,7 +26,13 @@ class TestSeriesSerializer(ModelSerializer):
             "tests",
             "institute",
             "status",
+            "image"
         )
+
+    def get_image(self, obj):
+        exams = obj.exams.all()
+        if len(exams):
+            return exams[0].image
 
     def get_status(self, obj):
         if not self.context["request"].user.is_authenticated:

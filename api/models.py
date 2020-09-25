@@ -26,6 +26,13 @@ from etests.storage_backends import (
     PublicMediaStorage,
 )
 
+class EmailField(models.EmailField):
+    def get_prep_value(self, value):
+        value = super(EmailField, self).get_prep_value(value)
+        if value is not None:
+            value = value.lower()
+        return value
+
 
 class MyUserManager(BaseUserManager):
     def _create_user(self, email, password, **extra_fields):
@@ -58,7 +65,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=100)
     verified = models.BooleanField(default=False)
     verification_code = models.CharField(max_length=100, default=random_key)
-    email = models.EmailField(unique=True, blank=True, null=True)
+    email = EmailField(unique=True, blank=True, null=True)
     phone = models.CharField(max_length=15, unique=True, blank=True, null=True)
     state = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)

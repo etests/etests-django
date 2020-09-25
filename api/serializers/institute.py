@@ -14,9 +14,14 @@ from rest_framework.exceptions import ValidationError
 
 
 class InstituteListSerializer(ModelSerializer):
+    image = SerializerMethodField()
+
     class Meta:
         model = Institute
-        fields = ("id", "name", "pincode", "test_series", "rating", "about")
+        fields = ("id", "name", "pincode", "test_series", "rating", "about", "image")
+
+    def get_image(self, obj):
+        return obj.user.image
 
 
 class InstituteDetailsSerializer(ModelSerializer):
