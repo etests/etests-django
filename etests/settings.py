@@ -12,7 +12,7 @@ EMAIL_ID = os.getenv("NOREPLY_EMAIL_ID")
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["etests.co.in", "api.etests.co.in"]
+ALLOWED_HOSTS = [os.getenv("DOMAIN"), os.getenv("API_URL")]
 
 DATABASES = {
     "default": {
