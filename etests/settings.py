@@ -155,7 +155,7 @@ CORS_ALLOW_HEADERS = (
 )
 
 CORS_ORIGIN_WHITELIST = ("https://ikedaintl.edu.np",)
-CORS_ORIGIN_REGEX_WHITELIST = (r"^(https?://)?(\w+\.)?etests\.co\.in$",)
+CORS_ORIGIN_REGEX_WHITELIST = (r"^(https?://)?(\w+\.)?courseclip\.com$",)
 
 GEOIP_PATH = os.path.join(BASE_DIR, "GeoLite")
 
@@ -222,5 +222,5 @@ RAZORPAY_SECRET = os.getenv("RAZORPAY_SECRET")
 
 try:
     from local_settings import *
-except FileNotFoundError:
+except ModuleNotFoundError:
     pass

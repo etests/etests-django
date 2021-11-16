@@ -41,7 +41,7 @@ class RegisterSerializer(ModelSerializer):
             raise ValidationError(errors)
 
     def create(self, validated_data):
-        user = User.objects.create(**validated_data)
+        user = User.objects.create(**validated_data, verified=True)
         user.set_password(validated_data["password"])
 
         request = self.context.get("request")
