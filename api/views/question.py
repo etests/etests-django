@@ -12,7 +12,6 @@ from rest_framework_bulk import ListBulkCreateUpdateAPIView
 from api.models import Question, QuestionImage
 from api.permissions import IsStaff
 from api.serializers.common import QuestionAnnotateSerializer, QuestionSerializer
-from api.utils import clean_image
 from api.forms import QuestionImageUploadForm
 
 
@@ -82,20 +81,32 @@ class UploadQuestionImageView(APIView):
     def post(self, request):
         uploaded_image = request.FILES.get("upload")
 
-        processed_image = clean_image(uploaded_image)
+        response = {
+            "uploaded": 0
+        }
 
-        if processed_image.size < uploaded_image.size:
-            request.FILES["file"] = processed_image
-        else:
-            request.FILES["file"] = uploaded_image
+        if uploaded_image is None:
+            response["error"] = {"message": "Upload field should not be empty."}
+        else: 
+            try:
+                from api.utils import clean_image
+                processed_image = clean_image(uploaded_image)
+            except:
+                processed_image = uploaded_image
 
-        form = QuestionImageUploadForm(request.POST, request.FILES)
-        if form.is_valid():
-            image = form.save()
-            return JsonResponse(
-                {"uploaded": 1, "file_name": image.file.name, "url": image.file.url}
-            )
-        else:
-            return JsonResponse(
-                {"uploaded": 0, "error": {"message": form.errors.as_text()}}
-            )
+            if processed_image.size < uploaded_image.size:
+                request.FILES["file"] = processed_image
+            else:
+                request.FILES["file"] = uploaded_image
+
+            form = QuestionImageUploadForm(request.POST, request.FILES)
+
+            if form.is_valid():
+                image = form.save()
+                response["uploaded"] = 1
+                response["file_name"] = image.file.name
+                response["url"] = image.file.url
+            else:
+                response["error"] = {"message": form.errors.as_text()}
+        
+        return JsonResponse(response)

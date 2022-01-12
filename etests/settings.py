@@ -1,5 +1,10 @@
 import os
+import re
+
+import dj_database_url
+
 from datetime import timedelta
+from distutils.util import strtobool
 from dotenv import load_dotenv
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -10,20 +15,36 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 
 EMAIL_ID = os.getenv("NOREPLY_EMAIL_ID")
 
-DEBUG = False
+DEBUG = strtobool(os.getenv("DEBUG", "False"))
 
-ALLOWED_HOSTS = [os.getenv("DOMAIN"), os.getenv("API_URL")]
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DATABASE_NAME"),
-        "USER": os.getenv("DATABASE_USER"),
-        "PASSWORD": os.getenv("DATABASE_PASSWORD"),
-        "HOST": os.getenv("DATABASE_HOST"),
+ALLOWED_HOSTS = [os.getenv("ALLOWED_HOST")]
+
+if strtobool(os.getenv("HEROKU", "False")):
+    DATABASES = {
+        "default": dj_database_url.config(conn_max_age=600)
     }
-}
 
+elif os.getenv("DATABASE_ENGINE") == "postgresql":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.getenv("DATABASE_NAME"),
+            "USER": os.getenv("DATABASE_USER"),
+            "PASSWORD": os.getenv("DATABASE_PASSWORD"),
+            "HOST": os.getenv("DATABASE_HOST"),
+        }
+    }
+    
+else:
+     DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(BASE_DIR , "db.sqlite3"),
+        }
+     }
+    
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -41,6 +62,7 @@ INSTALLED_APPS = [
     "social_django",
     "rest_framework_social_oauth2",
     "api",
+    "whitenoise.runserver_nostatic"
 ]
 
 SIMPLE_JWT = {
@@ -95,7 +117,7 @@ REST_FRAMEWORK = {
 
 ROOT_URLCONF = "etests.urls"
 
-SITE_ID = "1"
+SITE_ID = 1
 
 TEMPLATES = [
     {
@@ -154,8 +176,10 @@ CORS_ALLOW_HEADERS = (
     "Authorization",
 )
 
-CORS_ORIGIN_WHITELIST = ("https://ikedaintl.edu.np",)
-CORS_ORIGIN_REGEX_WHITELIST = (r"^(https?://)?(\w+\.)?courseclip\.com$",)
+if os.getenv("CORS_ORIGIN_WHITELIST"):
+    CORS_ORIGIN_WHITELIST = os.getenv("CORS_ORIGIN_WHITELIST").split(",")
+
+CORS_ORIGIN_REGEX_WHITELIST = (r"^(https?://)?(\w+\.)?" + re.escape(os.getenv("DOMAIN")) + r"$",)
 
 GEOIP_PATH = os.path.join(BASE_DIR, "GeoLite")
 
@@ -205,15 +229,22 @@ DEFAULT_FILE_STORAGE = "etests.storage_backends.PublicMediaStorage"
 AWS_PRIVATE_MEDIA_LOCATION = "media/private"
 PRIVATE_FILE_STORAGE = "etests.storage_backends.PrivateMediaStorage"
 
-
 AWS_INSTITUTE_MEDIA_LOCATION = ""
 AWS_INSTITUTE_STORAGE_BUCKET_NAME = os.getenv("AWS_INSTITUTE_STORAGE_BUCKET_NAME")
 AWS_INSTITUTE_DOMAIN = os.getenv("INSTITUTE_DOMAIN")
 
 AWS_STATIC_LOCATION = "static"
 
-STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
-STATICFILES_STORAGE = "etests.storage_backends.StaticStorage"
+if strtobool(os.getenv("USE_AWS_STATIC", "False")):
+    STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
+    STATICFILES_STORAGE = "etests.storage_backends.StaticStorage"
+elif strtobool(os.getenv("HEROKU", "False")):
+    STATIC_URL = "/static/"
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+    MEDIA_URL = '/media/'
+else:
+    STATIC_URL = "/static/"
 
 # Razorpay Configuration
 

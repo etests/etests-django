@@ -5,7 +5,6 @@ from django.contrib.auth.models import (
     BaseUserManager,
     PermissionsMixin,
 )
-from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import pre_save
@@ -101,23 +100,23 @@ class Institute(models.Model):
     show = models.BooleanField(default=True)
     rating = models.FloatField(default=0)
     about = models.CharField(max_length=1024, null=True, blank=True)
-    settings = JSONField(default=dict, null=True, blank=True)
-    carousel = JSONField(default=list, null=True, blank=True)
-    notifications = JSONField(default=list, null=True, blank=True)
-    features = JSONField(default=list, null=True, blank=True)
-    team = JSONField(default=list, null=True, blank=True)
-    toppers = JSONField(default=list, null=True, blank=True)
-    downloads = JSONField(default=list, null=True, blank=True)
-    questions = JSONField(default=list, null=True, blank=True)
-    gallery = JSONField(default=list, null=True, blank=True)
-    faqs = JSONField(default=list, null=True, blank=True)
-    courses = JSONField(default=list, null=True, blank=True)
-    centers = JSONField(default=list, null=True, blank=True)
-    contacts = JSONField(default=dict, null=True, blank=True)
-    faculty = JSONField(default=list, null=True, blank=True)
-    links = JSONField(default=list, null=True, blank=True)
-    forms = JSONField(default=list, null=True, blank=True)
-    extras = JSONField(default=extras_default, null=True, blank=True)
+    settings = models.JSONField(default=dict, null=True, blank=True)
+    carousel = models.JSONField(default=list, null=True, blank=True)
+    notifications = models.JSONField(default=list, null=True, blank=True)
+    features = models.JSONField(default=list, null=True, blank=True)
+    team = models.JSONField(default=list, null=True, blank=True)
+    toppers = models.JSONField(default=list, null=True, blank=True)
+    downloads = models.JSONField(default=list, null=True, blank=True)
+    questions = models.JSONField(default=list, null=True, blank=True)
+    gallery = models.JSONField(default=list, null=True, blank=True)
+    faqs = models.JSONField(default=list, null=True, blank=True)
+    courses = models.JSONField(default=list, null=True, blank=True)
+    centers = models.JSONField(default=list, null=True, blank=True)
+    contacts = models.JSONField(default=dict, null=True, blank=True)
+    faculty = models.JSONField(default=list, null=True, blank=True)
+    links = models.JSONField(default=list, null=True, blank=True)
+    forms = models.JSONField(default=list, null=True, blank=True)
+    extras = models.JSONField(default=extras_default, null=True, blank=True)
 
     def __str__(self):
         return self.user.name
@@ -332,15 +331,15 @@ class Test(models.Model):
     activation_time = models.DateTimeField(blank=True, null=True)
     closing_time = models.DateTimeField(blank=True, null=True)
     time_alotted = models.DurationField(default=timedelta(hours=3))
-    sections = JSONField(blank=True, null=True)
-    questions = JSONField(blank=True, null=True)
-    answers = JSONField(blank=True, null=True)
-    stats = JSONField(blank=True, null=True)
+    sections = models.JSONField(blank=True, null=True)
+    questions = models.JSONField(blank=True, null=True)
+    answers = models.JSONField(blank=True, null=True)
+    stats = models.JSONField(blank=True, null=True)
     corrected = models.BooleanField(default=False)
     finished = models.BooleanField(default=False)
     visible = models.BooleanField(default=True)
     free = models.BooleanField(default=False)
-    marks_list = JSONField(blank=True, null=True)
+    marks_list = models.JSONField(blank=True, null=True)
     syllabus = models.CharField(max_length=1024, blank=True, null=True)
 
     class Meta:
@@ -406,11 +405,11 @@ class Session(models.Model):
     checkin_time = models.DateTimeField(default=timezone.now)
     duration = models.DurationField(default=timedelta(hours=3))
     completed = models.BooleanField(default=False)
-    response = JSONField(blank=True, null=True)
-    result = JSONField(default=list, blank=True, null=True)
-    current = JSONField(blank=True, null=True)
-    marks = JSONField(blank=True, null=True)
-    ranks = JSONField(blank=True, null=True)
+    response = models.JSONField(blank=True, null=True)
+    result = models.JSONField(default=list, blank=True, null=True)
+    current = models.JSONField(blank=True, null=True)
+    marks = models.JSONField(blank=True, null=True)
+    ranks = models.JSONField(blank=True, null=True)
 
     class Meta:
         ordering = ("practice", "checkin_time", "test", "student")
@@ -613,7 +612,7 @@ class Question(models.Model):
     )
     id = models.AutoField(primary_key=True)
     text = models.CharField(max_length=20000)
-    answer = JSONField()
+    answer = models.JSONField()
     solution = models.CharField(max_length=20000, null=True, blank=True)
     type = models.IntegerField(choices=TYPES)
     difficulty = models.IntegerField(choices=LEVELS, null=True, blank=True)
@@ -630,7 +629,7 @@ class Question(models.Model):
     partial_marks = models.FloatField(default=0)
     incorrect_marks = models.FloatField(default=1)
     option_count = models.IntegerField(default=4)
-    tags = JSONField(default=list, null=True, blank=True)
+    tags = models.JSONField(default=list, null=True, blank=True)
     parent = models.ForeignKey(
         "self", related_name="parts", null=True, blank=True, on_delete=models.CASCADE
     )
