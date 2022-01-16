@@ -21,12 +21,12 @@ DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 ALLOWED_HOSTS = [os.getenv("ALLOWED_HOST")]
 
-if strtobool(os.getenv("HEROKU", "False")):
+if os.getenv("DATABASE_CONFIG", "") == "URL":
     DATABASES = {
         "default": dj_database_url.config(conn_max_age=600)
     }
 
-elif os.getenv("DATABASE_ENGINE") == "postgresql":
+elif os.getenv("DATABASE_CONFIG") == "postgresql":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
@@ -220,29 +220,28 @@ AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
 
-AWS_S3_CUSTOM_DOMAIN = os.getenv("MEDIA_DOMAIN")
 AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 
-AWS_PUBLIC_MEDIA_LOCATION = "media/public"
-DEFAULT_FILE_STORAGE = "etests.storage_backends.PublicMediaStorage"
+if os.getenv("AWS_S3_DOMAIN"):
+    AWS_S3_DOMAIN = os.getenv("AWS_S3_DOMAIN")
+else:
+    AWS_S3_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
 
-AWS_PRIVATE_MEDIA_LOCATION = "media/private"
-PRIVATE_FILE_STORAGE = "etests.storage_backends.PrivateMediaStorage"
-
-AWS_INSTITUTE_MEDIA_LOCATION = ""
-AWS_INSTITUTE_STORAGE_BUCKET_NAME = os.getenv("AWS_INSTITUTE_STORAGE_BUCKET_NAME")
-AWS_INSTITUTE_DOMAIN = os.getenv("INSTITUTE_DOMAIN")
+AWS_MEDIA_LOCATION = "media"
+DEFAULT_FILE_STORAGE = "etests.storage_backends.MediaStorage"
 
 AWS_STATIC_LOCATION = "static"
 
-if strtobool(os.getenv("USE_AWS_STATIC", "False")):
-    STATIC_URL = "https://%s/%s/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STATIC_LOCATION)
+if os.getenv("STATIC_CONFIG", "") == "AWS":
+    STATIC_URL = "https://%s/%s/" % (AWS_S3_DOMAIN, AWS_STATIC_LOCATION)
     STATICFILES_STORAGE = "etests.storage_backends.StaticStorage"
-elif strtobool(os.getenv("HEROKU", "False")):
+
+elif os.getenv("STATIC_CONFIG", "") == "WHTENOISE":
     STATIC_URL = "/static/"
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     MEDIA_ROOT = os.path.join(BASE_DIR,'media')
     MEDIA_URL = '/media/'
+    
 else:
     STATIC_URL = "/static/"
 

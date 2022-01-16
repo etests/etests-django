@@ -1,15 +1,20 @@
+import os
 import boto3
-from botocore.exceptions import ClientError
-from django.conf import settings
 
+from django.conf import settings
+from distutils.util import strtobool
+from botocore.exceptions import ClientError
 
 def send_email(
     to_email,
     subject,
     body_html,
-    from_email=f"eTests<{settings.DEFAULT_EMAIL_ID}>",
+    from_email=f"CourseClip<{settings.DEFAULT_EMAIL_ID}>",
     charset="UTF-8",
 ):
+    if not strtobool(os.getenv("SES_ENABLED", "False")):
+        return
+
     client = boto3.client("ses", region_name=settings.AWS_REGION)
     try:
         response = client.send_email(

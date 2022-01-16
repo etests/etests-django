@@ -19,11 +19,7 @@ from api.utils import (
     random_key,
     unique_random_key,
 )
-from etests.storage_backends import (
-    InstituteMediaStorage,
-    PrivateMediaStorage,
-    PublicMediaStorage,
-)
+from etests.storage_backends import MediaStorage, PrivateMediaStorage
 
 class EmailField(models.EmailField):
     def get_prep_value(self, value):
@@ -659,7 +655,7 @@ def validate_file_size(file):
 class QuestionImage(models.Model):
     id = models.AutoField(primary_key=True)
     file = models.ImageField(
-        storage=PublicMediaStorage(), validators=[validate_file_size]
+        storage=MediaStorage(), validators=[validate_file_size]
     )
 
     def __str__(self):
@@ -672,7 +668,7 @@ class QuestionImage(models.Model):
 class Image(models.Model):
     id = models.AutoField(primary_key=True)
     file = models.ImageField(
-        storage=InstituteMediaStorage(), validators=[validate_file_size]
+        storage=MediaStorage(), validators=[validate_file_size]
     )
 
     def __str__(self):

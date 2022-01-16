@@ -99,7 +99,7 @@ class Migration(migrations.Migration):
             name='Image',
             fields=[
                 ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('file', models.ImageField(storage=etests.storage_backends.PublicMediaStorage(), upload_to='', validators=[api.models.validate_file_size])),
+                ('file', models.ImageField(storage=etests.storage_backends.MediaStorage(), upload_to='', validators=[api.models.validate_file_size])),
             ],
         ),
         migrations.CreateModel(

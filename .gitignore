@@ -1,6 +1,7 @@
 # Environments
 .en
 .env
+.env.*
 .venv
 env/
 venv/
@@ -25,3 +26,5 @@ static
 
 # SageMath parsed files
 *.sage.py
+
+zappa_settings.json
