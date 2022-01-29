@@ -169,7 +169,7 @@ class Enrollment(models.Model):
         elif self.student:
             return self.student.user.name
         else:
-            return self.pk
+            return str(self.pk)
 
     @property
     def joining_key(self):

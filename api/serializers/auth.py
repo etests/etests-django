@@ -40,8 +40,8 @@ class RegisterSerializer(ModelSerializer):
         if errors:
             raise ValidationError(errors)
 
-    def create(self, validated_data):
-        user = User.objects.create(**validated_data, verified=True)
+    def create(self, validated_data, *args, **kwargs):
+        user = User.objects.create(**validated_data, **kwargs, verified=True)
         user.set_password(validated_data["password"])
 
         request = self.context.get("request")
@@ -52,10 +52,7 @@ class RegisterSerializer(ModelSerializer):
 
         user.save()
 
-        if user.is_student:
-            Student.objects.create(user=user)
-        elif user.is_institute:
-            Institute.objects.create(user=user)
+        Institute.objects.create(user=user)
 
         send_email(
             user.email,

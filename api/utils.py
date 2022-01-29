@@ -34,8 +34,12 @@ def get_client_country(request):
     else:
         ip = request.META.get("REMOTE_ADDR")
     g = GeoIP2()
-    return g.country(ip).get("country_code")
-
+    country = None
+    try:
+        country = g.country(ip).get("country_code")
+    except:
+        pass
+    return country
 
 def random_key(length=8):
     return "".join(

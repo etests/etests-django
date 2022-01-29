@@ -17,7 +17,7 @@ from social_django.utils import load_backend, load_strategy
 from api.serializers.auth import *
 from api.serializers.user import UserSerializer
 from api.models import Batch
-
+from api.utils import get_client_country
 
 sensitive = method_decorator(
     sensitive_post_parameters("password", "old_password", "new_password")
@@ -48,7 +48,7 @@ class RegisterView(CreateAPIView):
         )
 
     def perform_create(self, serializer):
-        user = serializer.create(self.request.data)
+        user = serializer.create(self.request.data, country=get_client_country(self.request))
         return user
 
 

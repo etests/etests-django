@@ -28,3 +28,5 @@ static
 *.sage.py
 
 zappa_settings.json
+
+temp.py
