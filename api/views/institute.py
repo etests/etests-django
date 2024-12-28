@@ -26,12 +26,15 @@ class InstitutesListView(ListAPIView):
         if user.is_authenticated and user.country:
             queryset = queryset.filter(user__country=user.country)
         else:
+            client_country = None
             try:
+                client_country = get_client_country(self.request)
+            except:
+                pass
+            if client_country:
                 queryset = queryset.filter(
                     user__country=get_client_country(self.request)
                 )
-            except:
-                pass
         return queryset
 
 

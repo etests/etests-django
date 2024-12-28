@@ -11,7 +11,7 @@ from rest_framework.serializers import (
     ValidationError,
 )
 
-from api.models import Institute, Student, User
+from api.models import Batch, Enrollment, Institute, Student, User
 from api.ses import send_email
 
 from .user import UserSerializer
@@ -52,7 +52,12 @@ class RegisterSerializer(ModelSerializer):
 
         user.save()
 
-        Institute.objects.create(user=user)
+        if "is_student" in validated_data:
+            student = Student.objects.create(user=user)
+            common_batch = Batch.objects.filter(name="eTests").first()
+            Enrollment.objects.create(student=student, institute=common_batch.institute, batch=common_batch, roll_number=student.id)
+        elif "is_institute" in validated_data:
+            Institute.objects.create(user=user)
 
         send_email(
             user.email,

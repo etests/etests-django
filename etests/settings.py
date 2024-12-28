@@ -178,8 +178,11 @@ CORS_ALLOW_HEADERS = (
 
 if os.getenv("CORS_ORIGIN_WHITELIST"):
     CORS_ORIGIN_WHITELIST = os.getenv("CORS_ORIGIN_WHITELIST").split(",")
+else:
+    CORS_ORIGIN_WHITELIST = ["http://localhost:3000"]
 
-CORS_ORIGIN_REGEX_WHITELIST = (r"^(https?://)?(\w+\.)?" + re.escape(os.getenv("DOMAIN")) + r"$",)
+if os.getenv("DOMAIN"):
+    CORS_ORIGIN_REGEX_WHITELIST = (r"^(https?://)?(\w+\.)?" + re.escape(os.getenv("DOMAIN")) + r"$",)
 
 GEOIP_PATH = os.path.join(BASE_DIR, "GeoLite")
 
