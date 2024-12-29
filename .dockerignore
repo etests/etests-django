@@ -1,0 +1,25 @@
+# Environments
+.en
+.env
+.env.*
+.venv
+env/
+venv/
+pypy_venv/
+ENV/
+env.bak/
+venv.bak/
+*.local
+.vscode/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+env.py
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+static
