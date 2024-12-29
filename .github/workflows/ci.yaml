@@ -10,7 +10,8 @@ on:
 
 jobs:
   lint-and-test:
-    name: Lint Code
+    name: Lint and Test Code
+    environment: staging
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -38,13 +39,14 @@ jobs:
 
       - name: Run Tests
         env:
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
           python manage.py migrate
           python manage.py test
 
   build:
     name: Build and Push Docker Image
+    environment: production
     runs-on: ubuntu-latest
     needs:
       - lint-and-test
@@ -57,10 +59,11 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }} .
+          docker build -t ${{ vars.DOCKER_IMAGE_NAME }}:${{ github.sha }} .
 
   deploy:
     name: Deploy to Production
+    environment: production
     runs-on: ubuntu-latest
     needs: build
     if: github.ref == 'refs/heads/main'
@@ -76,10 +79,10 @@ jobs:
 
       - name: Push Docker Image
         run: |
-          docker push ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ vars.DOCKER_IMAGE_NAME }}:${{ github.sha }}
 
       - name: Deploy Application
         env:
-          DOCKER_IMAGE: ${{ env.DOCKER_IMAGE_NAME }}:${{ github.sha }}
+          DOCKER_IMAGE: ${{ vars.DOCKER_IMAGE_NAME }}:${{ github.sha }}
         run: |
           echo "Deploying $DOCKER_IMAGE"
