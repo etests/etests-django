@@ -37,6 +37,8 @@ jobs:
         continue-on-error: true
 
       - name: Run Tests
+        env:
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
           python manage.py migrate
           python manage.py test
