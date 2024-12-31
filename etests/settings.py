@@ -17,14 +17,12 @@ EMAIL_ID = os.getenv("NOREPLY_EMAIL_ID")
 
 DEBUG = strtobool(os.getenv("DEBUG", "False"))
 
-DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 ALLOWED_HOSTS = [os.getenv("ALLOWED_HOST")]
 
 if os.getenv("DATABASE_CONFIG", "") == "URL":
-    DATABASES = {
-        "default": dj_database_url.config(conn_max_age=600)
-    }
+    DATABASES = {"default": dj_database_url.config(conn_max_age=600)}
 
 elif os.getenv("DATABASE_CONFIG") == "postgresql":
     DATABASES = {
@@ -36,15 +34,15 @@ elif os.getenv("DATABASE_CONFIG") == "postgresql":
             "HOST": os.getenv("DATABASE_HOST"),
         }
     }
-    
+
 else:
-     DATABASES = {
+    DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(BASE_DIR , "db.sqlite3"),
+            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
         }
-     }
-    
+    }
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -62,7 +60,7 @@ INSTALLED_APPS = [
     "social_django",
     "rest_framework_social_oauth2",
     "api",
-    "whitenoise.runserver_nostatic"
+    "whitenoise.runserver_nostatic",
 ]
 
 SIMPLE_JWT = {
@@ -182,7 +180,11 @@ else:
     CORS_ORIGIN_WHITELIST = ["http://localhost:3000"]
 
 if os.getenv("DOMAIN"):
-    CORS_ORIGIN_REGEX_WHITELIST = (r"^(https?://)?(\w+\.)?" + re.escape(os.getenv("DOMAIN")) + r"$",)
+    CORS_ORIGIN_REGEX_WHITELIST = (
+        r"^(https?://)?(\w+\.)?" + re.escape(os.getenv("DOMAIN")) + r"$",
+    )
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 GEOIP_PATH = os.path.join(BASE_DIR, "GeoLite")
 
@@ -228,7 +230,7 @@ AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 if os.getenv("AWS_S3_DOMAIN"):
     AWS_S3_DOMAIN = os.getenv("AWS_S3_DOMAIN")
 else:
-    AWS_S3_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'
+    AWS_S3_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
 
 AWS_MEDIA_LOCATION = "media"
 DEFAULT_FILE_STORAGE = "etests.storage_backends.MediaStorage"
@@ -241,10 +243,10 @@ if os.getenv("STATIC_CONFIG", "") == "AWS":
 
 elif os.getenv("STATIC_CONFIG", "") == "WHTENOISE":
     STATIC_URL = "/static/"
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-    MEDIA_ROOT = os.path.join(BASE_DIR,'media')
-    MEDIA_URL = '/media/'
-    
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+    MEDIA_URL = "/media/"
+
 else:
     STATIC_URL = "/static/"
 
