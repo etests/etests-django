@@ -11,8 +11,8 @@ schema_view = get_schema_view(
     openapi.Info(
         title="eTests API",
         default_version="v1",
-        description="Test description",
-        contact=openapi.Contact(email="etests.service@gmail.com"),
+        description="REST APIs for eTests application",
+        contact=openapi.Contact(email="piyushkumarmaurya@gmail.com"),
     ),
     public=True,
     permission_classes=(AllowAny,),
